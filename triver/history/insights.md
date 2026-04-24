@@ -1,0 +1,132 @@
+# TriVer Insights
+
+## Patterns
+
+- Qwen3 在这个任务上不能直接用默认续写；需要 `chat_template + enable_thinking=False`，否则会混入 `<think>` 或解释文本。
+- 对 prefix-control 实验，逐行 next-step rollout 比“一次性吐完整 trace”更稳，也更贴近 `continue / revise` 的动作定义。
+- 在线性方程域上，把等式规范成“变量尽量在左”能减少假无效前缀。
+- recoverable-prefix 扰动是必要的分层采样手段，否则 `revise` 状态覆盖不足。
+- 在当前 `linear_equations + Qwen3-8B` 初测里，`mu_continue` 单标量阈值控制明显弱于 learned-1D / direct-policy，这个方向值得继续扩样本。
+- crossing mass 高并不自动等于 scalar baseline 会输；arithmetic 域就是反例，说明 crossing 的定义和 controller 可分性之间还需要更细的分析。
+- 当前 small-data / linear-head 的 hidden-state baseline 不如表格特征版，说明“更贴近 proposal 的强 baseline”不等于“默认更强”。要么继续优化表示使用方式，要么承认当前 strongest baseline 还没有跑到位。
+- 如果 exact-state factorized 已强而 predicted-state factorized 弱，优先怀疑 state identification；如果 exact-state factorized 本身也弱，则要怀疑状态变量选择或 factorized value head 容量。
+- 如果 `predicted_state_exact_value` 明显优于“predicted state 上再训练一个 value head”，优先怀疑 canonical state reconstruction，而不是 action-value head 表达力。
+- `mean_content` 这类全局 pooling 可能更利于 `q`（局部无效风险）分离，但会伤害 `S`（默认继续成功分布）估计；`q` 和 `S` 不应默认共享同一最优表示。
+- 如果 split-repr 只提升 `q_auc`，却不改善 regret，优先怀疑 controller 当前缺的是 `S` 侧信息，而不是 `q` 识别。
+- Beta posterior 只能修正极端 `0/1` 估计，不能凭空制造 `nu` 变化；如果 rollouts 本身几乎总是 unanimous，`nu` 仍会退化成常数。
+- richer `S` proxy（如 default-continue 的 utility std / wrong-rate / token-cost）可以在 `nu` 退化时恢复部分 factorized 性能；这比继续硬刷 `q-head` 更符合当前瓶颈。
+- 如果 richer `S` proxy 提升了 exact-state、却伤害了 predicted-state，优先判断为 `S-head` 学习失败，而不是 proxy 无效。
+- 如果更强 state-head 只改善 `predicted_state_exact_value`，却让 `predicted_state` 变差，说明下一层瓶颈在 value head 对 noisy predicted state 的稳健性，而不只是 state-head 容量。
+- 不要默认 “用 predicted-state 训练 value head” 会比 “用 exact-state 训练再部署到 predicted-state” 更稳；在当前小样本设置下，predicted/OOF 训练可能只是把噪声直接喂进回归器。
+- `exact_plus_oof` 可能在某些域上有帮助、在另一些域上更差；它更像域依赖的 bias-variance tradeoff，不是通用修复按钮。
+- 基于 exact-vs-pred discrepancy 的 sample weighting 可以局部缓解最差的 OOF 训练，但未必能改变最优 train-mode 排序；它更适合当辅助机制，不像主解。
+- `Huber` 这类残差稳健回归如果只在一个域上改善、却在另一个域和 exact-state 上普遍变差，说明主问题不只是 utility label outlier。
+- 如果 pairwise / ranking-style value head 能提升 exact-state、却不提升 predicted-state，说明 point-value target 确实有错配，但 deployable 瓶颈仍主要是 noisy state，而不是单纯的 value target 选错。
+- pairwise preference head 更贴近 `argmax_a U(a | g_t)`，适合拿来检验 “当前差距来自 target 还是来自 state-noise”；它不是 direct-policy 的替代，而是 factorized valuation 的更结构化版本。
+- 如果 interaction value head 能显著改善 exact-state，说明 `q / mu / nu / wrong_rate / tok` 之间的关系不是线性的；线性 head 的失败不能直接解读为 factorization 无效。
+- 如果 interaction value head 只在一个域上改善 predicted-state，说明 “非线性容量不够” 不是唯一问题；state-noise 的域依赖传播方式同样是主研究对象。
+- committee disagreement 这类 uncertainty feature 如果能大幅改善某一域的 predicted-state，却在另一域无效，说明 reliability signal 是真的，但它和 action valuation 的耦合方式也是域依赖的。
+- 如果 uncertainty-aware 版本主要改善 `train_predicted`，却不改善 `train_exact`，说明它学到的不是更强的 value function 本身，而是更好的 noise handling。
+- 如果 simple gate 只在一个域上给极小收益、却在另一域上显著崩掉，优先怀疑的不是 “是否该混合两条分支”，而是 gate 的校准目标和路由分布本身也带有域依赖。
+- 用 OOF calibration prefixes 上“哪条分支的 chosen utility 更高”来训练 gate，仍可能过拟合到当前域的 state-noise 结构；simple mixture-of-experts 不能替代真正的 joint state-value modeling。
+- 如果 per-pair error calibration 能明显救一个域、却压坏另一个域，说明“是否该 shrink margin”本身就是条件性决策；校准强度不能假设是全局常数。
+- pairwise-level calibration 比整行 gate 更细，适合识别“哪类动作对在 noisy predicted state 下最不稳”；但如果 easy 域原本 margin 已经可靠，它也可能只是在过度去置信。
+- 如果 direct meta-calibration 比固定 shrinkage 更能保住 easy 域，却同时压坏 hard 域，优先怀疑的是 meta head 在小样本下过拟合了 calibration set 的局部结构，而不是“校准一定越灵活越好”。
+- 如果 per-pair selective gate 仍然不能跨域超过各自 best，说明 wrapper 家族的上限已经接近；下一步更值得改的是底层 state-value 参数化，而不是继续在外面叠校准器。
+- 如果 native heteroscedastic head 能系统性优于 wrapper，但仍打不过单域 best，说明方向是对的，只是当前方差结构太弱；下一步应优先加 action-conditional covariance / shared uncertainty structure，而不是退回 wrapper。
+- 独立动作方差的 heteroscedastic utility head 更容易改善 exact-state 和 easy 域 predicted-state；如果 hard 域仍不行，问题往往不是“uncertainty 没用”，而是“动作间耦合没有被建模”。
+- 如果 pairwise-difference heteroscedastic 比独立动作方差版更差，优先怀疑的是样本效率，而不是“动作耦合不重要”；完全放开每个动作对的 mean/variance 参数，在当前规模下很容易过拟合。
+- 在小样本 controller setting 里，covariance-aware 不等于 pairwise-head 越细越好；更现实的下一步通常是共享结构、低秩耦合、或少参数相关性建模。
+- 如果 shared-covariance 版本和独立动作方差版几乎打平，说明“共享结构”本身还不够，关键在共享结构是否足够表达域间差异；单模板缩放往往太弱。
+- covariance-aware 的参数化需要同时满足两点：比 pairwise-head 更省样本，比独立动作方差版更能表达相关性；只满足其中一点通常不会真正赢。
+- 如果 low-rank/shared-latent 版本能显著改善 hard 域、却伤害 easy 域，说明共享 latent 的表达力是真需求，但它的启用强度也需要条件化；rank-1 不是统一默认，而是一个有用的结构基元。
+- low-rank latent 比 shared template 强、比完全 pairwise 更省样本；如果它成为 hard 域最优附近方案，下一步通常该加少量 latent 因子或条件化因子，而不是回到更弱或更贵的两个极端。
+- 如果 rank-2 / multi-factor latent 主要提升 exact-state，却不改善 predicted-state，优先怀疑缺的是 conditional reliability handling，而不是 latent rank 本身；“更高秩”不能替代部署时的 state-noise interface 建模。
+- 如果 conditional latent orientation 明显优于 fixed rank-2，说明真正缺的是“输入决定该用哪种相关性结构”，而不是简单增加共享因子的数量。
+- 如果 `conditional latent + pairwise shrinkage` 能刷新 hard-domain best，却把 easy-domain 压坏，说明 shrinkage 本身仍然需要显式的 bypass 机制；“更强 base bundle”不能自动修复过度收缩。
+- 如果 capped-shrink 只能把 easy-domain 从“严重崩坏”拉回到“仍明显更差”，说明连续收缩强度调参不够，下一步应考虑离散的 no-op / banded regime，而不是继续细调 shrinkage 系数。
+- 如果 banded/no-op 的共享规则仍然救不回 easy-domain，说明问题不再是 shrinkage 曲线形状，而是 calibration 本身需要按 cluster / env 分开建模。
+- 如果 2-cluster per-pair calibration 仍然不能恢复 easy-domain，说明 shared calibration 这条线已经接近边界；继续增加 cluster 粒度的收益大概率很低。
+- 如果 pooled shared controller 显式看到 `env_is_linear` 后 exact-state 和 deployable 都明显改善，但仍稳定输给 specialist portfolio，说明问题不只是缺少 domain label，而是单一 shared controller 仍不如显式 per-env routing。
+- 如果 learned global router 和 env-override router 都不如 hard per-env specialist，甚至不如简单的 `always_linear_specialist`，说明当前样本规模下 expert-routing 的学习目标噪声很高；hard partition 本身反而更稳。
+- 如果 fixed expert-pool 的 oracle selector 明显优于 hard specialist，但 learned router 仍然更差，优先怀疑的是 routing supervision / feature interface，而不是 expert pool 本身不够强。
+- 如果 router 训练里 `oracle tie` 很多，直接做专家二分类会把大量零边际样本硬编码成任意标签；把监督改成连续的 `expert utility gap` 往往比简单 margin-weighted classification 更有效。
+- 如果把 specialist 内部 `action score / top-2 gap` 暴露给 router 后只能带来小幅改善，而 utility-gap regression 也仍追不上 hard specialist，说明 shared learned routing 的瓶颈已经不只是标签编码，而是当前数据规模与路由接口共同限制了可学的 routing policy。
+- 如果更强的非线性 router 能把 shared learned routing 明显推近 hard specialist，却仍然过不去，正确结论应是“router 容量也是一部分瓶颈，但还不是全部”，而不是“线性头无效”或“再换一个小模型就能解决”。
+- 如果扩大 routing supervision 的有效样本量后，shared learned routing 的提升幅度明显大于继续换小模型结构，优先级就该转向数据/监督规模，而不是继续在同一数据上扫 router 家族。
+- 在 `rf_specialist` 这条 family 里，先做小规模 multi-seed pilot 再决定是否升格很重要；单个 seed 上的 same-family winner 很容易是高方差假象，family 级结论要看 aggregate mean。
+- 对 `rf_specialist` 这类已经有强默认路由的模型，继续叠一个 fallback override 阈值很容易退化成与 base router 完全同分；如果多个 seed 都这样，说明这条线该尽快退役，容量增强比 fallback 微调更值得继续。
+- 如果 same-family 的高容量升级在 full multi-seed aggregate 上仍然在两个 setting 里都保持小幅 mean win，就应该按 aggregate 升格默认 family；per-seed winner 不稳定并不妨碍默认切换。
+- 在已经有强默认 family 的 same-family sweep 里，tempered weighting 这类“比 hard-margin 更温和”的分支应先过 representative aggregate 再决定是否升格；它很可能在部分 hard seeds 上翻成 winner，但 aggregate mean 仍未必能超过 plain high-capacity base。
+- 一旦 `rf_highcap_only` 的 fold cache 打通，same-family rerun 的成本会从十分钟级 specialist 重算降到四十秒级 cache-hit；这时更值得优先测“只改最终 router 容量”的变体，因为它们能最快给出 aggregate go/no-go。
+- 在当前 `rf_high_capacity` family 上，capacity-only 升级比 weighting-only 升级更有希望形成干净 aggregate win：`soft-margin` 仍是 mixed-signal，而 `extra_trees` 已经在 representative aggregate 上超过 plain `rf_high_capacity`。
+- 如果一个 same-family 容量升级不只在 representative filter 上翻转，而且在完整 `8-run no-env` aggregate 上仍保持 mean win，就不该继续在同一 setting 里扫更多小变体；下一步应直接测更关键的 setting 扩展（这里就是 `with-env`），而不是继续内卷 `no-env`。
+
+## Pitfalls
+
+- `infer` 环境有 `torch/transformers`，但缺 `matplotlib/pandas`。实验流水线需要拆成 generation 与 plot-only 两阶段。
+- 仅用很弱的 `lambda_tok / gamma_wrong` 会让 top-2 action gap 过小，导致 oracle determinacy 虚低。
+- 更强 backbone 会显著改变 action atlas 形状；4B 与 8B 不能直接混成一个机制结论。
+- 线性方程模型会输出分数形式；parser 必须把不可解析行安全忽略，不能直接崩溃。
+- 直接把“更强的 prompt embedding pooling”视为整体进步是不可靠的；必须把 `q` 指标和 `mu / nu` 指标拆开看，否则容易把单头收益误判成整体 state-ID 提升。
+- 如果高温、更高 rollout 数后 `nu` 仍为常数，不要继续把问题当成“训练不够”；这更可能是当前域上的 `S_t` 监督对象本身退化。
+- 不要把 `continue_utility` 直接塞进 factorized state 当作“更强 S”；它过于接近 action target。更稳的是用 default-continue 的分布性分量：波动、错误率、成本。
+- 跨域时要分开看“proxy 本身是否有价值”和“state head 能否学到 proxy”。arithmetic 域表明这两者可以完全分叉。
+- `pca_enet` 这类更强 head 可能只在某个域上有利；不要默认把单域最优 head 提升为全局默认，需要保留可切换配置。
+- `predicted_oof` 看起来最“严格”，但在当前规模下可能最差，因为它同时减少有效样本质量和放大 state-noise；不要把 OOF 当成默认稳健方案。
+- 不要把 `huber` / sample-weighting 这类通用 robust 回归技巧当成 proposal 里 value-head 的充分替代；如果它们只能给边角改进，下一步应转向更贴合 action valuation 结构的 head。
+- 不要把 exact-state 上的 pairwise 改善误读成 deployable controller 已经变强；如果 predicted-state 没同步变好，主问题仍在 state-noise interface。
+- 不要把单域 predicted-state 的 interaction 改善直接推广成通用结论；linear / arithmetic 的分叉已经说明 value-head 结构选择本身也是域依赖的。
+- 不要把 uncertainty 当作普通附加特征后就假设问题解决；如果最好结果仍卡在旧 baseline 之下，下一步需要更紧耦合的 joint state-value 或 heteroscedastic head。
+- 不要把 simple gate 在单域上的微小提升误写成通用方案；如果另一域明显崩坏，结论应写成“gate 目标/校准分布域依赖”，而不是“joint routing 已成立”。
+- 不要把 pairwise shrinkage 在单域上的显著改善直接升格成最终 head；如果另一域被明显压坏，下一步应改成条件化/异方差式 shrinkage，而不是继续全局收缩。
+- 不要在 fixed shrinkage、direct meta、selective gate 都失败后继续堆 wrapper；这通常是在重复利用同一校准集信号，收益会越来越小且更不稳。
+- 不要把 heteroscedastic head 的 exact-state 提升误读成 deployable controller 已经解决；如果 predicted-state 仍落后，下一步要看的是 uncertainty 结构够不够表达动作间相对排序，而不只是每个动作的独立方差。
+- 不要在 pairwise native 版本失利后直接得出“covariance-aware 没用”；更可能的结论是“当前 pairwise 参数化太贵”。下一步应压缩自由度，而不是回到 wrapper。
+- 不要在 shared-template 打平后就写“共享结构无效”；更准确的结论是“当前共享结构太弱”。下一步应增加结构表达力，而不是回到完全独立或完全 pairwise 两个极端。
+- 不要把 low-rank 在 hard 域上的改进误写成跨域统一成功；如果 easy 域变差，下一步要么分域，要么做条件化 latent，而不是直接把 rank-1 升成全局默认。
+- 不要把多因子 latent 带来的 oracle exact-state 提升误写成 deployable gain；如果 predicted-state 没同步改善，更可能是 latent activation / reliability routing 仍然是错的，而不是 rank 还不够高。
+- 不要在 conditional latent 已经恢复 easy-domain deployable 表现后继续盲目加固定 rank；那通常只会继续买到 oracle fit，而不是用户真正关心的 deployment gain。
+- 不要指望 simple selective gate 会自动学会 “什么时候不 shrink”；如果它和非 selective 版本一样崩，下一步应加入显式 no-op / capped-shrink 结构，而不是继续堆同类 gate。
+- 不要把 capped-shrink 的局部回升误读成问题已解；如果 easy-domain 仍远差于 base controller，说明还缺一个真正的 bypass 路径，而不是更细的 shrinkage 网格。
+- 不要在 banded/no-op 共享规则也失败后继续堆更多同类阈值；那通常只会重复验证同一个边界。下一步应该换成显式分群或分域处理。
+- 不要在 clustered 共享校准也失败后继续扫更多 cluster 数；更合理的是转向显式 domain-specific controller 或直接整理成结论，而不是继续同一族 sweep。
+- 不要把“给 shared controller 加一个 env 特征”误读成已经做了 domain-specific routing；如果 specialist portfolio 仍明显更强，结论应写成“shared controller 被条件化后有所改善，但还不足以替代显式 per-env controller”。
+- 不要在 hard specialist 已经明显领先时继续默认“小 learned router 一定更灵活更好”；如果 router 连 `always_linear_specialist` 都没超过，下一步应改 routing 监督或数据规模，而不是继续堆同类小路由器。
+- 不要把 hard specialist 当前最优误读成 “routing 已经没空间”；如果 oracle expert selector 还能明显更强，说明 routing headroom 仍在，只是当前学法没有抓住。
+- 不要把 margin-weighted 分类 router 的失败误读成 “supervision 不重要”；如果 utility-gap regression 明显更好，正确结论应是“连续 supervision 比二分类更贴近 routing 目标”，而不是“routing label form 无关”。
+- 不要把某一轮 RF router 的接近或反超直接升格成最终结论；更稳的判断要看它能否在后续更大 supervision 点上继续保持并进一步缩小 oracle gap。
+- 不要把大数据设置里某一版 shared router 的第一次反超写成终局；正确做法是继续补下一个 scale 点，确认这是 ranking 翻转的开始，还是一次性波动。
+- 如果继续扩大 routing supervision 后，普通 learned router 和多个结构化变体都一起超过 hard specialist，就不该再把结论停留在“仅仅接近”。这说明 ranking 真的被数据规模翻转了，下一步该转向消化 oracle gap，而不是继续证明能不能过 specialist。
+- 当 `no-env` 和 `with-env` 都出现 learned-routing 胜利，但胜出的具体 router 变体不同，正确结论不是“env feature 决定成败”，而是“数据规模主导、接口次要”。这时更该看 shared learned routing 相对 oracle selector 的剩余 gap。
+- 不要把“第一个越过 hard specialist 的 learned router 变体”误当成长期最优。80-sample 结果说明，随着 supervision 继续扩大，最佳 router 家族还会再次换位；更该跟踪的是 scaling 趋势，而不是单个 winner。
+- 如果 60-sample 到 80-sample 还在继续显著缩小 oracle gap，就不要轻易写“已经平台化”。这时最合理的下一步仍是继续扩大 supervision 或提升 router 容量，而不是把研究 prematurely 收口。
+- 但如果再往上的下一档（如 100-sample）只带来极小改善、且不同 env/variant 的排序开始来回切换，就要把结论改写成“进入平台/抖动区间”，而不是继续默认会单调变好。
+- 当 best router 家族在相邻大数据点之间切换时，说明当前更缺的是稳定性而不是单次峰值；下一步应优先做重复大数据复验或更强 router，而不是继续把单个 winner 当成主结论。
+- 不要把单个大数据 run 的“平台”结论写得太硬；独立 seed 的同规模 replicate 可能把 frontier 从 `~0.191` 直接拉到 `~0.157`。在这种 regime 下，multi-seed 报告不是可选项，而是必须项。
+- `direct_utility` 这类更贴近 oracle selector 的 supervision 如果能稳定优于 hard specialist、却仍输给 `utility_gap`，说明问题不在“supervision 不够 oracle-like”，而在“哪种监督接口最适合当前 router family”。更贴近 oracle 不自动等于更优。
+- 在 high-variance regime 里，`per-seed winner` 和 `multi-seed mean winner` 可以完全不是同一个 family。单个 seed 的最佳模型适合做 case study，不适合直接升格成主结论；主表应同时给 `mean/std` 和 `win-counts`。
+- 不要把 `rf_specialist_fallback` 这类与 plain `rf_specialist` 完全同分的“胜出”当成真实架构进步；先检查是不是 tie-breaking 或 threshold collapse。
+- 不要因为 same-family 升级的均值优势只有 `~0.001-0.002` regret 就忽略它；如果它在完整 multi-seed 主表上跨两个 setting 都保持同向改进，正确做法是升格默认并继续沿这条线加证据，而不是回到已证伪的 fallback 微调。
+- 在 `rf_high_capacity` 这类 same-family 探针里，不要并发起多个 full-router run。脚本内部本身就会训练多组 `n_jobs=-1` 的 RF baseline；再并发多个 session 会严重 oversubscribe，导致长时间无产物。更稳的做法是串行跑，或先裁掉与本轮 family 无关的 baseline。
+- 但 same-family 加速不要只盯着“裁后半段 baseline 数量”。`rf_highcap_only` probe 表明，即使只保留 RF family 相关 baseline，`100-sample` 的主耗时仍然在 specialist OOF generation。真正有效的加速方向应是 cache/复用 router-feature 中间产物，而不是继续删 head。
+- 对 same-family 升级，不要只凭 `no-env` 或 representative gate 就改写全局默认。更稳的升格条件是：跨 `no-env / with-env` 两个 setting 都完成 full multi-seed mean win。`rf_high_capacity_extra_trees` 就是第一个满足这条标准的容量升级线。
+- 在依赖历史 cache 做 cheap same-family gate 前，先审计 cache 的 fold 完整性。部分旧 `v5` 目录只保留了 `fold_01`，会让“看起来是 cache-hit 的 rerun”在中途 silently 退回 specialist OOF generation。
+- 对 `rf_high_capacity_extra_trees` 这类已经较强的默认 family，简单把 `max_features` 放开到 `None` 不一定是有效的容量升级；如果第一条 cache-backed probe 已经更差且更慢，应尽早 early-stop，而不是把它机械扩到 representative 4-seed。
+- 当 exact-state 明显有价值、predicted-state 长期掉点、而多轮 value-head sweep 仍主要改善 exact-state 时，不要继续把主要精力放在 head family 搜索上；这通常意味着项目已经进入“benchmark / mechanism paper + state-identification follow-up”阶段，后续算法线应只围绕 gap recovery 来设计。
+- 如果 `high-determinacy only` 和 `pairwise preference` 两条 label-side rescue 都只能部分回收 predicted-state gap，而且不同域的最优救法不同，那么 label noise 不是唯一问题；更合理的结论是“target cleanup matters, but state identification remains the dominant bottleneck”。
+- `high-determinacy` 和 `pairwise` 的作用模式可以分域分离：arithmetic 更受 ambiguity / MC-noise 过滤影响，linear 更受 target formulation 影响。看到这种分叉时，不要继续追求单一统一修复按钮，下一步应直接上 exact-state teacher distillation。
+- exact-state teacher distillation 也可能强域依赖，而且“最优 teacher/student 形式”未必与 phase-1 cleanup 一致：当前结果是 linear 更适合 `ridge teacher-distill`，arithmetic 更适合 `pairwise teacher-distill`。如果 teacher 也只能给出这种分叉式局部增益，正确结论应是“state-ID rescue 有信号但不统一”，而不是继续寻找单一通吃修复器。
+- 如果 `best cleanup + teacher` 的组合版本仍然不能超过各域当前单步 best rescue，而且 best rescue 还持续输给 `learned_1d_linear`，就不该再继续在同一 paper 里追算法胜利。这个信号说明：当前 exact-state / predicted-state gap 已经被充分诊断，但还没有被当前表示学习方案有效回收，继续扫同类 rescue 只会稀释 benchmark / mechanism 主线。
+- 对 API-backed exact-checker generation，`step_max_new_tokens` 是比 `num_rollouts` 更高杠杆的第一层旋钮：旧的 `24` 会直接把一步算式截断成 `0-prefix` 空跑；把它放宽到 `64` 能立刻恢复非空数据。相反，在当前 prompt 下把 `num_rollouts` 从 `2` 提到 `4` 明显增加等待时间，但几乎不改善 determinacy / ambiguity，因此下一轮 tuning 应优先打 sample coverage、prompt 和 action construction，而不是继续单纯加 Monte Carlo replication。
+- 对当前 API exact-checker benchmark，coverage/budget 调参比 rollout-count 更能改变机制质量：把 `num_samples / max_decision_points / total_budget_tokens` 一起提一档后，arithmetic 的 high-determinacy crossing 才真正出现，linear 也从“零 crossing”翻成了明显非零。这说明早期 API 版本里“看不到 crossing”更可能是 benchmark coverage 问题，而不是域本身不支持该现象。
+- 对当前 API exact-checker benchmark，stricter formatting prompt 不等于更好的 benchmark 数据：`api_strict` 虽然能提高 `mean_action_gap`、略降 ambiguity，但会明显压缩 prefix coverage，并把两域的 high-determinacy crossing 压回 `0`。如果目标是构造有机制价值的 benchmark，而不是只追求更整洁的 traces，默认应优先保留 coverage-first prompt。
+- 对当前 API exact-checker benchmark，专门强化 `revise_1` 的 rollback/replace 语义，比全局收紧格式更高杠杆：`api_revise_focus` 在不牺牲 coverage/crossing 的前提下提高了 determinacy、降低了 ambiguity，并且至少在 arithmetic 上提高了平均 `revise_gain`。如果下一轮继续做 action construction，应优先沿这条“局部动作语义”线推进，而不是再做全局 prompt 收紧。
+- 在 `revise_1` prompt 里直接列出 exact valid-next-step candidates，会把 action prior 推得更偏 `revise/abstain`，并不自动带来更好的 benchmark 质量。当前 `api_revise_candidates` 的结果是：coverage 增大，但 determinacy/gap 没有继续优于 `api_revise_focus`，linear 的 invalid-prefix 还更差。因此 candidate-guided prompting 适合做上界/ablation，不适合作为默认数据构造设置。
+- 如果更强的 revise 语义只在无效前缀上启用，而 clean prefixes 退回默认 `revise_1`，通常会比“全局强化 revise”更平衡。当前 `api_revise_invalid_focus` 的结果就是：它保留了 `api_revise_focus` 的主要正信号，同时避免了 `api_revise_candidates` 那种 action-prior 膨胀，并在 arithmetic 上把 invalid-prefix 副作用收了回去。
+- 对 recoverable-prefix 构造，优先扰动“当前步骤新引入的数字”这类更局部的 corruption，并不会自动优于默认的 last-line corruption。当前 `local_changed_token` 的 paired 结果表明：它能带来局部诊断改进（如 linear 的 revise gain），但不能稳定提升 determinacy/gap，也不足以替代 `api_revise_invalid_focus + default recoverable-style`。因此这类更局部的 corruption 适合做 paired ablation，不适合作为默认构造策略。
+- broad `judge_based_supporting` benchmark 与 exact-checker 主 benchmark 要严格分层。第一批 `gsm8k` smoke 已经说明：API generation + API judge 的 prefix-level oracle records 可以技术上跑通，但 determinacy 会明显更低、ambiguity 更高。因此这类 judge-based 数据适合做 external-validity / supporting evidence，不适合直接替代 exact-checker 主证据。
+- 对 broad judged benchmark，最小的 judge ensemble 确实能提高稳定性：当前 `dual` 模式在 GSM8K smoke 上把 determinacy 从 `0.125` 拉到 `0.2222`，也把 mean action gap 从 `0.1094` 拉到 `0.1339`。但只要 high-determinacy crossing 仍为 `0`，这条线就还不够硬，不能因为 determinacy 有所改善就误升格为主证据。
+- 对 broad judged benchmark，generation-side “更短、更整齐、终止更完整”的 trace prompt 不一定提升 benchmark 质量。当前 `compact_final` 把 GSM8K base-trace terminal rate 从 `0.6667` 拉到 `1.0`，但 determinacy 从 `0.2222` 回落到 `0.1111`，mean action gap 也从 `0.1339` 降到 `0.1159`。说明 broad judged 线的下一个高杠杆点不是 cleaner trace formatting，而更可能是 judge stability、ambiguity handling 和 action-level utility 定义。
+- 对 broad judged benchmark 做 judge/utility probe 时，必须先固定 generation；否则 API generation variance 会污染 paired 结论。当前新增的 `--base-traces-json` replay 机制已经说明：在固定 `v2_dual` base traces 后，`gamma_wrong=1.0` 仍把 determinacy 从 `0.2222` 降到 `0.1111`。所以“更重的 wrong-penalty”本身不是当前 broad judged 线的高杠杆旋钮。
+- 对 broad judged benchmark，若现有两套 correctness judge 已经都在用，不必急着再加第三个 prompt；先测试更严格的 aggregation 规则更高杠杆。当前 `dual_consensus` 在固定 generation 的 replay 上把 mean action gap 从 `0.1339` 提到 `0.1879`，同时不降低 determinacy，说明 judge disagreement 的“放行规则”本身就是一个重要旋钮。

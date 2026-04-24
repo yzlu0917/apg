@@ -1,0 +1,531 @@
+# TriVer Progress
+
+## Current Goal
+
+把项目从“继续扫 controller 变体”彻底切到“按 NeurIPS 主文结构写稿并收口”：
+- 已完成可编译的 NeurIPS LaTeX 初稿
+- 已把主文 strongest/weaker claims 收敛到 benchmark + conditional scalar insufficiency + deployment gap
+- 已补齐 budget-axis / revision harm / compute-value calibration / within-domain repeatability `v1`
+- 当前优先级：主文文字打磨、主图主表落版、appendix 裁剪，而不是继续扩 value-head / router sweep
+
+推进 proposal 的 Week 2：
+- 已完成双域的表格特征 baseline 初测
+- 已完成双域的 representation smoke
+- 已完成双域的 factorized controller 初测
+- 已完成 state-identification 诊断增强（hybrid exact-value + mean-content probe）
+- 已完成 `S_t` posterior 修正与 split-repr probe
+- 已完成 richer `S` proxy（continue std / wrong-rate / token-cost）实验
+- 已完成 richer `S` proxy 的跨域扩展（arithmetic）
+- 已完成可切换 `state_head_model` 的第一轮 sweep
+- 已完成 value-head training-mode 的正式对比（exact / predicted / OOF / exact+OOF）
+- 已完成第一轮 robust value-head sweep（`huber` / `noise_weighted_ridge`）
+- 已完成第一轮 structured value-head sweep（`pairwise_logit`）
+- 已完成第一轮 nonlinear interaction value-head sweep（`interaction_ridge` / `pairwise_interaction_logit`）
+- 已完成第一轮 uncertainty-aware value-head sweep（committee disagreement features）
+- 已完成第一轮 joint state-value gate probe（`joint_pairwise_gate`）
+- 已完成第一轮 per-pair error-calibrated value head probe（`pairwise_error_calibrated`）
+- 已完成第一轮 conditional pairwise calibration probe（`pairwise_meta_calibrated` / `pairwise_selective_calibrated`）
+- 已完成第一轮 native heteroscedastic value-head probe（`uncertainty_heteroscedastic_interaction`）
+- 已完成第一轮 native pairwise-difference heteroscedastic probe（`uncertainty_pairwise_heteroscedastic_interaction`）
+- 已完成第一轮 shared-structure covariance-aware probe（`uncertainty_shared_covariance_heteroscedastic_interaction`）
+- 已完成第一轮 low-rank/shared-latent heteroscedastic probe（`uncertainty_lowrank_heteroscedastic_interaction`）
+- 已完成第一轮 rank-2 / multi-factor shared-latent heteroscedastic probe（`uncertainty_rank2_lowrank_heteroscedastic_interaction`）
+- 已完成第一轮 conditional / input-dependent shared-latent heteroscedastic probe（`uncertainty_conditional_lowrank_heteroscedastic_interaction`）
+- 已完成第一轮 `conditional latent + per-pair shrinkage` hybrid probe（`conditional_lowrank_pairwise_error_calibrated` / `conditional_lowrank_selective_pairwise_error_calibrated`）
+- 已完成第一轮 `conditional latent + capped-shrink` probe（`conditional_lowrank_capped_pairwise_error_calibrated`）
+- 已完成第一轮 `conditional latent + banded/no-op calibration` probe（`conditional_lowrank_banded_pairwise_error_calibrated`）
+- 已完成第一轮 `conditional latent + 2-cluster calibration` probe（`conditional_lowrank_clustered_pairwise_error_calibrated`）
+- 已完成 pooled cross-domain shared-vs-specialist 对比
+- 已完成 pooled env-conditioned shared controller probe（`env_is_linear`）
+- 已完成 pooled learned expert-router probe（global router / env-override router）
+- 已完成 fixed expert-pool oracle-router diagnostics
+- 下一步收敛到：已完成 `rf_specialist` family 的 full 8-run multi-seed 扩展。`rf_high_capacity` 现在在 `no-env / with-env` 两边都成为新的 mean winner，分别为 `0.1841` 与 `0.1868`，优于 plain `rf_specialist` 的 `0.1861` 与 `0.1879`，也优于 hard specialist 的 `0.1961` 与 `0.1984`。`rf_specialist_fallback` 已确认退役。继续往下做时，当前 first-pass filter 结论是：`rf_high_capacity_margin` 在 representative `no-env` aggregate 上更差，不值得直接扩主表；下一步如果还沿 weighting 线走，只该做 tempered weighting，并且要避免并发多个 `n_jobs=-1` full-router run
+- 继续维护 oracle benchmark 与 controller 评估闭环
+- cross-domain routing 主线已从“shared learned routing 能否追平 hard specialist”推进到“100-sample 区间存在明显 seed/data sensitivity，当前下一步收敛为 multi-seed 稳定化与更贴近 oracle 的 supervision，而不是继续单次 run 外推”
+
+## Milestones
+
+- TODO: 更强的 `q` / `S` 头训练
+- TODO: 非退化 `S_t` 目标或域扩展
+- TODO: 更稳定的 representation-based direct-policy / learned-1D 结果
+- DOING: 收敛 cross-domain controller 稳定性结论与 upgraded RF 主表：small/medium data 下 hard per-env specialist 更稳；60/80-sample 后 shared learned routing 明显超过 specialist；`100-sample` 的 full 8-run family aggregate 进一步表明 `rf_high_capacity` 已经取代 plain `rf_specialist` 成为新的 mean winner，但 per-seed winner 仍然不稳定。当前主问题已经从“要不要升级 `rf_specialist`”转成“在把 `rf_high_capacity` 升格成默认 family 后，如何继续做更强容量/监督且不被 full-router oversubscription 拖死”
+- DONE: Week 2 factorized controller 初测（linear_equations + arithmetic）
+- DONE: factorized controller state-ID 诊断增强（hybrid exact-value + mean-content probe）
+- DONE: `S_t` Beta-posterior 修正 + split-repr factorized probe
+- DONE: richer `S` proxy factorized probe（utility std / wrong-rate / token-cost）
+- DONE: richer `S` proxy arithmetic cross-domain probe
+- DONE: `state_head_model` sweep (`linear` vs `pca_enet`)
+- DONE: value-head training-mode formalization（exact / predicted / OOF / exact+OOF）
+- DONE: robust value-head sweep（`huber` / `noise_weighted_ridge`）
+- DONE: structured value-head sweep（`pairwise_logit`）
+- DONE: nonlinear interaction value-head sweep（`interaction_ridge` / `pairwise_interaction_logit`）
+- DONE: uncertainty-aware value-head sweep（committee disagreement features）
+- DONE: joint state-value gate probe（`joint_pairwise_gate`）
+- DONE: per-pair error-calibrated value head probe（`pairwise_error_calibrated`）
+- DONE: conditional pairwise calibration probe（`pairwise_meta_calibrated` / `pairwise_selective_calibrated`）
+- DONE: native heteroscedastic value-head probe（`uncertainty_heteroscedastic_interaction`）
+- DONE: native pairwise-difference heteroscedastic probe（`uncertainty_pairwise_heteroscedastic_interaction`）
+- DONE: shared-structure covariance-aware probe（`uncertainty_shared_covariance_heteroscedastic_interaction`）
+- DONE: low-rank/shared-latent heteroscedastic probe（`uncertainty_lowrank_heteroscedastic_interaction`）
+- DONE: rank-2 / multi-factor shared-latent heteroscedastic probe（`uncertainty_rank2_lowrank_heteroscedastic_interaction`）
+- DONE: conditional / input-dependent shared-latent heteroscedastic probe（`uncertainty_conditional_lowrank_heteroscedastic_interaction`）
+- DONE: `conditional latent + per-pair shrinkage` hybrid probe（`conditional_lowrank_pairwise_error_calibrated` / `conditional_lowrank_selective_pairwise_error_calibrated`）
+- DONE: `conditional latent + capped-shrink` probe（`conditional_lowrank_capped_pairwise_error_calibrated`）
+- DONE: `conditional latent + banded/no-op calibration` probe（`conditional_lowrank_banded_pairwise_error_calibrated`）
+- DONE: `conditional latent + 2-cluster calibration` probe（`conditional_lowrank_clustered_pairwise_error_calibrated`）
+- DONE: pooled cross-domain shared-vs-specialist comparison
+- DONE: pooled env-conditioned shared controller probe（`env_is_linear`）
+- DONE: pooled learned expert-router probe（global router / env-override router）
+- DONE: fixed expert-pool oracle-router diagnostics
+- DONE: Week 2 baseline 初测（linear_equations + Qwen3-8B）
+- DONE: Week 2 baseline 初测（arithmetic + Qwen3-8B）
+- DONE: 第二个 exact-checker 域（linear equations）+ 受控 recoverable-prefix 扰动
+- DONE: Week 1 arithmetic exact-checker env + oracle rollout pipeline
+- DONE: 读 proposal 并锁定主闭环与 Week 1 目标
+
+## Latest Progress
+
+- 2026-03-16: 已把 `scripts/run_week1_oracle.py` 接上 API backend：新增 `triver/models/api_runner.py`，支持 OpenAI-compatible `POST /chat/completions`，并在脚本里加入 `--backend api`、`--api-model`、`--api-base-url`、`--api-key`、`--tokenizer-path`、`--step-max-new-tokens`。
+- 2026-03-16: API-backed Week-1 smoke 已经跑通。第一次沿用旧的 `step_max_new_tokens=24` 时，API 模型把 arithmetic 第一步截断，导致 `0 prefixes`；暴露 `--step-max-new-tokens` 并改到 `64` 后，`outputs/week1_api_smoke/` 成功产出 `prefix_oracle_records.csv` 和 `base_traces.json`。
+- 2026-03-16: 已完成双域 API exact-checker 小批次生成：`outputs/week1_api_arithmetic_v1/` 与 `outputs/week1_api_linear_v1/` 都成功产出非空 `prefix_oracle_records.csv`。说明 API rollout / revise + 现有 checker utility 的链路已经可用。
+- 2026-03-16: 已完成第一轮 API tuning：把 `num_rollouts` 从 `2` 提到 `4`（`outputs/week1_api_arithmetic_v2r/`, `outputs/week1_api_linear_v2r/`）并没有显著改善 benchmark 质量。arithmetic 上 mean gap 上升，但 determinacy 从 `0.20` 掉到 `0.1667`；linear 基本完全不变。
+- 2026-03-16: 因此当前最重要的新判断是：对现有 API exact-checker prompt，`num_rollouts` 不是高杠杆旋钮。下一步应优先调 sample coverage / prompt / action construction / budget，而不是继续单纯增加 Monte Carlo replication。
+- 2026-03-16: 已完成 coverage/budget tuning（`outputs/week1_api_arithmetic_v3cov/`, `outputs/week1_api_linear_v3cov/`），并拿到第一组真正正向的 API benchmark 质量提升。arithmetic 的 `oracle_determinacy_rate` 从 `0.20` 提到 `0.2857`，`crossing_mass_high_determinacy` 从 `0.00` 提到 `0.875`；linear 则从 `crossing_mass_all = 0.00` 直接升到 `0.5833`，`crossing_mass_high_determinacy = 1.00`。
+- 2026-03-16: 当前 API 线的主要结论已经明确：`coverage/budget > rollout-count`。后续不该继续把 `num_rollouts` 往上堆，而应优先优化 prompt / action construction，并在保持 modest rollout 的前提下继续做更高质量的数据扩展。
+- 2026-03-16: 继续做 submission-level polish。标题已改成 benchmark-first 的 `Beyond Ordered Thresholding: A Prefix-Level Oracle Benchmark for Verifiable Reasoning Control`，abstract / introduction 首段同步收紧到“prefix-level oracle benchmark + deployment gap diagnosis”版本。
+- 2026-03-16: 主文里原本较抽象的 `single natural confidence ordering` 已统一改成更具体的 `single ordered confidence score`，以减少 overclaim 并提高 first-page 可读性；controller repeatability 表 caption 也已明确 calibration 是 Spearman `\rho`。
+- 2026-03-16: 当前 [paper/main.tex](/cephfs/luyanzhen/apg/triver/paper/main.tex) 已再次通过 `latexmk -pdf -interaction=nonstopmode main.tex`，最新 [paper/main.log](/cephfs/luyanzhen/apg/triver/paper/main.log) 无新的 warning。
+- 2026-03-15: 已把项目默认工作模式从“继续扫 controller / router 变体”切到“paper-first assembly”。当前可编译稿入口在 `paper/main.tex`，并已通过 `latexmk -pdf main.tex`。
+- 2026-03-15: 新增 `scripts/render_paper_figures.py`，把现有 artifact 渲染成主文真实图：`paper/figures/benchmark_atlas.pdf`、`deployment_gap.pdf`、`budget_quality.pdf`。
+- 2026-03-15: 主文标题、引言、related work、benchmark、budget-quality 已按 `paper_reframe.md` 重写；`S_t` 相关术语统一收口到 continuation outcome statistics，不再把 richer proxy 硬写成原始 `S_t`。
+- 2026-03-15: controller comparison 现已改成 repeatability-first 叙事：主文不再以 single-run ranking 写 strongest claim，而是用 `outputs/week2_maintext_repeatability_v1/within_domain_repeatability_summary.csv` 约束正文措辞。
+- 2026-03-15: 现阶段最稳主张已经固定为：benchmark + conditional scalar insufficiency + exact-state/predicted-state deployment gap + budgeted decision quality。cross-domain routing 与 value-head family sweep 保留为 appendix/extension，而不再接管主文。
+- 2026-03-15: appendix 已从“仓库路径/工程日志摘录”重写成 paper-style 附录说明，重点保留 controller freeze、repeatability protocol、routing extension 边界和 negative-result 含义。
+- 2026-03-15: 当前 [paper/main.tex](/cephfs/luyanzhen/apg/triver/paper/main.tex) 已再次通过 `latexmk -pdf main.tex`，并且 `main.log` 中没有新的 `Overfull/Underfull/Warning` 项；现阶段主任务已从“把稿写出来”推进到“压语言密度与投稿感”。
+- 2026-03-15: 已完成一轮 main-text language/caption polish：abstract、introduction、benchmark、controller comparison、budget-quality、conclusion 全部压过一轮，caption 现在更 self-contained，controller comparison 继续保持 repeatability-first 叙事。
+
+- 2026-03-09: 读完 proposal，确认当前仓库无实现，需要从研究骨架开始。
+- 2026-03-09: 选定第一个域为“fully parenthesized arithmetic reduction”，因为它能严格定义 local invalidity、rollback revise 和 exact checker。
+- 2026-03-09: 实现 env / oracle / Qwen runner / Week-1 CLI，并补上 `history/` 维护。
+- 2026-03-09: 发现 Qwen3 默认 thinking / 自由续写会污染 trace，因此改成 `chat_template + enable_thinking=False + next-line rollout`。
+- 2026-03-09: 跑出第一版 Week-1 arithmetic 结果：`crossing_mass_all=0.6667`，`oracle_determinacy_rate=0.5556`，图表已写到 `outputs/week1_run2/`。
+- 2026-03-09: 新增第二域 `linear_equations`，并把 Week-1 oracle 脚本重构成多域复用。
+- 2026-03-09: 为覆盖 `revise` 状态，新增 controlled recoverable-prefix perturbation；4B 在线性方程域上仍偏向 `abstain`。
+- 2026-03-09: 用 `Qwen3-8B` 做第二域 smoke 对照后，首次观察到高确定性 `revise_1` 与高确定性 crossing：`oracle_determinacy_rate=0.9000`，`crossing_mass_high_determinacy=0.5556`，产物写到 `outputs/week1_linear_8b_smoke/`。
+- 2026-03-09: 补大一轮 `linear_equations + Qwen3-8B` oracle 数据，得到 `58` 个 prefixes，其中高确定性子集 `41` 个。
+- 2026-03-09: 跑出 Week 2 baseline 初测：`ordered_scalar_mu` 明显弱于 `learned_1d_linear` 和 `direct_policy`，结果写到 `outputs/week2_linear_8b_baselines_v1/`。
+- 2026-03-09: 补大一轮 `arithmetic + Qwen3-8B` oracle 数据，得到 `62` 个 prefixes，其中高确定性 crossing 仍然很高：`0.7925`。
+- 2026-03-09: arithmetic 域 Week 2 baseline 与 linear-equations 域出现分叉：这里 `ordered_scalar_mu` 反而最好，提示 scalar insufficiency 可能是条件性的。
+- 2026-03-09: 新增 hidden-state 抽取脚本 `scripts/extract_prefix_hidden_states.py`，并在 `week1_linear_8b_smoke` 上验证链路可跑通。
+- 2026-03-09: 在两域上都跑了 2-fold representation smoke；当前 hidden-state baseline 没有超过表格特征版，最强 baseline 方向仍未稳定。
+- 2026-03-09: 新增 `scripts/run_week2_factorized.py`，并在两域上跑出 factorized 初测。
+- 2026-03-09: `linear_equations` 上 exact-state factorized 很强，但 predicted-state factorized 明显掉队；`arithmetic` 上 exact-state factorized 也不如 scalar baseline。
+- 2026-03-09: factorized 新增 `factorized_predicted_state_exact_value` 诊断分支。在线性方程域上，它把 predicted-state regret 从 `0.3130` 降到 `0.2464`；arithmetic 上从 `0.5451` 降到 `0.4895`。
+- 2026-03-09: 补了 `mean_content` prefix embedding 探针。在线性方程域上，`q_auc` 从 `0.8486` 升到 `1.0000`，但 `mu_rmse` 从 `0.3851` 恶化到 `0.5197`，factorized regret 反而变差。
+- 2026-03-09: 把 `S_t` 从经验成功率改成 Beta posterior 均值/方差，并重跑 `linear_equations + Qwen3-8B` 主数据到 `outputs/week2_linear_8b_data_v2/`。`mu_continue` 不再是 `0/1`，但 `nu_continue` 仍为常数。
+- 2026-03-09: 在 `week2_linear_8b_data_v2` 上，tabular baseline 仍显示 `ordered_scalar_mu` 最差；`factorized_exact_state` 仍然优于 `direct_policy`。
+- 2026-03-09: 新增 split-repr factorized（`q=mean_content`, `S=last_generation_prompt`）。`q_auc` 提升到 `0.9778`，但 regret 没有改善，说明当前 controller gap 更像由 `S` 而不是 `q` 主导。
+- 2026-03-09: 高温 (`temperature=1.0`, `top_p=0.95`) + 6-rollout 的 `S_t` variance smoke 仍然只得到两档 `mu` 和常数 `nu`，提示线性方程域上的 default continuation success 近确定性。
+- 2026-03-09: 扩充 oracle 账本，新增 `continue_std_utility / continue_wrong_rate / continue_mean_tokens`，形成 richer `S` proxy 数据集 `outputs/week2_linear_8b_data_v3/`。
+- 2026-03-09: 在 `linear_equations` 主域上，rich `S` proxy 把 predicted-state factorized regret 从 `0.3401` 降到 `0.2931`，exact-state factorized 从 `0.1596` 降到 `0.1360`。
+- 2026-03-09: 再次验证 split-repr + rich `S` proxy：虽然 `q_auc` 提升到 `0.9778`，但 regret 回升到 `0.3207`，说明当前增益主要来自 richer `S`，不是更强的 `q` 表示。
+- 2026-03-10: richer `S` proxy 扩到 `arithmetic + Qwen3-8B`。这里 `mu` 有 3 档、`nu` 有 2 档，说明 `S` 分布比线性域更丰富。
+- 2026-03-10: 在 arithmetic 域上，rich `S` proxy 把 exact-state factorized regret 从 `0.2941` 降到 `0.2147`，但 predicted-state 从 `0.4639` 恶化到 `0.5113`。
+- 2026-03-10: cross-domain 结论变得更明确：linear 域 richer `S` proxy 同时帮助 exact-state 与 predicted-state；arithmetic 域 richer `S` proxy 只帮助 exact-state，说明当前主要卡在 `S` state identification，而不是 proxy 本身没信号。
+- 2026-03-10: 新增 `--state-head-model`，支持 `linear / pca_ridge / pca_enet / rf`。
+- 2026-03-10: `pca_enet` 在 arithmetic 域把 `factorized_predicted_state_exact_value` 从 `0.5113` 拉到 `0.4616`，说明 state head 本身还能继续改进；但 `factorized_predicted_state` 仍是 `0.5313`，提示下一层瓶颈在 noisy predicted state 上训练 value head。
+- 2026-03-10: 同样的 `pca_enet` 在线性方程域反而把 `factorized_predicted_state` 从 `0.2931` 拉差到 `0.3433`，说明更强 state-head 模型不是跨域统一更优。
+- 2026-03-10: 把 value-head training-mode 正式并入 `triver/factorized/week2.py`，新增四种可比基线：`train_exact / train_predicted / train_predicted_oof / train_exact_plus_oof`。
+- 2026-03-10: arithmetic + `pca_enet + s_proxy` 上，`train_exact` 最好（regret `0.4616`），其余更差：`train_predicted=0.5313`、`train_exact_plus_oof=0.6054`、`train_predicted_oof=0.6847`。这说明 arithmetic 域当前主要不是 label leakage，而是 predicted-state noise 会直接拖垮 value head。
+- 2026-03-10: linear-equations + `pca_enet + s_proxy` 上，`train_exact_plus_oof` 最好（regret `0.2598`），优于 `train_exact=0.3044`、`train_predicted=0.3433`、`train_predicted_oof=0.4121`。这说明适量混入 noisy state exposure 在 linear 域上有益，但纯 predicted-state 训练仍最差。
+- 2026-03-10: 统一对比表已写到 `outputs/week2_value_head_train_mode_comparison.csv`。当前结论是：训练模式确实重要，但仅靠切换 train-mode 还不足以让 predicted-state factorization 跨域追平 tabular `direct_policy`。
+- 2026-03-10: 新增 `--value-head-model {ridge,huber,noise_weighted_ridge}`，把 robust value-head 正式接进 factorized pipeline。
+- 2026-03-10: arithmetic 域上，`noise_weighted_ridge` 对 `train_exact_plus_oof` 和 `train_predicted_oof` 有小幅改善（`0.6054 -> 0.5158`, `0.6847 -> 0.6651`），但最优 predicted-state 仍是 `train_exact = 0.4616`；`huber` 全面更差。这说明简单下权 state-noise 有一点帮助，但还不够，而残差稳健化不是主解。
+- 2026-03-10: linear 域上，`huber + train_exact` 把 regret 从 `0.3044` 拉到 `0.2720`，说明 label/outlier 稳健性有部分价值；但最优仍是 `ridge + train_exact_plus_oof = 0.2598`。`noise_weighted_ridge` 没有超过现有最优。
+- 2026-03-10: 统一对比表已写到 `outputs/week2_robust_value_head_comparison.csv`。当前结论是：简单 robust regressor 不能统一解决双域 predicted-state gap，下一步需要更强的 value-head 架构或目标。
+- 2026-03-10: 新增 `--value-head-model pairwise_logit`，把 pairwise preference head 接进 factorized pipeline。
+- 2026-03-10: pairwise head 在两域都提升了 exact-state：arithmetic `0.2147 -> 0.1847`，linear `0.1360 -> 0.1297`。这说明 point-utility regression 不是最贴合决策目标的 value target。
+- 2026-03-10: 但 pairwise head 没有提升 predicted-state：arithmetic 最好仍是 `ridge/noise_weighted + train_exact = 0.4616`，pairwise `train_exact = 0.4759`；linear 最好仍是 `ridge + train_exact_plus_oof = 0.2598`，pairwise 各模式都在 `0.3478+`。这说明 target 更贴合动作选择是有价值的，但 deployable performance 仍主要被 predicted-state noise 主导。
+- 2026-03-10: 新的统一对比表已写到 `outputs/week2_value_head_model_comparison.csv`，当前可用的 value-head 族已经覆盖 `ridge / huber / noise_weighted_ridge / pairwise_logit / interaction_ridge / pairwise_interaction_logit / uncertainty_interaction_ridge / uncertainty_pairwise_interaction_logit`。
+- 2026-03-10: 新增 `interaction_ridge` 与 `pairwise_interaction_logit`，把二阶交互显式接进 value head。
+- 2026-03-10: arithmetic 域上，`pairwise_interaction_logit + train_exact` 把 predicted-state regret 拉到 `0.3727`，首次显著优于旧 best `0.4616`；`interaction_ridge + train_exact` 也到 `0.4193`。但它们仍输给 tabular `direct_policy = 0.3272` 和 `ordered_scalar_mu = 0.1599`。
+- 2026-03-10: linear 域上，interaction heads 主要改善 exact-state：`interaction_ridge` 到 `0.0689`，`pairwise_interaction_logit` 到 `0.1185`；但 predicted-state 仍不如旧 best `ridge + train_exact_plus_oof = 0.2598`。
+- 2026-03-10: 更新后的统一对比表仍写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：nonlinear interactions 确实有价值，但价值主要体现在 exact-state 或单域 predicted-state，跨域 deployable gap 还没被统一消掉。
+- 2026-03-10: 新增 uncertainty-aware value heads：用 state-head committee 的 prediction std 生成 `q_hat_std / mu_hat_std / ...`，并把这些 reliability features 喂给 value head。
+- 2026-03-10: linear 域上，uncertainty-aware 版本显著改善 predicted-state：`uncertainty_pairwise_interaction_logit + train_predicted = 0.2835`，优于无 uncertainty 的 `pairwise_interaction_logit + train_predicted = 0.4271`；`uncertainty_interaction_ridge + train_predicted = 0.3050` 也明显优于 `0.3708`。但它们仍没超过旧 best `ridge + train_exact_plus_oof = 0.2598`。
+- 2026-03-10: arithmetic 域上，uncertainty-aware 版本没有继续提升当前最佳 predicted-state：`uncertainty_pairwise_interaction_logit + train_exact = 0.3840`，仍差于无 uncertainty 的 `pairwise_interaction_logit + train_exact = 0.3727`。这说明“显式 reliability”是有效信号，但不是跨域通用修复。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：uncertainty-aware valuation 在线性域确实有效，但 arithmetic 仍未跟上，所以下一步应从简单 feature augmentation 转向更强的 joint state-value 建模。
+- 2026-03-10: 新增 `joint_pairwise_gate`：exact-state 分支使用 `pairwise_interaction_logit`，predicted-state 分支使用 uncertainty-aware pairwise interaction head，并用 OOF calibration prefixes 训练 gate 在两条分支间做路由。
+- 2026-03-10: linear 域上，`joint_pairwise_gate` 把 predicted-state regret 从旧 best `0.2598` 轻微拉到 `0.2594`，是第一例比旧 best 再前进一步的 joint-state/value 结果；但它仍输给 tabular `direct_policy = 0.2199`。
+- 2026-03-10: arithmetic 域上，`joint_pairwise_gate` 明显失效：predicted-state regret 到 `0.5427`，比当前 best `0.3727` 差很多。这说明“分支混合 + 简单 gate”不是跨域 deployable 解法。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：joint routing 在线性域只能给边际收益，在 arithmetic 域却会崩，所以下一步不该继续刷简单 gate，而应转向更强的 joint state-value / heteroscedastic 结构。
+- 2026-03-10: 新增 `pairwise_error_calibrated`：先用 exact-state `pairwise_interaction_logit` 学 base pairwise preference，再用 OOF predicted-state prefixes 上的 pairwise probability error 训练误差头，对每个动作对的 margin 做 uncertainty-aware shrinkage。
+- 2026-03-10: arithmetic 域上，`pairwise_error_calibrated` 明显优于 simple gate，也优于此前最佳 factorized predicted-state：`0.3727 -> 0.3379`，距离 tabular `direct_policy = 0.3272` 只差 `0.0107`。这说明 arithmetic 的 deployable gap 很大一部分确实在 pairwise margin reliability，而不是 factorization 本身完全不行。
+- 2026-03-10: linear 域上，`pairwise_error_calibrated` 明显过度收缩：predicted-state regret 到 `0.3861`，远差于旧 best `0.2594/0.2598`。这说明 per-pair error calibration 不是跨域通用解，在 easy / already-calibrated 域上会把有用 margin 压掉。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：joint state-value 校准开始出现“哪一域需要 shrinkage、哪一域不该 shrinkage”的明确分叉，下一步需要的是能按域内难度/可靠性自适应地决定 shrinkage 强度，而不是单一全局规则。
+- 2026-03-10: 新增 `pairwise_meta_calibrated`：让 per-pair meta-classifier 直接吃 `base_prob + predicted-state features + uncertainty` 来预测最终 winner，测试“是否可以端到端学会何时信任 base margin”。
+- 2026-03-10: `pairwise_meta_calibrated` 在线性域比固定 shrinkage 好一些（`0.3861 -> 0.3261`），但 arithmetic 域大幅崩到 `0.5640`。这说明直接让 meta-classifier 接管 pairwise decision 太不稳，小样本下会过拟合校准集结构。
+- 2026-03-10: 新增 `pairwise_selective_calibrated`：先算 calibrated margin，再训练 per-pair gate 只在“预测比 base 更好”时才启用 shrinkage。结果仍未跨域稳定：arithmetic `0.3840`，linear `0.3392`，都不如各自当前 best。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：post-hoc conditional calibration wrapper 这一族方法已经画清边界，能局部改善，但没有给出跨域统一最优的 deployable factorized controller。
+- 2026-03-10: 新增 `uncertainty_heteroscedastic_interaction`：直接用 predicted-state features + uncertainty 为每个动作联合拟合 utility 的均值与对数方差，再用方差调节的 pairwise win-prob 做决策，不再依赖外部 calibration wrapper。
+- 2026-03-10: linear 域上，这个 native heteroscedastic head 给出目前最好的“非-wrapper” predicted-state 结果：`train_predicted = 0.2786`，优于之前的 wrapper 变体 `0.3261 / 0.3392 / 0.3861`，也优于 `uncertainty_interaction_ridge + train_predicted = 0.3050`；但仍未超过当前 best `joint_pairwise_gate = 0.2594`。
+- 2026-03-10: arithmetic 域上，native heteroscedastic head 的 predicted-state 仍不够好：最好是 `train_exact = 0.3824`，明显差于当前 best `pairwise_error_calibrated = 0.3379`。但 exact-state 提升到 `0.1820`，明显优于之前的多数 factorized exact-state 版本。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：更原生的 heteroscedastic state-value 参数化比 wrapper 更符合 proposal 方向，并且在 linear 域确实更有效；但 arithmetic 的 deployable gap 仍在，说明还缺能处理跨域 state-noise 结构差异的更强参数化。
+- 2026-03-10: 新增 `uncertainty_pairwise_heteroscedastic_interaction`：直接对每个动作对的 utility difference 拟合 mean / log-variance，再用 variance-adjusted pairwise win-prob 聚合分数，测试“动作间耦合是否是当前独立动作方差版的主要缺口”。
+- 2026-03-10: linear 域上，pairwise-difference heteroscedastic 的最好 predicted-state 是 `train_predicted = 0.2980`。它比 wrapper 家族强，但仍差于独立动作方差版 `uncertainty_heteroscedastic_interaction = 0.2786`，也差于 `joint_pairwise_gate = 0.2594`。
+- 2026-03-10: arithmetic 域上，pairwise-difference heteroscedastic 没有改善：最好是 `train_exact = 0.4058`，明显差于独立动作方差版 `0.3824` 和当前 best `pairwise_error_calibrated = 0.3379`。exact-state 也退到 `0.2553`。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：在当前样本规模下，直接升到 pairwise-difference mean/variance 会引入明显的样本效率问题；更强的 native uncertainty 参数化不应简单走向“更多 pairwise 自由度”。
+- 2026-03-10: 新增 `uncertainty_shared_covariance_heteroscedastic_interaction`：用共享 covariance template + 样本级 scale 来建模动作间相关性，测试“共享结构的相关性建模”能否兼顾样本效率与 action coupling。
+- 2026-03-10: linear 域上，shared-covariance 版本基本与独立动作方差版打平：`train_predicted = 0.2786`，exact-state 也是 `0.0860`。这说明当前共享协方差模板没有带来额外可用信号。
+- 2026-03-10: arithmetic 域上，shared-covariance 版本也没有把 predicted-state 往前推：最好仍是 `train_exact = 0.3824`，和独立动作方差版相同；exact-state 反而从 `0.1820` 回落到 `0.2038`。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：简单的“共享 covariance template + 单一 scale”仍然太弱，不足以解释跨域 state-noise 差异；下一步更像需要 low-rank/shared-latent 的更灵活但仍有共享结构的参数化。
+- 2026-03-10: 新增 `uncertainty_lowrank_heteroscedastic_interaction`：在独立动作均值/方差之外，增加一个 rank-1 shared latent uncertainty factor，用样本级 factor variance 调节动作差值的不确定性。
+- 2026-03-10: arithmetic 域上，low-rank 版本第一次把 native shared-structure 模型推进到几乎追平当前 best deployable factorized：`train_exact = 0.3388`，相比独立动作方差版 `0.3824` 有明显改善，只比 `pairwise_error_calibrated = 0.3379` 差 `0.0009`；exact-state 也提升到当前最强的 `0.1784`。
+- 2026-03-10: linear 域上，low-rank 版本并没有继续提升：best predicted-state 是 `train_predicted = 0.3108`，差于独立动作方差版/共享模板版的 `0.2786`，也差于 `joint_pairwise_gate = 0.2594`。这说明 rank-1 shared latent 更适合 arithmetic 这类 harder/noisier 域，而不适合已经较好校准的 linear 域。
+- 2026-03-10: 更新后的统一对比表继续写到 `outputs/week2_value_head_model_comparison.csv`。当前结论是：low-rank/shared-latent 是目前最有前景的 native uncertainty 方向，因为它在 hard 域上明显优于更弱的 shared-structure 版本，同时没有回到完全 pairwise 的样本效率崩塌；下一步应考虑多因子/分域条件化的 shared latent，而不是再退回模板缩放。
+- 2026-03-10: 新增 `uncertainty_rank2_lowrank_heteroscedastic_interaction`，把 rank-1 shared latent 扩成 rank-2 / multi-factor 版本，并在双域上完成正式实验。
+- 2026-03-10: arithmetic 域上，rank-2 版本没有继续改善 deployable predicted-state：best 仅到 `train_exact = 0.3606`，差于 rank-1 low-rank 的 `0.3388` 与 `pairwise_error_calibrated = 0.3379`；exact-state 也只是 `0.1800`，略差于 rank-1 的 `0.1784`。
+- 2026-03-10: linear 域上，rank-2 版本把 exact-state regret 大幅压到新的全局最佳 `0.0356`，但 predicted-state 仍只有 `train_predicted = 0.3125`，差于 rank-1 low-rank `0.3108`、独立动作方差版 `0.2786` 和 `joint_pairwise_gate = 0.2594`。
+- 2026-03-10: 这轮结果把下一步收敛得更清楚：继续单纯加 latent rank 主要会买到 oracle exact-state 容量，而不会自动缩小 deployable predicted-state gap；更合理的下一步是做 conditional / input-dependent latent activation。
+- 2026-03-10: 新增 `uncertainty_conditional_lowrank_heteroscedastic_interaction`，用“两套 rank-1 latent template + feature-conditioned gate”替代固定 rank-2 latent，并在双域上完成正式实验。
+- 2026-03-10: arithmetic 域上，conditional 版本把 exact-state regret 压到新的全局最佳 `0.1553`，优于 `ordered_scalar_mu = 0.1599`；predicted-state best 为 `train_exact = 0.3388`，与 rank-1 low-rank 持平，距离 `pairwise_error_calibrated = 0.3379` 只差 `0.0009`。
+- 2026-03-10: linear 域上，conditional 版本显著改善 deployable predicted-state：`train_predicted = 0.2617`，明显优于 rank-1 low-rank `0.3108` 与独立动作方差版 `0.2786`，已接近 `joint_pairwise_gate = 0.2594`；exact-state 为 `0.1071`，不再追求 rank-2 的极致 oracle fit。
+- 2026-03-10: 这轮结果说明“input-dependent orientation”比“继续加 latent rank”更值钱。下一步最合理的是把 conditional latent 与 hard-domain 有效的 pairwise shrinkage 结合，而不是再做固定-rank sweep。
+- 2026-03-10: 新增 `conditional_lowrank_pairwise_error_calibrated`，把 conditional-lowrank base bundle 与 per-pair error shrinkage 结合。arithmetic 域上 predicted-state 刷到新的 deployable factorized 最佳 `0.3239`，首次超过 `pairwise_error_calibrated = 0.3379`；但 linear 域显著崩到 `0.4479`。
+- 2026-03-10: 紧接着新增 `conditional_lowrank_selective_pairwise_error_calibrated`，尝试只在需要时启用 shrinkage；结果 arithmetic 回到 `0.3388`，linear 仍是 `0.4479`，说明简单 selective gate 并没有真正学会“何时不 shrink”。
+- 2026-03-10: 这轮结果把下一步进一步收敛：hard-domain deployable gain 现在可以通过 `conditional latent + shrinkage` 拿到，但 easy-domain 需要显式的 bypass / capped shrinkage 先验；单纯把 gate 叠在同一校准信号上不够。
+- 2026-03-10: 新增 `conditional_lowrank_capped_pairwise_error_calibrated`，在 per-pair shrinkage 外显式加入“高置信 no-op + 低置信 retention floor”先验，并在双域上完成正式实验。
+- 2026-03-10: arithmetic 域上，capped-shrink 版本稳定保住了 hybrid 的 deployable 最优 `0.3239`；说明显式 cap 不会伤害 hard-domain 的收益。
+- 2026-03-10: linear 域上，capped-shrink 把过度收缩从 `0.4479` 拉回到 `0.4081`，但仍远差于 conditional-lowrank 本体 `0.2617`。这说明显式 cap 只解决了一部分 easy-domain 问题，还缺真正的 no-op regime / banded calibration。
+- 2026-03-10: 新增 `conditional_lowrank_banded_pairwise_error_calibrated`，把 calibration 明确拆成三段：高置信 no-op、中置信 capped shrink、低置信 full shrink。
+- 2026-03-10: arithmetic 域上，banded 版本继续稳定在 `0.3239`；linear 域上仅到 `0.4123`，比 capped 的 `0.4081` 还略差。说明 banded/no-op 的共享规则仍然救不回 easy-domain。
+- 2026-03-10: 到这一步，`conditional latent + shared shrinkage` 家族的边界已经很清楚：hard-domain 可以拿到强 deployable gain，但 easy-domain 仍需要更显式的 per-env / clustered bypass，而不是继续共享规则微调。
+- 2026-03-10: 新增 `conditional_lowrank_clustered_pairwise_error_calibrated`，尝试按 `pairwise meta features` 做 2-cluster 校准，并让每个 cluster 独立选择 `no-op / full / capped`。
+- 2026-03-10: arithmetic 域上，clustered 版本继续稳定在 `0.3239`；linear 域上只到 `0.4252`，仍差于 capped 的 `0.4081`，更远差于 conditional-lowrank 本体 `0.2617`。
+- 2026-03-10: 这轮结果说明 shared calibration 家族已经基本见顶：即使引入 cluster-specific 规则，也没能恢复 easy-domain。后续如果继续推进 controller，本质上应转向显式 domain-specific / per-env 路线，而不是继续在共享校准族里打转。
+- 2026-03-10: 新增 pooled cross-domain runner `scripts/run_week2_cross_domain_portfolio.py`，把 arithmetic 与 linear 合并成统一 group-CV，并显式对比“单一 shared controller”与“per-env specialist portfolio”。
+- 2026-03-10: pooled shared baseline 上，best deployable regret 为 `0.4531~0.4630`，明显差于 specialist portfolio `0.3563`；这第一次把 shared vs specialist 的 cross-domain 差距跑成了同表结果。
+- 2026-03-10: 给 pooled shared controller 显式加入 `env_is_linear` feature 后，shared exact-state regret 从 `0.1914` 改善到 `0.1650`，best deployable predicted-state 从 `0.4630` 改善到 `0.4049`。
+- 2026-03-10: 但 env-conditioned shared 仍明显输 specialist portfolio `0.3563`。这说明 pooled shared 的失败不只是“没看到 domain label”，而是单一 shared controller 本身仍不如显式 per-env routing。
+- 2026-03-10: 新增 `scripts/run_week2_cross_domain_router.py`，在 specialist portfolio 之上测试两类 learned router：全局二选一 router，以及“hard per-env specialist 为默认、只学何时 override”的结构化 router。
+- 2026-03-10: learned router 没有追平 hard specialist portfolio：global router `0.3894`（no-env）/ `0.4024`（with-env），override router 两版都在 `0.4534`，都差于 hard specialist `0.3563`，甚至不如 `always_linear_specialist = 0.3836`。
+- 2026-03-10: 这轮结果把当前 cross-domain 边界彻底钉住了：显式 hard per-env specialist 不是临时 baseline，而是当前 deployable 最优；shared controller 和小 learned router 都没有超过它。
+- 2026-03-10: 在同一 router outer-CV 里补了 fixed expert-pool 的 oracle selector 诊断。结果显示 oracle selector 可以到 `0.2528`，明显优于 hard specialist `0.3563`，说明 routing 空间本身并不小。
+- 2026-03-10: oracle 诊断还显示：`oracle_tie_rate = 0.6354`，`hard_matches_oracle_rate = 0.8646`，`learned_router_matches_oracle_rate = 0.8333`。这说明大多数样本上两专家等效，但剩余那部分错误选择仍然足够大，能带来约 `0.10` 的平均 utility headroom。
+- 2026-03-10: 这把结论进一步收敛成：hard per-env specialist 仍是当前 deployable 最优，但 routing 不是没价值，而是当前 supervision / interface 还没把 fixed expert pool 的 headroom 学出来。
+- 2026-03-10: 新增 `sparse_override_specialist_router_predicted_state` 与 `margin_weighted_specialist_router_predicted_state`，专门测试“高 margin 稀疏错误”与 weighted classification supervision；两者都没有改善 learned router，best 仍在 `0.4206~0.4241`，说明 tie-heavy routing 问题不能靠简单 sample-weighting 修复。
+- 2026-03-10: 把 specialist 内部 `action score / top-2 gap` 暴露给 router 后，global learned router 改善到 `0.3866`，优于旧版 `0.3894/0.4024`。这说明 routing interface 确实有信息量，但收益仍有限。
+- 2026-03-10: 把 routing supervision 从二分类改成直接回归 `linear_utility - arithmetic_utility` 后，`utility_gap_specialist_router_predicted_state` 达到 `0.3746`，是当前最强的 shared learned router，也把 oracle-match rate 拉到 `0.8542`，已接近 hard specialist 的 `0.8646`。
+- 2026-03-10: 但即使是 `utility-gap regression + score interface`，deployable regret 仍输 hard per-env specialist `0.3563`，更远输 oracle selector `0.2528`。这把 cross-domain 结论进一步钉住成：hard per-env specialist 仍是当前主结果；learned shared routing 有 headroom，但现有 supervision/interface 只缩小了部分 gap。
+- 2026-03-10: 在同一 score-interface 上加入更强的 `RandomForest` router / gap-regressor 后，`rf_specialist_router_predicted_state` 把 regret 进一步压到 `0.3627`（no-env）/ `0.3663`（with-env），首次非常接近 hard specialist `0.3563`。
+- 2026-03-10: 但 RF 版仍没有越过 hard specialist；而 `rf_utility_gap_specialist_router_predicted_state` 反而退回到 `0.3772~0.3837`。这说明 learned routing 的剩余 gap 不是单一问题：更强容量对 classification-style routing 有帮助，但 continuous gap supervision + tree model 并没有继续往前。
+- 2026-03-10: 当前 cross-domain routing 线的最稳结论已经变成：hard per-env specialist 仍是 deployable best；oracle selector 是两专家池上限；shared learned routing 通过 supervision/interface/capacity 都能持续逼近，但还没有跨过 hard specialist。
+- 2026-03-10: 直接把两域 oracle 数据扩到 `40` samples 后，arithmetic 数据集增到 `116` prefixes，linear 数据集增到 `124` prefixes；hidden-state 也已重新抽取并绑定到新 row order。
+- 2026-03-10: 在更大数据上，routing 整体进入了新 regime：no-env 版本里 hard specialist 到 `0.2608`，learned logistic router 到 `0.2701`；with-env 版本里 hard specialist `0.2639`，RF router `0.2636`，已经几乎打平。
+- 2026-03-10: 这轮最重要的结论不是“shared learned routing 稳健赢了”，而是“数据规模的收益明显大于继续扫小 router”。当前 learned routing 已进入和 hard specialist 同一量级，但反超还不稳健。
+- 2026-03-10: 再把两域 oracle 数据扩到 `60` samples 后，arithmetic 数据集增到 `156` prefixes，linear 数据集增到 `194` prefixes；hidden-state 已重新抽取并绑定到新 row order。
+- 2026-03-10: 在 60-sample 点上，shared learned routing 第一次稳定越过了 hard specialist。no-env 下 hard specialist `0.2111`，learned logistic `0.2058`，best learned router `rf_utility_gap = 0.2014`；with-env 下 hard specialist `0.2079`，learned logistic `0.2055`，best learned router `margin_weighted = 0.1974`。
+- 2026-03-10: 这把 cross-domain 结论真正翻转了：hard per-env specialist 不再是当前 deployable best。更准确的主结论变成：数据规模已经足以让 shared learned routing 超过 specialist，而当前主要剩余问题是如何继续缩小到 oracle selector `0.1158~0.1190` 的 gap。
+- 2026-03-10: 再把两域 oracle 数据扩到 `80` samples 后，arithmetic 数据集增到 `192` prefixes，linear 数据集增到 `258` prefixes；hidden-state 已重新抽取并绑定到新 row order。
+- 2026-03-10: 在 80-sample 点上，best shared learned router 继续明显改善。no-env 下 oracle `0.0998`，hard specialist `0.1921`，best shared router `rf_specialist = 0.1844`；with-env 下 oracle `0.0998`，hard specialist `0.1883`，best shared router `rf_specialist = 0.1829`。
+- 2026-03-10: 这轮最重要的新信息不是“又多赢了一点”，而是“还没有平台”。best deployable shared router 从 `0.2014/0.1974` 继续压到 `0.1844/0.1829`，说明扩 routing supervision 仍然有明显收益；同时普通 learned logistic 不再最优，router 容量在更大数据下重新变成关键因素。
+- 2026-03-10: 再把两域 oracle 数据扩到 `100` samples 后，arithmetic 数据集增到 `240` prefixes，linear 数据集增到 `320` prefixes；hidden-state 已重新抽取并绑定到新 row order。
+- 2026-03-10: 在 100-sample 点上，`no-env` 最优只从 `0.1844` 小幅改善到 `0.1833`，best router 也从 `rf_specialist` 变成了 `sparse_override`；而 `with-env` 反而回到 `0.1921~0.1926`，没有延续 80-sample 的最好结果。
+- 2026-03-10: 这把 scaling 结论从“还在明显下降”收紧成“开始出现平台/抖动信号”。当前最合理的判断是：best shared learned routing 大致进入了 `0.18~0.19` 区间，继续单纯扩数据的边际收益已经明显变小。
+- 2026-03-11: 扩展 `scripts/run_week2_cross_domain_router.py`，新增更贴近 oracle selector 的 `direct_utility` / `rf_direct_utility` supervision，并通过 `python -m compileall scripts/run_week2_cross_domain_router.py` 验证通过。
+- 2026-03-11: 在 original `100-sample` 数据上用新脚本重跑后，`direct_utility` 虽然可用，但没有成为最优：no-env 下 `direct_utility = 0.2071`、`rf_direct_utility = 0.1982`；with-env 下 `direct_utility = 0.1994`、`rf_direct_utility = 0.2055`。当前 original-100 的 best 仍在 `0.1909~0.1912` 一带。
+- 2026-03-11: 做了独立 `seed=29` 的完整 `100-sample` replicate。结果把之前的“平台”判断推翻成“高 seed sensitivity”：no-env 下 `utility_gap = 0.1592`，with-env 下 `utility_gap = 0.1569`，明显优于 original-100 的 `0.191` 左右。
+- 2026-03-11: seed-29 replicate 还说明：`direct_utility` supervision 是正方向，因为它达到 `0.1667 / 0.1635`，显著优于 hard specialist `0.1952 / 0.1896`；但它仍然没有超过 `utility_gap` family。
+- 2026-03-11: 当前最准确的边界已经改写成：`100-sample` 不是稳定平台，而是 high-variance regime。single-run frontier claim 不可靠，后续必须开始按 multi-seed 或 repeatability 报告。
+- 2026-03-11: 新增 `scripts/aggregate_week2_router_multiseed.py`，把 repeated router summaries 聚合成 `mean/std/min/max` 表，并额外导出逐 run baseline 表，避免继续手工拼 repeatability 结果。
+- 2026-03-11: 补完了 `seed=31` 与 `seed=37` 的完整 `100-sample` oracle+embedding+pooled-router 流水线。新 seed 的单次结果明显更接近 original-100，而不是 seed-29 的极低 regret：`seed31` 两个 setting 下都没有 learned router 超过 hard specialist；`seed37` 则在 no-env/with-env 下分别由 `rf_direct_utility` 和 `rf_utility_gap_fallback` 取胜。
+- 2026-03-11: 4-run `100-sample` aggregate 现在已经明确：no-env 下 best mean learned router 是 `rf_specialist = 0.1892 +/- 0.0116`，with-env 下也是 `rf_specialist = 0.1880 +/- 0.0122`；两者都仍优于 hard specialist 的 `0.1960 +/- 0.0040` 和 `0.1929 +/- 0.0042`。
+- 2026-03-11: 这把 `100-sample` 结论进一步收紧成：high-variance 是真的，但 seed-29 更像正向 outlier，而不是默认 frontier。当前应该报告“learned routing 在 multi-seed 均值上小幅优于 hard specialist”，而不是继续引用某个单 seed 的最佳值。
+- 2026-03-11: 另一个新结论是 family instability：四个 runs 里 no-env 的 winner 在 `hard_specialist / utility_gap_fallback / rf_direct_utility` 间切换，with-env 的 winner 则分散到 `hard_specialist / learned_specialist / utility_gap_fallback / rf_utility_gap_fallback`。当前最合理的主表应改成 mean/std 排名，而不是 single winner 排名。
+- 2026-03-11: 新增 `seed=41` 与 `seed=43` 的完整 `100-sample` oracle+embedding+router 流水线。两组新 seed 都是强正向信号，尤其 `seed43`：oracle selector 已到 `0.0440 / 0.0459`，best learned router `rf_specialist` 为 `0.1833 / 0.1860`。
+- 2026-03-11: `seed41` 进一步说明，强正向 seed 不一定只由 `rf_specialist` 获胜；在这一组里 best learned router 反而是 `rf_direct_utility = 0.1731 / 0.1784`。这再次证明当前 per-seed winner 不能直接拿来做最终架构结论。
+- 2026-03-11: 更新到 6-run aggregate 后，`rf_specialist` 已在 `no-env / with-env` 两边都成为 mean winner：`0.1866 +/- 0.0100` 与 `0.1867 +/- 0.0098`，同时都明显优于 hard specialist 的 `0.1993 +/- 0.0064` 与 `0.1982 +/- 0.0092`。
+- 2026-03-11: 这把 cross-domain routing 的当前主结论进一步稳住了：high-variance 仍然真实存在，但 learned routing 的均值优势不再只是 4-run 偶然；当前更值得报告的是 “rf_specialist 是最稳的 mean winner，per-seed winner 仍不稳定”。
+- 2026-03-11: 继续补了 `seed=47` 与 `seed=53` 的完整 `100-sample` oracle+embedding+router 流水线。`seed47` 是中等强度正向 seed，best learned router 为 `rf_specialist = 0.2034 / 0.2016`；`seed53` 则再次把 winner 切换到 `sparse_override / rf_direct_utility`，说明 per-seed family instability 仍然存在。
+- 2026-03-11: 更新到 8-run aggregate 后，`rf_specialist` 仍是 `no-env / with-env` 两边的 mean winner：`0.1872 +/- 0.0115` 与 `0.1857 +/- 0.0133`。相对 hard specialist 的均值优势分别是 `+0.0123` 与 `+0.0114` regret。
+- 2026-03-11: 这把当前主结论进一步收紧成：`rf_specialist` 的 mean win 现在已经跨过了 8 runs，但 per-seed winner 仍未收敛；因此现阶段最稳的报告方式仍然是 “mean/std + win counts”，而不是单一 winner 排名。
+- 2026-03-11: 按“改做 `rf_specialist`”的新方向，在 `scripts/run_week2_cross_domain_router.py` 里新增了 `rf_high_capacity_specialist_router_predicted_state` 与 `rf_specialist_fallback_router_predicted_state`，并完成了 `seed29/41/43/53 × no-env/with-env` 的 4-seed pilot。
+- 2026-03-11: pilot aggregate 表明，no-env 下 `rf_high_capacity` 是当前 family-level best：`0.1722 +/- 0.0105`，优于 plain/fallback `0.1753 +/- 0.0078` 与 hard specialist `0.1915 +/- 0.0182`；with-env 下 `rf_high_capacity = 0.1771 +/- 0.0075`，基本只和 plain/fallback `0.1771 +/- 0.0060` 打平，且略弱于 `learned_specialist = 0.1762 +/- 0.0100`。
+- 2026-03-11: `rf_specialist_fallback` 在 4 个 seeds 上都没有产生独立增益；它在 `seed43` 的“胜出”只是和 plain `rf_specialist` 完全同分后的字母序结果。当前最合理的 family 级结论是：退役 fallback，只保留 `rf_high_capacity` 作为候选升级。
+- 2026-03-11: 已补完 `original / seed31 / seed37 / seed47` 的完整 `v3_rf_family`，并生成 [week2_rf_family_multiseed_100s_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_family_multiseed_100s_summary.csv) 与配套的 deployable best-by-run / win-counts artifact。
+- 2026-03-11: full 8-run aggregate 现在已经把 family 级判断真正收口了：no-env 下 `rf_high_capacity = 0.1841 +/- 0.0150`，优于 plain `rf_specialist = 0.1861 +/- 0.0135`；with-env 下 `rf_high_capacity = 0.1868 +/- 0.0132`，也优于 plain `rf_specialist = 0.1879 +/- 0.0141`。
+- 2026-03-11: `rf_specialist_fallback` 在 full 8-run aggregate 下继续与 plain `rf_specialist` 完全同分，没有任何独立收益。当前最合理的主表更新是：把 `rf_high_capacity` 升格成默认 learned-router family，同时正式退役 fallback。
+- 2026-03-11: 在 `rf_high_capacity` family 内继续新增了 `rf_high_capacity_margin_specialist_router_predicted_state`，测试更激进的 hard-margin sample weighting，并完成了 `original/31/41/53` 的 representative `no-env` 聚合。[week2_rf_highcap_margin_representative_noenv_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_highcap_margin_representative_noenv_summary.csv) 表明它整体更差：`0.1847 +/- 0.0153`，落后于 plain `rf_high_capacity = 0.1833 +/- 0.0137`。
+- 2026-03-11: 这个分支的失败模式很清楚：hard-margin weighting 在 `seed31/53` 上有局部增益，但会压坏 `original/41` 这类 already-good seeds，所以它不值得直接扩到 full 主表。
+- 2026-03-11: 基于这个失败模式，已在 `scripts/run_week2_cross_domain_router.py` 里补入一个更温和的 `rf_high_capacity_soft_margin_specialist_router_predicted_state`（`sample_weight = 1 + margin`），并通过 `python -m compileall scripts/run_week2_cross_domain_router.py`。
+- 2026-03-11: 但同轮还暴露出新的执行风险：并发跑多个 `n_jobs=-1` 的 full-router family run 会严重 oversubscribe，导致 `v5` representative 评估长时间无产物。当前正确下一步不是继续并发 brute-force，而是改成串行或 family-only 裁剪后再测 soft-margin。
+- 2026-03-12: 已在 `scripts/run_week2_cross_domain_router.py` 里新增 `--router-family-mode {full, rf_highcap_only}`，尝试用 family-only 路径只跑 `hard / rf_specialist / rf_high_capacity / rf_high_capacity_margin / rf_high_capacity_soft_margin / oracle`。
+- 2026-03-12: 这个 probe 给出了明确的执行结论：即使只跑 family-only，`original/no-env` 的 `rf_high_capacity_soft_margin` 单 run 在 `8m40s` 后仍无 `router_summary.csv`，同期 CPU time 已到 `4h27m`。说明主瓶颈不在后半段 baseline 数量，而在前面的 specialist OOF generation。
+- 2026-03-12: 因此当前 `rf_high_capacity` 线的下一步已经进一步收敛：不是继续删 baseline，也不是继续并发 brute-force，而是做可复用 router-cache / specialist 中间产物复用，然后再重跑 `soft-margin` representative filter。
+- 2026-03-12: 已在 `scripts/run_week2_cross_domain_router.py` 里实现 `--router-cache-dir` 的真实 `100-sample` 路径，并在 `original / seed31 / seed41 / seed53` 四个 representative `no-env` runs 上验证通过：四个 run 都完整写出 `cache/fold_01` 到 `cache/fold_05`，说明 cache-backed family-only 路径在真实规模上已经可稳定执行。
+- 2026-03-12: 四个真实 run 的 wall-clock 分别为 `617.686 / 591.015 / 579.032 / 605.862` 秒。当前 same-family 探针已经从“实现可疑”收敛成“只是慢但可跑”，后续是否继续扩展主要由研究价值决定，不再由执行风险决定。
+- 2026-03-12: `rf_high_capacity_soft_margin` 的 representative mixed signal 现已收口：`original/seed31` 仍由 hard specialist 取胜，但 `seed41/seed53` 已翻成 `soft-margin` best。说明 tempered weighting 不是空招，而是高方差 mixed-signal 分支。
+- 2026-03-12: 4-seed representative aggregate 已生成到 `outputs/week2_rf_highcap_soft_margin_representative_noenv_summary.csv`：`rf_high_capacity = 0.1815 +/- 0.0119`，`rf_high_capacity_soft_margin = 0.1817 +/- 0.0149`，plain `rf_specialist = 0.1828 +/- 0.0116`，hard specialist `0.1869 +/- 0.0168`。
+- 2026-03-12: 这把 `soft-margin` 线的 family 级判断钉住了：它明显比 hard-margin 更稳，也能在部分强 seed 上翻成 best，但 representative aggregate 仍略输 plain `rf_high_capacity`（约 `+0.0002` regret），因此当前不应升格默认 family。
+- 2026-03-12: 已在 `scripts/run_week2_cross_domain_router.py` 里新增 `rf_high_capacity_extra_trees_specialist_router_predicted_state`，并通过 `python -m compileall` 验证通过。这个变体只改最终 router 容量，不改 specialist 特征，因此可以完全复用既有 `v4` fold cache。
+- 2026-03-12: cache-hit rerun 已经在真实 `100-sample` 上验证成型：`original / seed31 / seed41 / seed53` 四个 representative `no-env` runs 的 wall-clock 仅为 `40.019 / 38.840 / 39.499 / 38.911` 秒，说明 same-family sweep 已从十分钟级重算压到四十秒级。
+- 2026-03-12: `rf_high_capacity_extra_trees` 的代表性结果已经收口成正向候选：[week2_rf_highcap_extratrees_representative_noenv_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_highcap_extratrees_representative_noenv_summary.csv) 给出 `0.1799 +/- 0.0141`，优于 plain `rf_high_capacity = 0.1815 +/- 0.0119`、`soft-margin = 0.1817 +/- 0.0149`、以及 hard specialist `0.1869 +/- 0.0168`。
+- 2026-03-12: per-run 上，`extra_trees` 在 `original/seed53` 取胜，`soft-margin` 在 `seed41` 取胜，`hard specialist` 在 `seed31` 取胜。当前最合理的结论不是“winner 已收敛”，而是 `extra_trees` 已经成为 post-`rf_high_capacity` 的第一条真正 aggregate-positive 升级线。
+- 2026-03-12: 已补完 `seed29 / seed37 / seed43 / seed47` 的完整 `v5_rf_highcap_extratrees` `no-env` family-only 结果，新增 full-run wall-clock 为 `586.171 / 598.676 / 626.120 / 599.843` 秒。
+- 2026-03-12: full `8-run no-env` aggregate 已生成到 [week2_rf_highcap_extratrees_multiseed_100s_noenv_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_highcap_extratrees_multiseed_100s_noenv_summary.csv)：`rf_high_capacity_extra_trees = 0.1824 +/- 0.0131`，优于 plain `rf_high_capacity = 0.1838 +/- 0.0109`、`soft-margin = 0.1842 +/- 0.0143`、plain `rf_specialist = 0.1850 +/- 0.0110` 和 hard specialist `0.1954 +/- 0.0168`。
+- 2026-03-12: 这个结论比 representative 4-seed 更强，因为 `extra_trees` 现在已经在完整 `8-run no-env` 上保持 mean win；同时 win-counts 也最强，为 `3/8`。当前最合理的判断是：它已通过 `no-env` 主表筛选，成为下一层真正值得扩展的 family candidate。
+- 2026-03-12: 但它仍未跨过最后一条边界：目前只有 `no-env`，没有 `with-env`。因此下一步不该再在 `no-env` 内部扫更多小变体，而应优先检查 `with-env` 是否也成立。
+- 2026-03-12: `with-env` representative 4-seed gate 已完成，[week2_rf_highcap_extratrees_representative_withenv_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_highcap_extratrees_representative_withenv_summary.csv) 给出 `rf_high_capacity_extra_trees = 0.1807 +/- 0.0118`，优于 plain `rf_high_capacity = 0.1822 +/- 0.0135`、plain `rf_specialist = 0.1836 +/- 0.0096` 和 hard specialist `0.1902 +/- 0.0126`。这说明 `extra_trees` 在 `with-env` 上虽然比 `no-env` 更 mixed，但 representative gate 仍然是正的。
+- 2026-03-12: 已补完 `seed29 / seed37 / seed43 / seed47` 的完整 `v5_rf_highcap_extratrees` `with-env` family-only 结果，新增 full-run wall-clock 为 `585.701 / 602.554 / 616.416 / 603.096` 秒。
+- 2026-03-12: full `8-run with-env` aggregate 已生成到 [week2_rf_highcap_extratrees_multiseed_100s_withenv_summary.csv](/cephfs/luyanzhen/apg/triver/outputs/week2_rf_highcap_extratrees_multiseed_100s_withenv_summary.csv)：`rf_high_capacity_extra_trees = 0.1828 +/- 0.0128`，优于 `rf_high_capacity_soft_margin = 0.1851 +/- 0.0117`、plain `rf_high_capacity = 0.1852 +/- 0.0132`、plain `rf_specialist = 0.1852 +/- 0.0122` 和 hard specialist `0.1975 +/- 0.0147`。
+- 2026-03-12: 这把 family 结论真正收口了：`rf_high_capacity_extra_trees` 现在在 `no-env / with-env` 两边都通过了 full `8-run` multi-seed mean-win 筛选，因此应取代 plain `rf_high_capacity` 成为默认 learned-router family。
+- 2026-03-12: 但 per-seed winner 仍未收敛；`with-env` 的 win counts 仍是 `extra_trees 3/8`、plain `rf_specialist 2/8`、其余分散。这意味着主结论应继续写成 `mean/std + win counts`，而不是把某个 single-seed winner 升格成统一最优架构。
+- 2026-03-15: 已在 [run_week2_cross_domain_router.py](/cephfs/luyanzhen/apg/triver/scripts/run_week2_cross_domain_router.py) 里新增 `rf_high_capacity_extra_trees_full_features_specialist_router_predicted_state`，只改最终 ExtraTrees router 的 `max_features=None`，不改 specialist 特征和监督。
+- 2026-03-15: 这条线的最小 probe 已完成：[week2_pooled_learned_router_no_env_bigdata_100s_v6_rf_highcap_extratrees_fullfeat_repr](/cephfs/luyanzhen/apg/triver/outputs/week2_pooled_learned_router_no_env_bigdata_100s_v6_rf_highcap_extratrees_fullfeat_repr)。`original/no-env` 上，plain `extra_trees = 0.193675`，`full_features = 0.195545`，hard specialist `= 0.193711`，因此它在第一针上就落后于当前默认 family。
+- 2026-03-15: 同时 runtime 也没有给出 cheap same-family gate：即便指向旧 cache，`original/no-env` 仍跑了 `625.281s`。因此这条线不是“微调即可判断”的轻量升级，而是又重又没有初步增益。
+- 2026-03-15: 后续 cache audit 进一步说明，部分旧 `v5` cache 资产本身不完整。比如 `seed31 no-env` 的 `v5_rf_highcap_extratrees_repr/cache` 只有 `fold_01`，`fold_02-05` 缺失；因此继续这条 probe 会退回 specialist OOF generation，而不是纯 cache-hit。
+- 2026-03-15: 当前最合理的结论是：`rf_high_capacity_extra_trees_full_features` early no-go，不继续扩 representative 4-seed，也不扩 full multi-seed。默认 learned-router family 保持 `rf_high_capacity_extra_trees` 不变。
+- 2026-03-15: 当前项目重心已正式从“继续扫局部架构”切换到“paper 收口”。新增 [paper_reframe.md](/cephfs/luyanzhen/apg/triver/paper_reframe.md)，把 strongest / weaker claims、主图主表、appendix 分层、术语修正、以及必须补的最小实验包写死。
+- 2026-03-15: 按这个重排版，主文应回到四条主线：oracle benchmark、ordered scalar insufficiency、exact-state vs predicted-state deployment gap、budgeted decision quality；cross-domain routing 降级为 extension。
+- 2026-03-15: 从现在起，新增实验的默认优先级也要改：优先补 `Action Regret@Budget`、equal-token frontier、`Revision Harm`、`Compute Value Calibration`，而不是继续做 router/value-head micro-sweep。
+- 2026-03-15: `Action Regret@Budget` / equal-token frontier 的基础设施已经落盘。新增 [run_week2_budget_eval.py](/cephfs/luyanzhen/apg/triver/scripts/run_week2_budget_eval.py) 生成 per-sample / per-budget artifacts，新增 [aggregate_week2_budget_eval.py](/cephfs/luyanzhen/apg/triver/scripts/aggregate_week2_budget_eval.py) 聚合双域结果到 [outputs/week2_budget_axis_v1](/cephfs/luyanzhen/apg/triver/outputs/week2_budget_axis_v1)。
+- 2026-03-15: 预算轴主表已经支持 proposal 叙事：linear 域上 `factorized_exact_state` / `direct_policy` 主导 budget bins，`ordered_scalar_mu` 在主文 controller 集合里最差；arithmetic 域上 `ordered_scalar_mu` 仍是 overall best main-text controller。这进一步支持“conditional scalar sufficiency/insufficiency”的写法。
+- 2026-03-15: 预算轴上的 deployable gap 也被直接量化了：两个域里 `factorized_predicted_state_selected` 都明显落后于 `factorized_exact_state`，所以主文 deployment-gap 图现在可以从 overall regret 扩到 budget-conditioned regret。
+- 2026-03-15: `Revision Harm` / `Compute Value Calibration` 的 `v1` 也已经补齐，并挂在同一套 budget-eval 输出上。每个域现在都有：
+  - `combined_sample_results_main.csv`
+  - `revision_harm_summary.csv`
+  - `revision_harm_at_budget.csv`
+  - `compute_value_calibration_summary.csv`
+  - `compute_value_calibration_bins.csv`
+- 2026-03-15: 当前 action-quality 结论也已经和主叙事对齐：
+  - linear 上 `factorized_exact_state` 给出最强 calibration；
+  - `factorized_predicted_state_selected` 在两个域上 calibration 都明显塌掉；
+  - harmful revise 不是大面积问题，但 deployable predicted-state factorized 仍残留非零 revision harm。
+- 2026-03-15: 这意味着 proposal 主文需要的四类 decision-quality 指标都已有 `v1` artifact。后续优先级不再是“补指标”，而是“给主结论做 minimal repeatability check + 组装主图主表”。
+- 2026-03-15: within-domain main-text repeatability v1 已完成。新增：
+  - [scripts/aggregate_week2_maintext_repeatability.py](/cephfs/luyanzhen/apg/triver/scripts/aggregate_week2_maintext_repeatability.py)
+  - [outputs/week2_maintext_repeatability_v1](/cephfs/luyanzhen/apg/triver/outputs/week2_maintext_repeatability_v1)
+- 2026-03-15: 这轮 repeatability 用 representative 4-run `100-sample` (`original/seed31/seed41/seed53`) 对主文 controller 集合做了最小复查，并用 `--maintext-only` 剪掉 appendix 级 factorized predicted-state sweep；lean 路线没有降低目标，只是把 repeatability 聚焦到主文真正要报告的集合。
+- 2026-03-15: repeatability v1 把 deployment-gap 结论进一步稳住了：
+  - `factorized_predicted_state_selected` 在两个域里都持续明显差于 `factorized_exact_state`
+  - 它在两个域上的 calibration 都更差，且在 linear 上保留最高 revision harm (`0.1115`)
+  - 因此 main-text 的 “exact-state vs predicted-state deployment gap” 现在不再依赖 single-run 结果。
+- 2026-03-15: repeatability v1 也迫使主文 controller 排名写得更保守：
+  - linear 上最稳的说法是 `ordered_scalar_mu` 稳定最差，而 `learned_1d_linear / direct_policy / factorized_exact_state` 构成更强前列 cluster
+  - arithmetic 上 `100-sample` repeatability 下 `direct_policy` 与 `learned_1d_linear` 已经系统性优于 `ordered_scalar_mu`
+  - 所以 paper 不该再写“某个单一 controller 普遍统治”，而应写 conditional / domain-dependent ranking
+- 2026-03-15: 这意味着 paper-closeout 现在真的从“补实验”切到“收口叙事”了：四类 decision-quality 指标 + within-domain repeatability 都已经具备，下一步应以主图 / 主表 / appendix 组装为核心，而不是继续扫 controller family。
+- 2026-03-15: 已新增 [paper_assembly.md](/cephfs/luyanzhen/apg/triver/paper_assembly.md)，把主文 strongest/weak claims、主图 / 主表 / appendix 分层、artifact 路径绑定、以及 immediate writing order 全部固化。现在写 paper 已不需要再回头搜索 outputs 目录。
+- 2026-03-15: 当前 paper assembly 的核心收口是：
+  - 主文只保留 benchmark / mechanism / deployment gap / budgeted decision quality
+  - `factorized_predicted_state_selected` 明确写成 per-domain selected deployable controller
+  - routing 正式降级为 extension
+  - richer `S` proxy 统一改名为 continuation outcome statistics
+- 2026-03-15: 已建立可编译的 NeurIPS 风格 LaTeX 稿件：
+  - [paper/main.tex](/cephfs/luyanzhen/apg/triver/paper/main.tex)
+  - [paper/neurips_2024.sty](/cephfs/luyanzhen/apg/triver/paper/neurips_2024.sty)
+  - [paper/references.bib](/cephfs/luyanzhen/apg/triver/paper/references.bib)
+  - [paper/sections](/cephfs/luyanzhen/apg/triver/paper/sections)
+- 2026-03-15: 这版稿件已经能通过 `latexmk -pdf main.tex` 编译出 [main.pdf](/cephfs/luyanzhen/apg/triver/paper/main.pdf)。正文已包含：
+  - abstract
+  - introduction
+  - setup
+  - oracle benchmark / mechanism
+  - controller comparison
+  - budgeted decision quality
+  - limitations
+  - appendix scaffolding
+- 2026-03-15: 当前写稿阶段的重点不再是“有没有 paper 入口”，而是正文打磨：
+  - 把 figure placeholders 替换成最终图
+  - 压缩措辞，提高 NeurIPS 风格密度
+  - 扩充 related work 与方法细节
+  - 统一术语边界与 caption 口径
+- 2026-03-16: 已按最新审稿视角进一步收口主文 claim：
+  - abstract / introduction / benchmark / conclusion 不再把 strongest claim 写成“broad ordered-scalar class 被整体否定”
+  - 当前主文改写为：simple continuation-score thresholding 与单一自然 confidence ordering 不足以解释低-regret prefix control
+  - 这让 paper 更稳定地对齐到 benchmark / mechanism 版本，而不是过强的 universal controller 版本
+- 2026-03-16: 已补强 benchmark protocol 的可检验性：
+  - 在 [paper/sections/setup.tex](/cephfs/luyanzhen/apg/triver/paper/sections/setup.tex) 和 [paper/sections/appendix_details.tex](/cephfs/luyanzhen/apg/triver/paper/sections/appendix_details.tex) 中补入了 oracle utility、`abstain=0`、rollout 数范围、ambiguity 规则、bounded `revise_1` 与 prefix sampling 的论文式说明
+  - 这一步是为了把 benchmark 从“概念合理”推进到“协议厚度更接近审稿级可复查”
+- 2026-03-16: 已补强 2025--2026 邻近 related work，并明确 novelty boundary：
+  - paper 不再隐含“我们是第一个 adaptive compute controller”
+  - 当前 novelty 明确写成 exact-checker prefix oracle benchmark + controller-class diagnostics + exact-state vs predicted-state deployment gap
+- 2026-03-16: 已新增 [state_identification_2week_plan.md](/cephfs/luyanzhen/apg/triver/state_identification_2week_plan.md)，把后续算法线正式收敛到 `state identification`：
+  - 停止继续盲扫 value-head/router
+  - 攻 high-determinacy slice、soft/pairwise teacher、exact-state teacher distillation
+  - 用 gap-recovery、revision harm、compute-value calibration 做 go/no-go
+- 2026-03-16: state-identification phase 1 的前两步已经跑完，产物在 [week2_state_identification_phase1_v1](/cephfs/luyanzhen/apg/triver/outputs/week2_state_identification_phase1_v1)：
+  - linear:
+    - `high-determinacy only` 没有改善 regret
+    - `pairwise preference` 把 predicted-state regret 从 `0.3709` 压到 `0.3244`，约回收 `19.8%` 的 baseline exact-state gap
+  - arithmetic:
+    - `high-determinacy only` 把 predicted-state regret 从 `0.5047` 压到 `0.4126`，约回收 `31.8%` 的 baseline exact-state gap
+    - `pairwise preference` 也改善，但更弱（到 `0.4681`）
+  - 两域共同点：
+    - 两条救法都把 revision harm 压到 `0`
+    - 但 deployment gap 仍远未被关闭，所以“label noise 是唯一问题”不成立
+- 2026-03-16: 这把 state-identification 线的下一步进一步收敛成：
+  - 继续做 exact-state teacher distillation
+  - 不回到广义 value-head search
+  - 不把当前 partial gains 误写成算法胜利
+- 2026-03-16: exact-state teacher distillation 已跑完，产物在 [week2_state_identification_phase2_v1](/cephfs/luyanzhen/apg/triver/outputs/week2_state_identification_phase2_v1)：
+  - linear:
+    - `teacher-distill (ridge)` 把 predicted-state regret 从 `0.3709` 压到 `0.3295`
+    - `teacher-distill (pairwise)` 反而恶化到 `0.3807`
+    - 当前 linear 域最优 rescue 仍是 phase-1 的 `pairwise` cleanup (`0.3244`)
+  - arithmetic:
+    - `teacher-distill (pairwise)` 把 predicted-state regret 从 `0.5047` 压到 `0.4079`
+    - `teacher-distill (ridge)` 恶化到 `0.5498`
+    - 当前 arithmetic 域最优 rescue 变成 `teacher-distill (pairwise)`，略优于 `high-determinacy` (`0.4126`)
+  - 总结：
+    - teacher distillation 是部分正结果，不是通用修复
+    - 目前 best rescue 仍强域依赖：linear 偏向 `pairwise` cleanup，arithmetic 偏向 `pairwise` teacher distill
+    - 这进一步支持“主瓶颈在 state identification”，但不足以恢复强算法 claim
+- 2026-03-16: `best cleanup + teacher` 组合实验已完成，产物在 [week2_state_identification_phase3_v1](/cephfs/luyanzhen/apg/triver/outputs/week2_state_identification_phase3_v1)：
+  - linear:
+    - `teacher-ridge + high-det = 0.3444`
+    - `teacher-pairwise + high-det = 0.4274`
+    - 都没有超过当前 best rescue `pairwise cleanup = 0.3244`
+  - arithmetic:
+    - `teacher-ridge + high-det = 0.4581`
+    - `teacher-pairwise + high-det = 0.4628`
+    - 都没有超过当前 best rescue `teacher-pairwise = 0.4079`
+  - 结论：
+    - rescue 组合不叠加
+    - 当前 best rescue 仍然强域依赖
+    - 且 best rescue 仍未超过 `learned_1d_linear`
+    - 因而按 proposal 的 go/no-go，算法 rescue 线应在这里停止，paper 固定为 benchmark / mechanism / deployment-diagnosis
+- 2026-03-16: paper 主文与附录已同步吸收这条 no-go：
+  - abstract / introduction / controller comparison / limitations / appendix negative 现在都明确写成 benchmark / mechanism / deployment-diagnosis 版本
+  - 针对 rescue probes 的最终表述是：target cleanup 和 exact-state distillation 有局部正信号，但不能恢复统一算法胜利
+  - 当前 [paper/main.pdf](/cephfs/luyanzhen/apg/triver/paper/main.pdf) 已重新编译通过，日志中无新的 warning / overfull / underfull 项
+- 2026-03-16: 又完成一轮 paper-polish：
+  - intro opening 更快进入“prefix control 不是 confidence thresholding”的主问题
+  - benchmark / repeatability / deployment-gap / budget-quality 的主图主表 caption 已改成更 self-contained 的审稿风格
+  - conclusion closing 更明确强调 benchmark 的方法论价值：区分 mechanism、deployment 与 action quality
+  - [paper/main.pdf](/cephfs/luyanzhen/apg/triver/paper/main.pdf) 已重新编译通过，日志仍无新的 warning / overfull / underfull 项
+- 2026-03-16: 又补了一轮 boundary-polish：
+  - related work 更明确写成“不是 another adaptive controller，而是 exact-checker prefix oracle benchmark + controller-class diagnostics”
+  - setup / appendix details 现在明确说明 predicted-state 主文行是 frozen row，后续 rescue probes 只用于 diagnosis，不回写 main-text leaderboard
+  - appendix routing 更明确限定为 extension，并写清当前 strongest family 是 higher-capacity ExtraTrees-style router
+  - [paper/main.pdf](/cephfs/luyanzhen/apg/triver/paper/main.pdf) 已再次编译通过，日志仍无新的 warning / overfull / underfull 项
+- 2026-03-16: API exact-checker prompt/action tuning (`v4strict`) 已完成，结论是 mixed/no-go：
+  - arithmetic / linear 都出现了更大的 `mean_action_gap` 和略低的 ambiguity
+  - 但两域都损失了 prefix coverage，并把 `high-determinacy crossing` 压回了 `0`
+  - 因此当前 benchmark 目标下，不应把 stricter formatting prompt 升格为默认设置
+- 2026-03-16: [scripts/run_week1_oracle.py](/cephfs/luyanzhen/apg/triver/scripts/run_week1_oracle.py) 现在在 `matplotlib` 缺失时会自动跳过画图；summary 与 CSV/JSON artifact 不再因图形依赖而让整次 API run 失败
+- 2026-03-20: API action-construction tuning (`v5revise`) 已完成，结论是正向：
+  - arithmetic / linear 都保持了 `v3cov` 的 prefix coverage 与 crossing，不再出现 `api_strict` 那种机制信号塌缩
+  - 两域 determinacy 都上升，ambiguity 都下降，`mean_action_gap` 也更大
+  - linear 是更干净的正结果；arithmetic 也提升，但伴随更高的 invalid-prefix rate
+  - 当前它已经是比 `v3cov` 更值得继续推进的默认候选
+- 2026-03-20: candidate-guided revise tuning (`v6cand`) 已完成，结论是 mixed/no-go：
+  - 它把两域 prefix coverage 都从 `24/28` 推到 `32`
+  - linear 的 `crossing_mass_all` 还进一步升到 `0.6562`
+  - 但相对 `v5revise`，两域的 determinacy / gap 没有继续提升，arithmetic 还回落；linear 的 invalid-prefix rate 也变差
+  - 因此它更像“更强 action prior”的 probe，不适合升格成默认 benchmark 设置
+- 2026-03-20: conditional revise tuning (`v7ifocus`) 已完成，结论是正向：
+  - 它只在无效前缀上启用更强 revise 语义，避免把 clean prefixes 也推成 intervention-heavy
+  - arithmetic 上它显著改善了 `invalid_prefix_rate`（`0.6071 -> 0.5000`），同时进一步提高了 `mean revise_gain`
+  - linear 上它比 `v5revise` 稍弱，但仍好于 `v3cov`，且没有 `v6cand` 的 action-prior 膨胀
+  - 当前它是更平衡的默认候选
+- 2026-03-20: recoverable-style tuning (`v8local`) 已完成，结论是 mixed/no-go：
+  - 新变体只改 recoverable-prefix 构造，不改 `api_revise_invalid_focus` prompt 本身；它优先扰动“当前步骤新引入的数字”
+  - arithmetic 上 determinacy 与 ambiguity 略有改善，但 `mean_action_gap` 和 `mean revise_gain` 都回落
+  - linear 上 `mean revise_gain` 与 `crossing_mass_all` 有小幅提升，但 `invalid_prefix_rate` 上升，`mean_action_gap` 没继续变好
+  - 因此它是有价值的 paired ablation，不应替代当前默认的 `recoverable-style=default`
+- 2026-03-20: broad `judge_based_supporting` benchmark 的最小闭环已跑通：
+  - 新增 `gsm8k` smoke pipeline：broader dataset -> API generation -> prefix extraction -> `{continue, revise_1, abstain}` rollout -> API judge -> prefix-level oracle records
+  - 当前第一批 smoke 的 determinacy 很低（`0.125`），ambiguity 很高（`7/8`），所以它只能作为 supporting benchmark 层，不能与 exact-checker 主证据混写
+  - 这条线已经证明 broad judged benchmark 技术上可行；下一步问题不再是“能不能做”，而是“如何把 determinacy 和 judge stability 提上去”
+- 2026-03-20: broad judged benchmark 的 first judge-stability probe (`dual`) 已完成，结论是正向但仍偏弱：
+  - 在不改 dataset / sample count / rollout count 的前提下，`oracle_determinacy_rate` 从 `0.125` 提到 `0.2222`
+  - `mean_action_gap` 从 `0.1094` 提到 `0.1339`
+  - 但 `high-determinacy crossing` 仍是 `0`
+  - 所以 `dual` 是当前更好的 judge stability 候选，但 broad judged benchmark 仍只能作为 supporting evidence
+- 2026-03-22: broad judged benchmark 的 generation-side probe (`compact_final`) 已完成，结论是 mixed/no-go：
+  - 它把 GSM8K base trace 的 `Final answer` 终止完整率从 `0.6667` 拉到 `1.0`
+  - 但 determinacy 从 `0.2222` 回落到 `0.1111`
+  - `invalid_prefix_rate` 从 `0.1111` 升到 `0.2222`
+  - `mean_action_gap` 也从 `0.1339` 回落到 `0.1159`
+  - 所以 broad judged 线当前的下一步不该再追求“更短更整齐的 trace”，而应继续打 judge stability / ambiguity handling
+- 2026-03-22: broad judged benchmark 的 action-utility probe (`gamma_wrong=1.0`) 已完成，并用 `base-traces replay` 做了干净对照：
+  - 新增 `--base-traces-json`，可以在固定 generation 的前提下重放 broad judged benchmark
+  - 在固定 `v2_dual` base traces 上，`gamma_wrong=1.0` 反而把 determinacy 从 `0.2222` 降到 `0.1111`
+  - `mean_action_gap` 也从 `0.1339` 降到 `0.1246`
+  - 所以 broad judged 线当前也不该优先通过“更重的 wrong-penalty”来拉开动作差距
+- 2026-03-23: broad judged benchmark 的 `dual_consensus` replay probe 已完成，结论是正向但仍偏弱：
+  - 在固定 `v2_dual` base traces 上，`dual_consensus` 保住了 determinacy `0.2222`
+  - `mean_action_gap` 从 `0.1339` 提到 `0.1879`
+  - `crossing_mass_all` 从 `0.8889` 降到 `0.7778`
+  - 但 `high-determinacy crossing` 仍是 `0`
+  - 所以 `dual_consensus` 是当前更强的 judge-stability 候选，但 broad judged benchmark 仍只能作为 supporting evidence
+
+## Blockers And Decisions
+
+- 暂无用户侧阻塞。当前默认 backbone 用本地 `/cephfs/shared/hf_cache/hub/Qwen3-4B`。
+- `infer` 环境缺 `matplotlib/pandas`，所以生成阶段在 `infer`，plot-only 阶段在基础 Python 环境完成。
+- 第二域表明 backbone 能力会显著影响 `revise` 是否变成稳定最优动作；`4B` 与 `8B` 需要分开报告，不能混写。
+- 当前 Week 2 还只是单设置初测；要写主表，必须补 arithmetic 域与统一 backbone/utility 设置。
+- 双域表格特征 baseline 已经显示 domain split：linear-equations 支持 scalar insufficiency，arithmetic 暂不支持，后续必须用 representation-based baseline 复核，不能直接下总论断。
+- 目前 representation smoke 结果偏弱，说明单纯拿 prefix hidden state + 小样本线性头并不能自动成为更强 baseline。
+- 当前最清晰的瓶颈是 state identification，不是 action-value head 本身：`predicted_state_exact_value` 明显优于旧版 `predicted_state`。
+- `q` 与 `S` 可能需要不同表示：`mean_content` 强化了 `q`，却伤害了 `mu`。
+- `S_t` 的更大问题可能不是表示，而是监督对象本身在当前域上退化：Beta posterior 修正后 `nu` 仍为常数，高温 smoke 也没打破这一点。
+- richer `S` proxy 已经给出正向 regret 改善，说明 proposal 里“默认继续分布/价值侧信息”这一维是实的；只是当前 `nu` 本身不是好载体。
+- arithmetic 域进一步说明：即使 richer `S` proxy 本身有价值，predicted-state 仍可能变差；这更像 state-head 学不到，而不是 factorized exact state 没用。
+- 最新 sweep 进一步说明：即使 state head 变好，deployable predicted-state controller 也可能不变好；当前需要把 value head 对 predicted-state noise 的稳健性单独当成问题处理。
+- 最新 train-mode formalization 进一步说明：`predicted_oof` 和纯 `predicted` 训练并没有自动更稳健，说明问题不只是 train/test mismatch，更像是当前 value-head 建模方式本身对 noisy state 不耐受。
+- 最新 robust value-head sweep 进一步说明：简单的 `huber` 或 sample-weighting 只能给局部修正，不能跨域稳定改写排序；问题不只是回归器脆弱，还可能是 value target/feature interface 本身不足。
+- 最新 structured value-head sweep 进一步说明：value target 本身确实重要，因为 pairwise head 能系统性改善 exact-state；但如果 predicted-state 仍不变好，下一步就该把 uncertainty/noise 显式并入 value head，而不是只继续改 target。
+- 最新 interaction sweep 进一步说明：value head 容量与 feature interactions 确实重要，因为 arithmetic predicted-state 首次得到明显改善；但 linear 仍显示 exact-state 改善无法自动迁移到 predicted-state，所以 uncertainty/noise handling 仍是主问题。
+- 最新 uncertainty-aware sweep 进一步说明：显式 reliability 特征确实能改善 predicted-state，但改善仍是强域依赖；单纯把 uncertainty 当附加特征还不够，下一步更像需要 joint state-value / heteroscedastic 结构。
+- 最新 joint-gate probe 进一步说明：把 exact-trained 分支和 uncertainty-aware predicted 分支简单混合，并不能自动得到更稳 controller；gate 的校准目标和路由分布本身也带有强域依赖。
+- 最新 per-pair error-calibration probe 进一步说明：按动作对校准 predicted-state 风险确实能救 arithmetic，但会压坏 linear；问题已经从“要不要引入校准”推进到“校准强度如何条件化”。
+- 最新 conditional pairwise calibration probes 进一步说明：即使把校准强度条件化到 per-pair / per-instance，wrapper 家族仍然没有跨域统一最优；下一步应转向更原生的 joint state-value 参数化，而不是继续在 base pairwise head 外面包一层校准器。
+- 最新 native heteroscedastic probe 进一步说明：把 uncertainty 直接写进底层 utility mean/variance 参数化，确实比 wrapper 更稳地改善了 linear predicted-state，也显著改善了 arithmetic exact-state；但 deployable arithmetic 仍未跟上，说明下一步需要更强的 action-conditional heteroscedastic / covariance-aware 参数化，而不只是独立动作方差。
+- 最新 pairwise-difference heteroscedastic probe 进一步说明：动作对层面的 native uncertainty 并不自动更好；在当前数据规模下，pairwise 自由度本身会带来明显样本效率损失。下一步更可能需要共享结构/低秩耦合，而不是完全独立的 pairwise variance 头。
+- 最新 shared-covariance probe 进一步说明：仅靠“共享 covariance template + 样本级 scale”也不够；它在 linear 上几乎退化成独立动作方差版，在 arithmetic 上也没有额外收益。下一步需要的是更丰富的共享结构，而不是单模板缩放。
+- 最新 low-rank/shared-latent probe 进一步说明：共享结构确实可以更强，只要它不是过弱模板。rank-1 latent 已经显著改善了 arithmetic predicted-state 并刷新 exact-state，但 linear 仍显示这种额外结构会带来不必要偏置；下一步需要的是能按域/样本条件启用不同 latent 结构的版本。
+- 最新 rank-2/shared-latent probe 进一步说明：增加 latent 因子数不会自动带来更好的 deployable factorized controller；它更像在提升 exact-state 拟合容量。下一步要解决的是 latent 结构何时启用、启用多强，而不是继续固定地增加 rank。
+- 最新 conditional/shared-latent probe 进一步说明：当 latent orientation 可以由输入条件化时，easy-domain 的 deployable predicted-state 会明显受益，而 hard-domain 至少不会退回到差的 fixed-rank 结果。说明当前更缺的是“何时用哪种 latent 结构”，而不是“latent 因子还不够多”。
+- 最新 `conditional latent + shrinkage` hybrid probe 进一步说明：hard-domain 上，conditional latent 的确能和 pairwise shrinkage 形成互补，甚至刷新 deployable best；但 easy-domain 上，同样的 shrinkage 仍会压坏 controller。问题现在更明确地收敛到“如何可靠地 no-op / cap shrinkage”。
+- 最新 capped-shrink probe 进一步说明：给 shrinkage 加显式下界和高置信 bypass 先验，确实能部分缓解 easy-domain 过度收缩，但还不足以恢复到 base controller 水平。下一步需要更离散的 banded / no-op regime，而不是继续微调连续 shrinkage。
+- 最新 banded/no-op probe 进一步说明：即使把共享 calibration 规则离散成多段，easy-domain 仍没有恢复到 base controller 水平。说明当前瓶颈不只是 shrinkage 形状，而是 easy/hard 本身需要更显式的分群或独立处理。
+- 最新 clustered probe 进一步说明：把 calibration 再做成 2-cluster per-pair 也没有救回 easy-domain，说明问题不只是 cluster granularity 不够，而是 shared calibration 这条主线本身已接近边界。
+- 最新 pooled specialist-vs-shared probe 进一步说明：即使单一 shared controller 显式看到 `env_is_linear`，best deployable 也只有 `0.4049`，仍差于 specialist portfolio `0.3563`；这说明当前 cross-domain 最优更像显式 per-env routing，而不是“共享 controller + 一个 env 特征”。
+- 最新 learned-router probe 进一步说明：在当前数据规模下，全局二选一 router 和 env-override router 都不如 hard per-env specialist；如果继续推进 routing，不能再把希望放在一个小 router 上，而应把显式 domain partition 当成主结果，或改变 routing 监督/数据规模。
+- 最新 oracle-router diagnostics 进一步说明：hard per-env specialist 虽然是当前 deployable 最优，但 fixed 两专家池仍有明显上限空间（oracle selector `0.2528` vs hard specialist `0.3563`）；当前瓶颈不是 expert pool 本身，而是 router supervision / interface 没把这部分 headroom 学出来。
+- 最新 router follow-up 进一步说明：改 routing supervision / interface 的方向是对的，因为 `score-interface` 和 `utility-gap regression` 都确实优于原始 learned router；但它们仍未超过 hard specialist。这说明当前 gap 不是单一标签编码问题，而是 shared learned routing 在这批数据与两专家设置上还不够稳。
+- 最新 RF router follow-up 进一步说明：更强容量也确实有帮助，因为 `rf_specialist_router_predicted_state` 已经到 `0.3627`；但它仍未跨过 `0.3563`，说明当前 learned routing 的残余差距不是“只差一个更强 sklearn 小模型”。
+- 最新大数据 router follow-up 进一步说明：显式扩大 routing supervision 后，shared learned routing 会显著改善，甚至在单个设定里和 hard specialist 打平；这说明当前主瓶颈的确更接近数据/监督，而不是 router 家族还没扫够。
+- `rf_high_capacity` 同族继续往下做时，新的主要工程风险不是模型本身，而是 full-router 脚本里多个 RF baseline 叠加 `n_jobs=-1` 后的 oversubscription；same-family 探针应优先串行运行，或先做 family-only 裁剪。
+- 但 `rf_highcap_only` probe 已表明：只裁 baseline 数量还不够。真正的运行时主瓶颈在 specialist OOF generation，所以后续加速必须做中间产物 cache/复用。
+- API benchmark 线当前默认设置从 `v3cov + api_revise_focus` 更新为“`v3cov` coverage-first + `api_revise_invalid_focus` 条件 revise construction”；`api_strict` 仍保留为 paired ablation，不升格成默认。
+- `api_revise_candidates` 保留为 candidate-guided ablation，不升格成默认；它会明显改变 revise/abstain 的 action prior。
+- 如果继续做 API exact-checker 数据，下一步应优先打：
+  - revise recoverability 的下一层轻量 action construction / operator 设计
+  - revise recoverability quality
+  - wider coverage
+  而不是更 strict 的格式 prompt 或更多 rollouts。
+
+## Resume Point
+
+当前有两条明确主线：
+1. API benchmark 线：
+  - 当前默认候选保持为 `v3cov + api_revise_invalid_focus + recoverable-style=default`
+  - `api_revise_candidates` 已验证为 mixed/no-go，不作为默认延续
+  - `local_changed_token` 已验证为 recoverable-prefix ablation，不升格为默认
+  - 下一步如果继续，应改成更轻量的 revise recoverability / operator 设计，而不是再加重 prompt 约束
+3. broad judged benchmark 线：
+  - `gsm8k` smoke pipeline 已跑通，当前证据等级明确是 `judge_based_supporting`
+  - `dual_consensus` 是当前更强的 judge-stability 候选；它在 fixed-base replay 上优于 plain `dual`
+  - `compact_final` generation-style 已验证为 mixed/no-go：completion 更好，但 benchmark quality 更差
+  - `gamma_wrong=1.0` 已验证为 no-go，且 replay 结果排除了 generation variance 的主要混淆
+  - 下一步如果继续，应优先打 judge stability / determinacy / ambiguity handling，而不是马上扩大 dataset 规模、继续做 cleaner trace prompt，或继续堆更重的 wrong-penalty
+2. paper 线：
+   - 继续精修 [paper/main.tex](/cephfs/luyanzhen/apg/triver/paper/main.tex) 的正文、caption、protocol 与 appendix
+   - 不让这轮 API tuning 反过来改写主文 strongest claim
+3. 算法 rescue 线已完成并按 go/no-go 收口：不再继续追 predicted-state algorithm win。
+4. 若未来要重开算法线，应作为新 follow-up project，目标改成“deployable state identification”而不是“救回当前 paper 主 claim”。
+新的默认研究原则是不再让局部 router/value-head 搜索决定主叙事，而是让现有 strongest evidence 决定 paper 结构。

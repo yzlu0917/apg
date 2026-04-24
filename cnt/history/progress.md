@@ -1,0 +1,502 @@
+# Progress
+
+## Current Goal
+
+Keep the strict `29`-example `audit08` mixed gate frozen as a final test, and formalize Week 3 as a clean negative / partial-result branch after five dev-side structural recipes still failed to produce a broad CNT-over-control win.
+
+The Week 3 discipline now stays fixed:
+- keep the synthetic benchmark as the object-validity gate
+- treat `outputs/countertrace_mini_math_20260311_merged03/` as the collection baseline
+- use `outputs/math_stage_a_20260311_audit08_conservative_merged112/` as the conservative Week 2 exit
+- use `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/strict_gate_manifest.json` as the frozen Week 3 final-test gate
+- use `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/recipe_dev_slice_summary.json` as the Week 3 recipe-dev pool
+- do not silently widen the gate definition just to cross `30+`
+- make the next recipe change explicit and structural, not another same-gate sweep
+
+## Milestones
+
+- DONE: Read proposal and map the Week 1 scope into concrete deliverables.
+- DONE: Implement the synthetic planning benchmark and scoring pipeline.
+- DONE: Run the first synthetic pilot and record Go / No-Go evidence.
+- DONE: Package the verified Week 1 result and prepare the CounterTrace-mini(math) entry point.
+- DONE: Implement GSM8K download, Qwen trace generation, numeric verification, and candidate-step selection for `CounterTrace-mini(math)`.
+- DONE: Implement real-domain Stage A pilot: successful-trace loading, `drop / paraphrase / swap` edits, continuator prompts, and `N_t / stability` estimation.
+- DONE: Merge a formal Stage A rerun with locked-prefix continuators and heuristic arithmetic swaps; the rerun now preserves a strong positive `N_t` signal at 12-record scale.
+- DONE: Add Stage A incremental write-out plus `--resume` support so long held-out audits do not lose all progress on interruption.
+- DONE: Run the first formal held-out continuator audit with `Qwen3-4B`.
+- DONE: Build the first conservative cross-continuator keep-set from train-side + held-out Stage A outputs.
+- DONE: Tighten the paraphrase family and rerun both train-side and held-out Stage A.
+- DONE: Fix the remaining `, so` paraphrase template and rerun the cross-continuator audit.
+- DONE: Expand the success-trace pool to a merged 16-trace GSM8K pool and rerun Stage A at larger scale.
+- DONE: Complete the first larger-scale held-out joint audit over 48 candidate-step pairs.
+- DONE: Diagnose and tighten the held-out-swap failure families exposed by the larger-scale audit.
+- DONE: Rerun the larger-scale audit after swap-family tightening.
+- DONE: Add one conservative train-side candidate filter and rerun the held-out audit on the filtered subset.
+- DONE: Build Stage B matched training data from the conservative `audit06` keep-set.
+- DONE: Implement the first matched training trainer and rollout-aware held-out evaluation.
+- DONE: Run the first step-only, rollout-suffix, and clean-positive rollout Stage B smoke pilots.
+- DONE: Compare clean-positive CNT against matched SFT-only control across multiple split seeds with an automated split-compare runner.
+- DONE: Recheck the only apparent positive split under a looser rollout budget.
+- DONE: Harden the Week 3 held-out rollout gate against token-budget and final-answer formatting artifacts, then deterministically rescore all existing Stage B rollouts.
+- DONE: Replace random split smoke with a full-coverage disjoint 4-fold Week 3 comparison under the hardened rollout gate.
+- DONE: Add `original-prefix` rollout-anchor support to Stage B dataset construction and compare anchor-only vs rollout-paired signal variants.
+- DONE: Expand the first promising stronger-signal variant to a full disjoint 4-fold comparison under the hardened gate.
+- DONE: Stress-test `signal03` on the decisive hard fold under a wider continuation budget.
+- DONE: Build a reproducible `GSM8K-hard` Stage B eval slice from base-rollout non-ceiling examples plus Stage A held-out-fragile examples.
+- DONE: Run `signal03` on the `GSM8K-hard` slice at both `lc120` and `lc160`.
+- DONE: Expand the verified GSM8K success-trace pool past `100` unique traces.
+- DONE: Rebuild the Week 2 conservative exit on top of the new `112`-trace pool.
+- DONE: Reconstruct a larger Week 3 strict mixed gate from the larger-pool Stage A exit.
+- DONE: Run the first matched compare on the new strict `audit08` mixed gate.
+- DONE: Freeze the strict `29`-example gate into an explicit final-test manifest and split out a complementary `81`-example recipe-dev pool.
+- DONE: Run the first dev-side structural Stage B recipe on the `81`-example recipe-dev pool with a disjoint 4-fold compare.
+- DONE: Run the second dev-side structural Stage B recipe on the same dev pool with rollout-pref-only supervision and measure the resulting frontier.
+- DONE: Run a third dev-side structural recipe with semantic original-prefix counterfactual negatives.
+- DONE: Run a fourth dev-side structural recipe with a genuine cross-prompt protect term.
+- DONE: Formalize Week 3 as a clean negative / partial-result branch instead of continuing to narrate it as an almost-win.
+- TODO: Only reopen Week 3 family search if a clearly more radical Stage B family is justified.
+- TODO: If Week 3 is reopened later, run the new recipe on the dev pool first, then bring only the selected recipe back to the frozen strict `29`-example gate for final confirmation.
+- TODO: If we insist on `30+`, re-open alignment before broadening the gate definition.
+
+## Latest Updates
+
+- 2026-03-16: Expanded the paper draft from a structured status memo into a fuller submission-style draft. The current `paper/neurips/main.tex` now includes related work, operational notation, a staged method/pipeline figure, representative quantitative tables, discussion/limitations, and a more concrete appendix scaffold.
+- 2026-03-16: Expanded the NeurIPS-style paper draft beyond the initial skeleton. The draft now includes a dedicated related-work section, a method/pipeline figure, and an appendix scaffold, while preserving the accepted `Week 1–2 positive / Week 3 negative-partial` reading.
+- 2026-03-16: Replaced the local NeurIPS-compatible placeholder style with the official `neurips_2024.sty` extracted from the public arXiv source bundle for the NeurIPS 2024 formatting instructions (`arXiv:2406.10625`), and recompiled `paper/neurips/main.pdf` successfully.
+- 2026-03-16: Added a compileable NeurIPS-style LaTeX draft in `paper/neurips/`, with `main.tex` as the root document and `main.pdf` verified via `latexmk`.
+- 2026-03-16: The paper draft currently follows the accepted reading:
+  - Week 1 positive
+  - Week 2 positive
+  - Week 3 clean negative / partial-result branch
+  - Week 4--6 still open
+- 2026-03-16: Added a shorter proposal-facing status summary in `history/proposal_update_brief.md` for direct reuse in updates and slides.
+- 2026-03-16: Added a proposal-facing status write-up in `history/proposal_update_after_week3.md`.
+- 2026-03-16: The accepted stage summary is now explicit:
+  - Week 1 positive
+  - Week 2 positive
+  - Week 3 clean negative / partial-result branch
+  - Week 4–6 still open rather than completed
+- 2026-03-09: Initialized the repo as an active research workspace instead of a proposal-only folder.
+- 2026-03-09: Started the Week 1 synthetic benchmark implementation with explicit decoy / filler / redundancy structure.
+- 2026-03-09: Completed a reproducible 48-instance synthetic run in `outputs/week1_20260309_run01/`; CNT necessity score strongly tracks the programmed ground truth while observational and entropy baselines do not.
+- 2026-03-09: Tightened paraphrase generation to same-family rewrites so detectability no longer comes mostly from style shifts.
+- 2026-03-09: Started `CounterTrace-mini(math)` on GSM8K and saved the first verified local-model traces in `outputs/countertrace_mini_math_20260309_run01/`.
+- 2026-03-09: The first real-domain pilot produced 4 verified success traces from 16 sampled GSM8K questions, with candidate steps already attached for later Stage A edits.
+- 2026-03-09: Completed the first math Stage A pilot in `outputs/math_stage_a_20260309_run01/` over 12 candidate-step records.
+- 2026-03-09: Current math `N_t` signal is only weakly positive before weighting and collapses after stability weighting, indicating continuator/editor instability rather than a clean training-ready signal.
+- 2026-03-09: Refined math Stage A with locked-prefix continuator prompts and heuristic arithmetic `swap_*` edits. Smoke validation in `outputs/math_stage_a_20260309_smoke04/` improved `mean_n_t` from negative/near-zero pilot behavior to clearly positive local signal, but the larger rerun was stopped before completion due runtime.
+- 2026-03-09: Completed the formal rerun in `outputs/math_stage_a_20260309_run02/`; `mean_n_t` rose to `0.6111`, `mean_n_t_weighted` to `0.0203`, and `mean_swap_solve` fell to `0.0000`.
+- 2026-03-09: The remaining risk is now sharper: cross-prompt signal is much better, but `mean_stability = 0.0343` is still too low to call the math signal held-out-stable.
+- 2026-03-09: Attempted `Qwen3-4B` held-out audits exposed an engineering blocker rather than a conceptual one: long runs were too slow for all-or-nothing execution, so Stage A now writes outputs incrementally and supports `--resume`.
+- 2026-03-09: Verified the new `--resume` path in `outputs/math_stage_a_20260309_resume_smoke01/`; rerunning the same job with `--resume` skipped recomputation and preserved a single-record output.
+- 2026-03-09: Completed the first held-out continuator rerun in `outputs/math_stage_a_20260309_run03_qwen3_4b/`. The signal survives held-out continuation but weakens: `mean_n_t = 0.4907`, `mean_n_t_weighted = 0.0111`, `mean_swap_solve = 0.1111`.
+- 2026-03-09: Held-out degradation is concentrated rather than uniform. Most damage comes from one GSM8K problem family where the 4B continuator repairs dropped/paraphrased prefixes too effectively.
+- 2026-03-09: Built the first cross-continuator keep-set in `outputs/math_stage_a_20260309_audit01/`; `8 / 12` candidate steps survive a conservative joint filter.
+- 2026-03-10: Conservative paraphrase rerun completed in `outputs/math_stage_a_20260310_run04_para_fix/` and `outputs/math_stage_a_20260310_run05_qwen3_4b_para_fix/`.
+- 2026-03-10: The held-out paraphrase problem improved materially: `mean_paraphrase_gap` fell from `0.1111` to `0.0278` on the 4B audit.
+- 2026-03-10: The keep-set did not grow beyond `8 / 12`, but the bottleneck sharpened. The Carla late-step prefix is now retained; the new main editor failure is a train-side `, so` paraphrase on the Meredith problem.
+- 2026-03-10: Second template fix completed in `outputs/math_stage_a_20260310_run06_para_fix2/` and `outputs/math_stage_a_20260310_run07_qwen3_4b_para_fix2/`; train-side `mean_paraphrase_gap` dropped to `0.0556` while held-out stayed at `0.0278`.
+- 2026-03-10: `audit03` is now the best joint audit: the keep-set grew from `8 / 12` to `9 / 12`.
+- 2026-03-10: Remaining dropped cases are now mostly low-original-solve Carla prefixes plus one Meredith early step that fails on `heldout_swap_solve`, not paraphrase instability.
+- 2026-03-10: Expanded the verified math pool to `16` unique traces in `outputs/countertrace_mini_math_20260310_merged01/` by merging the original 4-trace run with two new 6-trace collection runs.
+- 2026-03-10: Completed the first larger-scale Stage A rerun over the merged pool. `run08` (train-side) yields `mean_n_t_weighted = 0.0172`, `mean_paraphrase_gap = 0.0347`; `run09` (held-out 4B) yields `mean_n_t_weighted = 0.0164`, `mean_paraphrase_gap = 0.0069`.
+- 2026-03-10: Larger scale confirms that broad paraphrase instability is mostly solved; the dominant failure mode is now held-out `swap` repair, with `mean_swap_solve = 0.2049` on `run09`.
+- 2026-03-10: `audit04` over `48` pairings keeps `26`, for `keep_fraction = 0.5417`. The kept subset is cleaner and stronger on held-out (`mean_heldout_n_t_weighted_kept = 0.0242`), but the global keep ratio drops relative to `audit03`.
+- 2026-03-10: The larger pool exposes two fully dropped trace families, `gsm8k-00076` and `gsm8k-00096`, plus a wider long tail of partial held-out-swap failures. The bottleneck is no longer paraphrase editing; it is swap robustness at scale.
+- 2026-03-10: Tightened `swap_operation` so implausible operator flips now fall back to stronger local wrong-value edits instead of inviting explicit held-out repair.
+- 2026-03-10: A targeted smoke rerun over `gsm8k-00045 / 00076 / 00096` confirmed the fix on the exact weak subset: held-out `mean_swap_solve` fell from `0.4444` to `0.2037`, while `mean_n_t_weighted` rose from `0.0074` to `0.0111`.
+- 2026-03-10: Full rerun after the swap fix completed in `outputs/math_stage_a_20260310_run10_swapfix_merged16/` and `outputs/math_stage_a_20260310_run11_qwen3_4b_swapfix_merged16/`.
+- 2026-03-10: On the full 48-pair pool, train-side `mean_swap_solve` fell from `0.0729` to `0.0208`, and held-out `mean_swap_solve` fell from `0.2049` to `0.1146`, while both weighted `N_t` means improved.
+- 2026-03-10: `audit05` is now the current best larger-scale audit: `35 / 48` kept, `keep_fraction = 0.7292`, with held-out swap-related drops cut from `15` to `7`.
+- 2026-03-10: The residual failures are now concentrated in low-original-solve or low-weighted-`N_t` prefixes (`gsm8k-00007`, `gsm8k-00076`, `gsm8k-00135`, `gsm8k-00245`), not in a global editor naturalness problem.
+- 2026-03-10: Added a reusable train-side filtering entrypoint in `scripts/filter_math_stage_a_records.py` and corresponding library support in `src/cnt_research/math/stage_a_audit.py`.
+- 2026-03-10: Final conservative filter `filter01` keeps `40 / 48` candidates using only train-side rules: perfect original solvability plus zero train-side paraphrase gap.
+- 2026-03-10: Conservative `audit06` keeps `33 / 40`, for `keep_fraction = 0.8250`, while both all-pair weighted means rise to about `0.020`.
+- 2026-03-10: The conservative route only removes `2` previously kept `audit05` examples (`gsm8k-00045` early-step and `gsm8k-00151` unicycle step), so the price of extra cleanliness is small.
+- 2026-03-10: Implemented Stage B matched training infrastructure in `src/cnt_research/math/stage_b.py` plus dataset-build / train / rollout-eval scripts.
+- 2026-03-10: The first step-only matched training smoke improved local offline loss but weakened held-out rollout necessity (`mean_n_t_weighted: 0.2133 -> 0.1152`), so local pair metrics are not sufficient as the Stage B gate.
+- 2026-03-10: Switching to rollout-suffix completions still harmed held-out rollout behavior when the chosen suffix came from Stage A continuator outputs; the failure concentrated on `gsm8k-00164`.
+- 2026-03-10: Diagnosed the failure as positive-suffix impurity: some verifier-correct continuator suffixes were locally inconsistent and poisoned training.
+- 2026-03-10: Rebuilt the rollout dataset with clean chosen suffixes from verified success traces (`dataset03_cleanchosen`).
+- 2026-03-10: `smoke04_cleanchosen` is the first no-harm Stage B pilot: held-out rollout metrics return to the base-model level while offline SFT loss improves slightly.
+- 2026-03-10: Ran the first matched SFT-only control on the same clean-positive dataset. It is also no-harm, and on the current held-out rollout gate it is indistinguishable from `smoke04_cleanchosen`.
+- 2026-03-10: Ran a slightly stronger clean-positive CNT schedule (`2 epochs`, lower LR). It also remains no-harm, but still does not separate from base or matched SFT-only control on the current gate.
+- 2026-03-10: Added and validated `scripts/run_math_stage_b_split_compare.py`, then ran four new split-specific Stage B comparisons (`seed05`, `seed23`, `seed41`, `seed77`) in `outputs/math_stage_b_20260310_split_compare/`.
+- 2026-03-10: Across the five currently available lc120 splits (`05`, `17`, `23`, `41`, `77`), only `seed23` shows a non-zero CNT-minus-control rollout delta; the other four are exact ties on the held-out rollout gate.
+- 2026-03-10: The apparent `seed23` gain is not broad. It comes entirely from `gsm8k-00145 @ step 0`, where matched SFT-only reconstructed the right dropped-step reasoning but stopped with a blank `Final answer:` under the tight 120-token continuation budget.
+- 2026-03-10: Re-evaluating `seed23` control and CNT with `continuation_max_new_tokens = 160` removes the delta completely. The current Week 3 state is therefore still "no-harm but no robust CNT-specific gain."
+- 2026-03-10: Hardened the rollout verdict logic itself. The gate now accepts strict final answers with currency / percent markers and recovers answers from blank `Final answer:` stubs without dropping verifier-based checking.
+- 2026-03-10: Added `scripts/rescore_math_stage_b_rollout.py` and `scripts/summarize_math_stage_b_multisplit.py`, then deterministically rescored all existing Stage B rollout records instead of re-running generation.
+- 2026-03-10: Under the hardened gate, the clean Stage B variants (`base`, matched SFT-only, `smoke04`, `smoke05`) remain exact ties, but at a lower absolute level: `mean_drop_solve = 0.8000`, `mean_n_t = 0.6333`, `mean_n_t_weighted = 0.1152`.
+- 2026-03-10: The robust 5-split aggregate in `outputs/math_stage_b_20260310_split_compare/multisplit_summary_robust.json` is fully flat: `nonzero_delta_seeds_lc120 = []`.
+- 2026-03-10: This hardens and revises the previous Week 3 reading. The old `seed23` positive split was a verdict artifact, and the earlier `smoke01` harm claim also disappears under the hardened gate.
+- 2026-03-10: The dirty rollout-positive variants still remain unacceptable, but the reason is now sharper: they reduce `mean_original_solve` to `0.8000` rather than uniquely collapsing weighted necessity.
+- 2026-03-10: Added `scripts/run_math_stage_b_fold_compare.py` plus `scripts/summarize_math_stage_b_fold_compare.py`, and ran a disjoint 4-fold Stage B comparison over the full 16-example conservative pool.
+- 2026-03-10: The fold aggregate in `outputs/math_stage_b_20260310_fold_compare/fold_compare_summary.json` is fully flat: `nonzero_delta_folds = []`, `mean_delta_n_t_weighted = 0.0000`, `mean_delta_n_t = 0.0000`, `mean_delta_drop_solve = 0.0000`.
+- 2026-03-10: The folds are disjoint and jointly exhaustive (`num_unique_eval_examples = 16`, `all_eval_ids_disjoint = true`), so the current Week 3 tie is no longer plausibly explained by random split choice.
+- 2026-03-10: The remaining uncertainty is now very narrow: the present clean-positive CNT recipe itself is too weak to separate from matched SFT under the hardened rollout gate.
+- 2026-03-10: Added `anchor_mode=original_rollout` to Stage B data construction so each kept pair can contribute an additional original-prefix rollout SFT anchor from the verified success trace.
+- 2026-03-10: The first anchor-only hard-fold smoke (`signal02`) did not help. On fold00, matched SFT-only and CNT still tied at `mean_original_solve = 0.8000`, `mean_drop_solve = 0.7000`, while the base model stayed at `0.9000 / 0.8000`.
+- 2026-03-10: Switching the pair loss from `step` to `rollout` while keeping the new original-prefix anchor (`signal03`) produced the first real Week 3 separation on the hard slice. On fold00, CNT returned to the base-model rollout (`0.9000 / 0.8000`) while matched SFT-only remained at `0.8000 / 0.7000`.
+- 2026-03-15: Froze the strict `29`-example `audit08` mixed gate into `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/strict_gate_manifest.json` and split out a complementary `81`-example recipe-dev pool with dev-only audit rows in `recipe_dev_audit_kept.jsonl`.
+- 2026-03-15: The first hygienic dev-side structural recipe, `equiv_weight_mode = uniform` on top of `step_and_rollout + drop_sft_filter = one_side_positive`, completed as a full 4-fold exact tie across all `81` dev examples.
+- 2026-03-15: Added preference-subtype multipliers so Stage B can independently weight `step`, `rollout`, and anchor-side preference rows.
+- 2026-03-15: The second hygienic dev-side structural recipe, `rollout-pref-only` (`pref_step_multiplier = 0`, `pref_rollout_multiplier = pref_anchor_multiplier = 1`), no longer ties exactly. Across the `81`-example dev pool it yields `mean_delta_drop_solve = +0.0127` and `mean_delta_n_t_weighted = -0.0123`, so the old utility-vs-weighted-`N_t` frontier reappears at dev scale instead of collapsing to noise.
+- 2026-03-15: Added `anchor_pair_mode = original_counterfactual_pref`, which places semantic wrong-suffix negatives under the original anchor prompt instead of only truncation negatives.
+- 2026-03-15: On the same `81`-example dev pool, `original_counterfactual_pref` on top of the `signal11` recipe fully neutralizes the sparse frontier: all four folds return to exact CNT-vs-control rollout ties, while offline pref margins still increase.
+- 2026-03-16: Added a genuine cross-prompt protect term, `protect_mode = original_over_drop_hinge`, which compares `original prompt -> gold suffix` against `drop prompt -> repaired gold completion`.
+- 2026-03-16: The protect recipe still returns an exact 4-fold rollout tie on the same `81`-example dev pool, and even the new protect offline metric drifts slightly in the wrong direction (`protect_margin_mean` becomes a bit more negative for CNT than control).
+- 2026-03-10: Expanding `signal03` to the full disjoint 4-fold comparison shows that the gain is concentrated rather than broad: `nonzero_delta_folds = [0]`, `mean_delta_drop_solve = +0.0250`, `mean_delta_n_t = +0.0167`, `mean_delta_n_t_weighted = -0.0238`.
+- 2026-03-10: This is the first post-hardening result where CNT and matched SFT-only are not globally tied. The current best reading is "hard-slice repair, not broad Week 3 win."
+- 2026-03-10: The first budget stress test on the decisive hard fold removes the `signal03` repair. At `continuation_max_new_tokens = 160`, base rises to `1.0 / 1.0`, while matched SFT-only and CNT tie again at `0.9 / 0.9`.
+- 2026-03-10: Because the only non-zero fold already collapses back to a tie under wider budget, `signal03` is not yet robust enough to be scaled as the new default Week 3 recipe.
+- 2026-03-10: Built a reproducible `GSM8K-hard` slice using only pre-existing artifacts: examples whose mean Stage B base-rollout original/drop solve at `lc120` is below `1.0`, or whose mean Stage A held-out original/drop solve is below `1.0`.
+- 2026-03-10: That rule selects `gsm8k-00007 / 00141 / 00164 / 00327`, which concentrates the remaining non-ceiling or held-out-fragile examples inside the current conservative core.
+- 2026-03-10: On this `GSM8K-hard` slice, `signal03` cleanly separates from matched SFT-only at `lc120`: base `0.875 / 0.750`, control `0.750 / 0.625`, cnt `0.875 / 0.750`.
+- 2026-03-10: Unlike the earlier fold00-only result, the hard-slice separation survives the budget stress test. At `lc160`, base `1.000 / 1.000`, control `0.875 / 0.875`, cnt `1.000 / 1.000`.
+- 2026-03-10: This changes the Week 3 diagnosis materially. The problem is not "GSM8K cannot show CNT gains"; it is that the easy-heavy conservative core hides them unless we gate on a non-ceiling slice.
+- 2026-03-11: Completed an 8-run seed-shuffled GSM8K collection batch (`max_examples = 128`, `target_successes = 16` per run) across `cuda:0-7` and merged it with the prior `30`-trace pool.
+- 2026-03-11: The merged collection baseline is now `outputs/countertrace_mini_math_20260311_merged03/` with `num_unique_verified_traces = 112`, up from `30`.
+- 2026-03-11: Trace-pool scale is no longer the main bottleneck. The next bottleneck is re-running Week 2 filtering and then rebuilding Week 3 evaluation on top of the `112`-trace pool instead of the older small-core artifacts.
+- 2026-03-11: Completed the larger-pool Stage A rerun over the full `112`-trace baseline. Final merged summaries are `outputs/math_stage_a_20260311_run14_merged112/` and `outputs/math_stage_a_20260311_run15_qwen3_4b_merged112/`, both with `331` aligned records.
+- 2026-03-11: The new conservative filter keeps `298 / 331` pairs in `outputs/math_stage_a_20260311_filter03_conservative_merged112/`.
+- 2026-03-11: The new larger-pool conservative joint audit keeps `230 / 298` pairs in `outputs/math_stage_a_20260311_audit08_conservative_merged112/`, with `mean_heldout_n_t_weighted_kept = 0.0332` and zero paraphrase gap on the kept subset.
+- 2026-03-11: The Week 2 object therefore scales cleanly to the `112`-trace regime. The remaining larger-pool bottleneck is still held-out swap repair, not paraphrase drift.
+- 2026-03-11: Completed fresh Stage B base-rollout folds over the full `audit08` conservative core in `outputs/math_stage_b_20260311_base_rollout_folds_merged112_lc120/`. The root now covers `110` unique eval examples with disjoint `28 / 28 / 27 / 27` folds.
+- 2026-03-11: Under the unchanged strict `base_and_audit` selection rule, the rebuilt mixed Week 3 gate reaches `29` examples in `outputs/math_stage_b_20260311_gsm8k_hard_slice_audit08_mixed/hard_slice_summary.json`.
+- 2026-03-11: This is a real jump from the old tiny probes and much better than the same-pool `audit_only` gate (`10` examples), but it still stops one example short of the desired `30+` main-eval threshold.
+- 2026-03-11: Completed the first matched compare on this strict `29`-example gate in `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_merged112/hard_audit08_mixed_lc120/`.
+- 2026-03-11: Result: current CNT recipe does not beat matched control on the larger gate. Control and CNT tie on `mean_drop_solve = 0.6452`, but CNT loses `mean_original_solve` (`0.9032` vs `0.9194`), so `delta(cnt-control)` is slightly negative rather than flat.
+- 2026-03-11: Completed a first fixed-gate recipe sweep on the same strict `29`-example gate:
+  - `weight_source=min` at `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_weightsrc_sweep/hard_audit08_mixed_lc120_minw/`
+  - `weight_source=train` at `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_weightsrc_sweep/hard_audit08_mixed_lc120_trainw/`
+  - `pair_completion_mode=step` at `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal04_step_pair/hard_audit08_mixed_lc120_step_pair/`
+- 2026-03-11: These sweeps remove the old `gsm8k-00155 @ step 2` original-prefix regression, but they do not produce a broad win over matched control.
+- 2026-03-11: The current fixed-gate Week 3 picture is now a sparse frontier rather than a single failure mode:
+  - `min` / `train` weighting improve weighted `N_t` over control but lose one or two drop repairs
+  - `step-pair` improves `mean_drop_solve` over control by one record but gives back weighted `N_t`
+- 2026-03-11: Added `--reuse-base-rollout-from` to `scripts/run_math_stage_b_fold_compare.py` so future same-gate recipe sweeps can skip identical base-rollout re-evaluation.
+- 2026-03-12: Added a structural Stage B loss knob, `pref_margin_target`, to:
+  - `src/cnt_research/math/stage_b.py`
+  - `scripts/run_math_stage_b_fold_compare.py`
+  - `scripts/run_math_stage_b_training.py`
+  - `scripts/run_math_stage_b_split_compare.py`
+- 2026-03-12: Completed the first structural follow-up on the fixed strict `29`-example gate:
+  - `step-pair + pref_margin_target = 1.0`
+  - output root: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal05_step_pair_prefmargin/hard_audit08_mixed_lc120_step_pair_prefmargin1p0/`
+  - it reuses the existing strict-gate base rollout via `--reuse-base-rollout-from`
+- 2026-03-12: Result: `pref_margin_target = 1.0` flips the sign of the previous `step-pair` tradeoff instead of resolving it.
+  - relative to control: `mean_drop_solve = -0.0161`, `mean_n_t_weighted = +0.0158`
+  - relative to plain `step-pair`, the decisive example changes from `gsm8k-00134 @ step 1` to `gsm8k-00198 @ step 1`
+  - this means the current frontier is not just easy-margin inflation; the tradeoff is still structural and sparse
+- 2026-03-12: Added a second structural Stage B dataset knob, `anchor_pair_mode`, with `original_truncated_pref` support in:
+  - `src/cnt_research/math/stage_b.py`
+  - `scripts/run_math_stage_b_fold_compare.py`
+  - `scripts/build_math_stage_b_data.py`
+  - `scripts/run_math_stage_b_split_compare.py`
+- 2026-03-12: Completed the second structural Stage B follow-up on the fixed strict `29`-example gate:
+  - `step-pair + anchor_pair_mode = original_truncated_pref`
+  - output root: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal06_step_pair_anchortrunc/hard_audit08_mixed_lc120_step_pair_anchortrunc/`
+  - it reuses the existing strict-gate base rollout via `--reuse-base-rollout-from`
+- 2026-03-12: Result: `original_truncated_pref` is active but not sufficient.
+  - aggregate rollout deltas are exactly the same as plain `step-pair`: `mean_drop_solve = +0.0161`, `mean_n_t_weighted = -0.0158`
+  - the mechanism changes which examples flip (`gsm8k-00030`, `gsm8k-00118`, `gsm8k-00134`) instead of improving the aggregate frontier
+  - this means the strict-gate Stage B bottleneck is not simply “missing original-side truncation pressure”
+- 2026-03-12: Diagnosed the next proposed Week 3 move before coding it:
+  - literal utility sign-consistency on the current `audit08` keep-set is a no-op for `pref` rows
+  - all `230 / 230` kept candidates already satisfy `min(train_delta, heldout_delta) >= 0` for `drop`, `swap_quantity`, and `swap_operation`
+  - the real asymmetry is that `drop` is mostly zero-margin: `227 / 230` candidates have `min(train_drop_delta, heldout_drop_delta) = 0`
+- 2026-03-12: Implemented a new Stage B dataset knob, `drop_sft_filter`, in:
+  - `src/cnt_research/math/stage_b.py`
+  - `scripts/build_math_stage_b_data.py`
+  - `scripts/run_math_stage_b_fold_compare.py`
+  - `scripts/run_math_stage_b_split_compare.py`
+- 2026-03-12: First utility-aware dataset smoke is complete:
+  - `step-pair + drop_sft_filter = one_side_positive`
+  - dataset root: `outputs/math_stage_b_20260312_dataset04_step_pair_dropfilter_smoke/`
+  - this keeps `pref/equiv` intact and only filters `drop-prefix` SFT
+  - observed shrink on that smoke split:
+    - train `sft: 336 -> 189`
+    - eval `sft: 124 -> 63`
+    - explicit `drop-prefix` keep/filter counts are written in `stage_b_dataset_summary.json`
+- 2026-03-12: Completed the strict-gate compare for this utility-aware branch:
+  - `step-pair + drop_sft_filter = one_side_positive`
+  - strict frozen `29`-example gate
+  - output root: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal07_step_pair_dropfilter/hard_audit08_mixed_lc120_step_pair_dropfilter1side/`
+  - it reuses the existing strict-gate base rollout via `--reuse-base-rollout-from`
+- 2026-03-12: Result: `drop_sft_filter = one_side_positive` collapses the plain `step-pair` frontier into an exact tie.
+  - relative to control, CNT is `0.0` on every rollout metric
+  - compared with plain `step-pair`:
+    - control moves from `drop_solve 0.6613 / weighted N_t 0.2707` to `0.6452 / 0.2865`
+    - CNT moves from `0.6774 / 0.2548` to `0.6452 / 0.2865`
+  - so this recipe removes the CNT utility edge, but also removes the weighted-`N_t` disadvantage
+- 2026-03-12: Example-level interpretation is sharper now:
+  - control and CNT differ only on two drop cases, `gsm8k-00134 @ step 1` and `gsm8k-00155 @ step 2`
+  - these two flips cancel exactly, which is why the aggregate is a full tie
+- 2026-03-12: Completed the next structural combination on the same frozen strict gate:
+  - `step-pair + drop_sft_filter = one_side_positive + anchor_pair_mode = original_truncated_pref`
+  - output root: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal08_step_pair_dropfilter_anchortrunc/hard_audit08_mixed_lc120_step_pair_dropfilter_anchortrunc/`
+  - it keeps the filtered-drop base unchanged (`train kept=4 / filtered=164`, `eval kept=18 / filtered=44`) and only adds anchor-side truncation negatives
+- 2026-03-12: Result: `signal08` is not a fix.
+  - relative to control:
+    - `mean_drop_solve = -0.0161`
+    - `mean_n_t_weighted = +0.0158`
+  - so `drop_sft_filter` had cleaned the old frontier into a tie, and anchor-side truncation pressure pushes it back onto the weighted-`N_t` side
+- 2026-03-12: Implemented a new Stage B pair-construction mode, `pair_completion_mode = step_and_rollout`, in:
+  - `src/cnt_research/math/stage_b.py`
+  - `scripts/build_math_stage_b_data.py`
+  - `scripts/run_math_stage_b_fold_compare.py`
+  - `scripts/run_math_stage_b_split_compare.py`
+- 2026-03-12: Dataset smoke for this new structural branch is complete:
+  - `step_and_rollout + drop_sft_filter = one_side_positive`
+  - output root: `outputs/math_stage_b_20260312_dataset05_step_and_rollout_dropfilter_smoke/`
+  - the new pair mode does what it should:
+    - train `pref: 240 -> 480`, `equiv: 68 -> 136`, `sft: 189` unchanged against the same-family dropfilter base
+    - eval `pref: 70 -> 140`, `equiv: 20 -> 40`, `sft: 63` unchanged
+- 2026-03-12: Completed the first strict-gate compare for this new structural branch:
+  - `step_and_rollout + drop_sft_filter = one_side_positive`
+  - output root: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal09_stepandrollout_dropfilter/hard_audit08_mixed_lc120_stepandrollout_dropfilter1side/`
+  - the monolithic compare was superseded by an equivalent fasttrack finish on the same dataset/config so the result could be written cleanly without waiting on sequential control/cnt execution
+- 2026-03-12: Result: `signal09` is also an exact tie.
+- 2026-03-15: Frozen the strict `29`-example `audit08` mixed gate into `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/strict_gate_manifest.json`. The selection rule is unchanged; the change is procedural, not scientific.
+- 2026-03-15: Derived the complementary Week 3 recipe-dev pool in `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/recipe_dev_slice_summary.json`. It contains the other `81` examples from the `110`-example `audit08` kept-example pool.
+- 2026-03-15: Week 3 workflow is now explicitly split:
+  - strict `29` gate = final-style test only
+  - `81`-example dev pool = recipe search / ablation selection
+  - future same-gate broad sweeps on the strict `29` examples are retired
+- 2026-03-15: `scripts/run_math_stage_b_fold_compare.py` now accepts either `eval_example_ids` or `dev_example_ids`, so both the frozen strict-gate manifest and the new dev-pool summary can drive the same compare runner directly.
+- 2026-03-15: Corrected a new Week 3 hygiene pitfall before accepting any result:
+  - feeding `recipe_dev_slice_summary.json` directly into `--eval-example-ids-path` would have pushed the frozen strict `29` examples into the training split
+  - the accepted dev path now uses `recipe_dev_audit_kept.jsonl` and folds entirely inside the `81`-example dev universe
+- 2026-03-16: Implemented a genuinely different Stage B family: bundle-level cross-prefix ranking over `original / drop / paraphrase`.
+  - new code paths:
+    - `src/cnt_research/math/stage_b.py`
+    - `scripts/build_math_stage_b_data.py`
+    - `scripts/run_math_stage_b_training.py`
+    - `scripts/run_math_stage_b_fold_compare.py`
+    - `scripts/run_math_stage_b_split_compare.py`
+- 2026-03-16: Fixed a pure engineering bottleneck before accepting the new family:
+  - zero-weight rows now short-circuit in `_row_loss`
+  - otherwise control/CNT dev runs waste most wall-clock on inactive pref/equiv/protect rows
+- 2026-03-16: Completed `signal14 = bundle-level cross-prefix ranking` on the hygienic `81`-example dev pool.
+  - root:
+    - `outputs/math_stage_b_20260316_recipe_dev_signal14_bundle_v2_folds/`
+  - aggregate:
+    - `outputs/math_stage_b_20260316_recipe_dev_signal14_bundle_v2_folds/fold_compare_summary.json`
+  - result:
+    - `mean_delta_drop_solve = -0.0060`
+    - `mean_delta_n_t = -0.0040`
+    - `mean_delta_n_t_weighted = +0.0057`
+    - `nonzero_delta_folds = [2]`
+  - readout:
+    - three folds are exact rollout ties
+    - one fold recreates the familiar utility-down / weighted-`N_t`-up frontier
+    - offline bundle margins improve in every fold, but still do not convert into a broad dev-side rollout win
+  - decision:
+    - do not rerun this recipe on the frozen strict `29` gate
+- 2026-03-16: Accepted the writing decision to stop treating Week 3 as an almost-win.
+  - formal narrative now lives in:
+    - `history/week3_negative_branch.md`
+  - current accepted reading:
+    - Week 1–2 success
+    - Week 3 clean negative / partial-result branch
+- 2026-03-15: Completed the first dev-side structural compare on the `81`-example recipe-dev pool:
+  - recipe: `step_and_rollout + drop_sft_filter = one_side_positive + equiv_weight_mode = uniform`
+  - output root: `outputs/math_stage_b_20260315_recipe_dev_signal10_equivuniform_folds/`
+  - aggregate summary: `outputs/math_stage_b_20260315_recipe_dev_signal10_equivuniform_folds/fold_compare_summary.json`
+- 2026-03-15: Result: the first dev-side structural recipe is a flat 4-fold tie against matched SFT-only control.
+  - `num_unique_eval_examples = 81`
+  - `all_eval_ids_disjoint = true`
+  - `mean_delta_drop_solve = 0.0`
+  - `mean_delta_n_t_weighted = 0.0`
+  - offline pair margins still rise, but rollout stays tied
+  - relative to control, CNT is `0.0` on every rollout metric
+  - this remains true even though offline pair metrics move in CNT's favor (`pref_margin_mean +0.0257`)
+  - so adding rollout-pair rows on top of the cleaned `dropfilter` base is safe, but still not enough to separate CNT from matched SFT-only
+  - follow-up diagnostic on the same dev pool:
+    - `drop` utility margin is identically `0` across all `168` kept dev candidate rows
+    - `swap` margins are almost uniform and close to `1.0`
+    - so a naive utility-reweighting recipe is likely close to a no-op on this dev universe
+
+## Blockers / Decisions
+
+- No hard blocker.
+- Synthetic side: `swap_*` edits are still somewhat shallow-detectable, so they are acceptable for object-identification but not yet ready to be reused unchanged for math training data.
+- Math side:
+  - local `Qwen3-1.7B` can produce verified GSM8K success traces
+  - Stage A now runs end-to-end
+  - `run02` fixes the previous soft-swap problem and yields a clearly positive batch-scale math signal
+  - held-out `Qwen3-4B` preserves a positive signal but repairs `drop/paraphrase` too often for a clean Go
+  - a conservative audit still keeps `8 / 12` candidates, so the object is not collapsing completely under held-out continuation
+  - `Qwen3-4B` held-out audits are computationally viable and now operationally manageable because Stage A is resumable
+  - conservative paraphrase fixes can improve held-out invariance without changing the main `N_t` level
+  - current best joint audit keeps `9 / 12` candidates, so the object is getting cleaner under filtering
+  - after the larger 16-trace rerun, sample scale is no longer the main issue; the blocker is now held-out swap repair on a broader trace pool
+  - the larger audit still preserves positive all-pair weighted `N_t` on both sides, so the object is not collapsing
+  - after the swap fix, the larger audit keeps `35 / 48`; after the final conservative filter, the cleaner core keeps `33 / 40`
+  - Stage A is no longer the blocker; the uncertainty has moved to whether offline matched training can improve utility without harming the object-level rollout gate
+  - the project now has both a broader entry set (`audit05`) and a cleaner conservative core (`audit06`) for training decisions
+  - within Stage B, dirty chosen suffixes are now a known blocker; clean chosen suffixes remove the harm but have not yet produced a gain
+  - current Stage B uncertainty is now narrower than before:
+    - anchor-only training still ties and still hurts the hard slice
+    - rollout-paired CNT does not survive the first fold00-only budget stress test
+    - but the same recipe does survive once evaluation is restricted to the reproducible `GSM8K-hard` slice
+  - after expanding the verified trace pool to `30`, the conservative Stage A exit also scales:
+    - `run12` / `run13` stay positive on both train and held-out
+    - `filter02` keeps `79 / 89`
+    - `audit07` keeps `62 / 79`
+  - the expanded-pool lesson is sharper:
+    - a held-out-hard Stage A slice selected directly from `audit07` shrinks to only `gsm8k-00007 / gsm8k-00132`
+    - on that 2-example slice, `base`, matched SFT-only, and CNT tie exactly at both `lc120` and `lc160`
+    - so Stage A held-out hardness alone is not enough to define a useful Week 3 gate
+  - adding Stage B base-rollout artifacts back into the selection logic fixes that specific problem:
+    - the rebuilt mixed-source gate over `audit07` expands to `7` examples
+    - it is clearly non-ceiling under base rollout
+    - it separates control and CNT at both budgets
+  - but the new mixed gate exposes a harder Week 3 problem than before:
+    - at `lc120`, CNT improves weighted `N_t` over control while losing `drop_solve`
+    - at `lc160`, CNT improves `drop_solve` over control while losing weighted `N_t`
+    - so the broader gate is useful, but it is not yet a single-direction regression target
+  - targeted falsification of the simplest structural hypothesis is now done:
+    - removing explicit `drop-prefix` SFT positives (`include_drop_sft = false`) does not restore faithfulness on the 7-example gate
+    - instead, at `lc160`, control and CNT tie on the main rollout metrics
+    - the only residual CNT advantage is paraphrase cleanup, not the utility-vs-weighted-`N_t` conflict
+  - weighted `N_t` can move opposite to utility in Stage B when a model degrades original and edited prefixes more uniformly, so rollout utility and weighted necessity now need to be read together
+  - verified-trace collection scale is no longer the limiting factor:
+    - `outputs/countertrace_mini_math_20260311_merged03/` now contains `112` unique GSM8K success traces
+    - this is enough to stop treating the old `7`-example mixed gate as anything more than a stress probe
+    - the next required move is to rerun Stage A / conservative filtering on the larger pool and lift Week 3 back onto a `30+` example evidence set
+  - that larger-pool Week 2 rerun is now done:
+    - `run14` / `run15` align at `331` records
+    - `filter03` keeps `298 / 331`
+    - `audit08` keeps `230 / 298`
+    - the scaled bottleneck is still swap repair under held-out continuation, not paraphrase instability
+  - Week 3 has now been rebuilt one level up:
+    - `audit08` fresh base-rollout folds cover all `110` kept examples
+    - strict `base_and_audit` selection yields a `29`-example mixed gate
+    - that is large enough to supersede the old `4/7`-example probes, but still one short of the desired `30+`
+    - the first matched compare on this strict gate is now complete and comes back slightly negative for CNT vs control
+    - the first fixed-gate recipe sweep is also complete:
+      - changing `weight_source` from `heldout` to `min/train` removes the old original-prefix regression but does not beat control on utility
+      - changing `pair_completion_mode` from `rollout` to `step` wins one drop repair back but loses weighted `N_t`
+    - the first structural follow-up is now also complete:
+      - adding `pref_margin_target = 1.0` to `step-pair` simply flips the sign back toward weighted `N_t`
+      - it does not dominate the plain `step-pair` recipe
+    - the second structural follow-up is now also complete:
+      - adding original-anchor truncated negatives changes the sparse flip locations but leaves the aggregate rollout delta exactly equal to plain `step-pair`
+      - so this mechanism is active, but it is not the missing unlock either
+    - the first utility-aware `drop-prefix` filtering branch is now also complete:
+      - filtering `drop-prefix` SFT to positive-drop candidates removes the plain `step-pair` separation entirely
+      - this is cleaner than the previous sparse frontier, but it is still not a CNT-over-control win
+    - the next two structural follow-ups are now also complete:
+      - adding original-anchor truncation negatives on top of the cleaned `dropfilter` base recreates the old weighted-`N_t` side of the frontier
+      - adding `step_and_rollout` pairs on top of the same cleaned base leaves the gate at an exact tie
+    - the blocker is now narrower and cleaner:
+      - on the fixed strict `29` gate, we have seen
+        - mild negative (`signal03`)
+        - sparse frontier (`step-pair`, `pref_margin`, `signal08`)
+        - clean exact ties (`signal07`, `signal09`)
+      - but still no broad CNT-over-control win
+
+## Resume Point
+
+Preserve `scripts/run_week1_synthetic.py` as the regression gate. On math, the current collection baseline is `outputs/countertrace_mini_math_20260311_merged03/` with `112` unique verified GSM8K success traces, and the current Week 2 exit is `outputs/math_stage_a_20260311_audit08_conservative_merged112/`. Week 3 is now explicitly split into:
+
+- frozen final-test gate:
+  - `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/strict_gate_manifest.json`
+- complementary recipe-dev pool:
+  - `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/recipe_dev_slice_summary.json`
+  - dev-only audit rows:
+    - `outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/recipe_dev_audit_kept.jsonl`
+
+Treat all prior strict-gate comparisons as exploratory references, not as the continuing dev loop:
+
+- baseline negative compare: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_merged112/hard_audit08_mixed_lc120/comparison_summary.json`
+- `weight_source=min`: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_weightsrc_sweep/hard_audit08_mixed_lc120_minw/comparison_summary.json`
+- `weight_source=train`: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal03_weightsrc_sweep/hard_audit08_mixed_lc120_trainw/comparison_summary.json`
+- `step-pair`: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal04_step_pair/hard_audit08_mixed_lc120_step_pair/comparison_summary.json`
+- `step-pair + pref_margin_target = 1.0`: `outputs/math_stage_b_20260311_gsm8k_hard_compare_signal05_step_pair_prefmargin/hard_audit08_mixed_lc120_step_pair_prefmargin1p0/comparison_summary.json`
+- `step-pair + anchor_pair_mode = original_truncated_pref`: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal06_step_pair_anchortrunc/hard_audit08_mixed_lc120_step_pair_anchortrunc/comparison_summary.json`
+- `step-pair + drop_sft_filter = one_side_positive`: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal07_step_pair_dropfilter/hard_audit08_mixed_lc120_step_pair_dropfilter1side/comparison_summary.json`
+- `step-pair + drop_sft_filter = one_side_positive + anchor_pair_mode = original_truncated_pref`: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal08_step_pair_dropfilter_anchortrunc/hard_audit08_mixed_lc120_step_pair_dropfilter_anchortrunc/comparison_summary.json`
+- `step_and_rollout + drop_sft_filter = one_side_positive`: `outputs/math_stage_b_20260312_gsm8k_hard_compare_signal09_stepandrollout_dropfilter/hard_audit08_mixed_lc120_stepandrollout_dropfilter1side/comparison_summary.json`
+
+The current accepted dev-side recipe results are now:
+
+- `equiv_weight_mode = uniform` on `step_and_rollout + drop_sft_filter = one_side_positive`
+  - root: `outputs/math_stage_b_20260315_recipe_dev_signal10_equivuniform_folds/`
+  - aggregate: `outputs/math_stage_b_20260315_recipe_dev_signal10_equivuniform_folds/fold_compare_summary.json`
+  - verdict: exact 4-fold tie vs matched SFT-only control across all `81` dev examples
+- `rollout-pref-only` on `step_and_rollout + drop_sft_filter = one_side_positive`
+  - root: `outputs/math_stage_b_20260315_recipe_dev_signal11_rolloutprefonly_folds/`
+  - aggregate: `outputs/math_stage_b_20260315_recipe_dev_signal11_rolloutprefonly_folds/fold_compare_summary.json`
+  - verdict: sparse dev-side frontier, not a broad win (`drop_solve +0.0127`, `weighted N_t -0.0123`)
+- `original_counterfactual_pref` on top of the same `rollout-pref-only` base
+  - root: `outputs/math_stage_b_20260315_recipe_dev_signal12_anchorcf_folds/`
+  - aggregate: `outputs/math_stage_b_20260315_recipe_dev_signal12_anchorcf_folds/fold_compare_summary.json`
+  - verdict: exact 4-fold tie; the `signal11` frontier collapses completely
+- `cross-prompt protect` on top of the same `rollout-pref-only` base
+  - root: `outputs/math_stage_b_20260316_recipe_dev_signal13_protect_folds/`
+  - aggregate: `outputs/math_stage_b_20260316_recipe_dev_signal13_protect_folds/fold_compare_summary.json`
+  - verdict: exact 4-fold tie; no rollout gain and no protect-side offline gain either
+- `bundle-level cross-prefix ranking` on the same dev pool
+  - root: `outputs/math_stage_b_20260316_recipe_dev_signal14_bundle_v2_folds/`
+  - aggregate: `outputs/math_stage_b_20260316_recipe_dev_signal14_bundle_v2_folds/fold_compare_summary.json`
+  - verdict: not a broad win; three-fold exact tie plus one fold with `utility - / weighted N_t +`
+
+Latest writing update:
+
+- accepted paper reading is now fixed as:
+  - `Week 1`: positive
+  - `Week 2`: positive
+  - `Week 3`: clean negative / partial-result
+  - `Week 4--6`: open
+- NeurIPS draft root:
+  - `paper/neurips/main.tex`
+  - compiled PDF: `paper/neurips/main.pdf`
+- this draft now contains:
+  - related work
+  - method overview with object-first pipeline
+  - main quantitative tables
+  - discussion / limitations
+  - appendix reproducibility map
+- latest polish pass tightened:
+  - title, abstract, and introduction into a more submission-style narrative
+  - Week 3 family presentation from internal run-centric wording toward family-level descriptions
+  - appendix command blocks and table wording for cleaner PDF output
+
+Default next step is now paper-finalization, not routine Stage B continuation. Any reopening of Week 3 should require a genuinely new objective family rather than another nearby recipe sweep.
+
+Additional final-polish pass:
+
+- shifted main-result subsection titles from week-report wording toward paper-style scientific descriptions
+- renamed the proposal section to emphasize claim boundary rather than project management
+- added an appendix note clarifying that internal labels `signal10--14` are retained only for artifact traceability
+- recompiled the NeurIPS draft successfully after the polish pass
+
+Current accepted decision:
+
+- user accepted route `A`
+- default project mode is now writing closure rather than continued Week 3 experimentation
+- do not treat Weeks `4--6` as completed
+- do not reopen Week 3 unless a structurally new Stage B family is explicitly justified
+
+Latest paper-finalization pass:
+
+- tightened the abstract into a shorter paper-style status claim
+- added an explicit code/artifact-availability subsection to the appendix
+- recompiled the NeurIPS draft successfully; current PDF length is `10` pages
+
+Submission-hygiene pass:
+
+- removed internal run labels from the main Week 3 results narrative and kept them only in the appendix traceability map
+- tightened the conclusion wording to reduce internal-project phrasing
+- reran the full LaTeX build successfully and then cleaned intermediate files with `latexmk -c`
+- current paper directory now keeps only source, bibliography, style, and final `main.pdf`
+
+Latest final-check pass:
+
+- rechecked submission hygiene for anonymous authorship, placeholder text, and internal label leakage
+- kept `Anonymous Authors` and the accepted claim boundary unchanged
+- retained internal run labels only in the appendix mapping, not in the main scientific narrative
+- verified that the current NeurIPS paper directory is reduced to the deliverable set after cleanup
