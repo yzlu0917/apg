@@ -1,0 +1,157 @@
+\section{Main Results}
+
+\subsection{\textsc{Craft-Deploy}: main deployment benchmark}
+
+We use \textsc{Craft-Deploy}, the naturalized full-hybrid generated regime, as
+the main deployment benchmark. It combines tri-domain coverage,
+model-generated origin, auditable counterfactual structure, naturalized
+surface shift, and deployment-relevant reranking.
+
+\begin{table}[t]
+\centering
+\caption{Seed-averaged main comparison set on \textsc{Craft-Deploy}, the main
+deployment benchmark. Higher is better for AUROC, \amcd, and
+\selectiongain; lower is better for \asstotal{} and \exploitability. Best
+values are bold.}
+\label{tab:main}
+\small
+\begin{tabular}{lccccc}
+\toprule
+model & AUROC & AMCD & ASS & Sel@4 & Expl. \\
+\midrule
+8B reranker (masked) & \textbf{0.6795} & \textbf{0.8529} & \textbf{0.0184} & \textbf{0.3824} & \textbf{0.0588} \\
+1.7B BCE (masked) & 0.5969 & 0.7647 & 0.1041 & 0.2647 & 0.1765 \\
+1.7B pairwise visible & 0.5753 & 0.7353 & 0.0848 & 0.2059 & 0.2941 \\
+1.7B BCE (visible) & 0.5926 & 0.7059 & 0.0941 & 0.2647 & 0.2353 \\
+1.7B cond-swap repair & 0.5640 & 0.7059 & 0.0377 & 0.2059 & 0.2353 \\
+8B reranker (visible) & 0.5398 & 0.5294 & 0.2128 & 0.3235 & 0.1765 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:main} supports three conclusions. First, the best current
+deployment model is the masked 8B reranker. Second, stronger scale does not
+remove answer leakage in the visible setting: the visible reranker is worse
+than the masked reranker on both \amcd{} and \asstotal. Third, the strongest
+frozen-head repair, cond-swap, improves answer invariance relative to other
+visible frozen-head baselines but still trails the masked reranker on the main
+benchmark. The deployment implication is straightforward. When a stronger
+model is available, removing direct answer access is more reliable than trying
+to rescue answer-visible scoring with a lightweight repair term.
+
+\subsection{Bootstrap comparisons}
+
+The clearest comparison is the masked 8B reranker against the visible 8B
+reranker:
+\begin{itemize}[leftmargin=1.5em]
+\item \auroc{} difference: \texttt{+0.1397}, CI \texttt{[0.0644, 0.2608]};
+\item \amcd{} difference: \texttt{+0.3235}, CI \texttt{[0.1818, 0.4583]};
+\item \asstotal{} difference: \texttt{-0.1944}, CI
+\texttt{[-0.2485, -0.1355]}.
+\end{itemize}
+The masked reranker also beats the strongest repair baseline, cond-swap, with
+positive \auroc{} and \amcd{} gaps and a lower \asstotal. These intervals make
+the deployment conclusion difficult to dismiss as a one-run artifact. They
+also clarify the comparison hierarchy: masked reranking is the strongest
+deployment choice; masked frozen-head baselines are the strongest simple
+reference; and visible repair terms are best understood as diagnostic
+interventions rather than the final deployment answer.
+
+\subsection{\textsc{Craft-Clean}: secondary audit benchmark}
+
+\textsc{Craft-Deploy} remains our main deployment benchmark, but it is not the
+only regime we report. On \textsc{Craft-Clean}, the comparison shifts in an
+informative way.
+
+\begin{table}[t]
+\centering
+\caption{Visible vs.\ masked reranking on \textsc{Craft-Clean}, the cleaner
+audit benchmark. Higher is better for AUROC, \amcd, and
+\selectiongain; lower is better for \asstotal{} and \exploitability. Best
+values are bold.}
+\label{tab:benchv3}
+\small
+\begin{tabular}{lccccc}
+\toprule
+model & AUROC & AMCD & ASS & Sel@4 & Expl. \\
+\midrule
+8B reranker (masked) & \textbf{0.5589} & \textbf{0.6731} & \textbf{0.0438} & \textbf{0.3889} & \textbf{0.1111} \\
+8B reranker (visible) & 0.5524 & 0.6058 & 0.1344 & \textbf{0.3889} & \textbf{0.1111} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The masked reranker still wins on process-facing metrics, but the utility edge
+disappears. This is useful rather than contradictory. \textsc{Craft-Clean}
+behaves as a cleaner process-faithfulness benchmark, whereas
+\textsc{Craft-Deploy} is more deployment-like and more sensitive to
+exploitability consequences. Additional cleaner-benchmark reproduction and
+acceptance details are deferred to the appendix.
+
+A \textsc{Craft-Clean}-specific reproduction pass reaches the same conclusion.
+Across three seeds, the quartet-protocol frozen-head baselines remain strong
+but do not overturn the masked-vs-visible reranker readout. Mean quartet
+\amcd{} is \texttt{0.9028} for \texttt{visible\_bce}, \texttt{0.9213} for
+\texttt{masked\_bce}, and \texttt{0.9028} for \texttt{pairwise\_visible}.
+Paired bootstrap on the same reranker rows gives an \amcd{} difference of
+\texttt{+0.0673} for masked over visible with CI \texttt{[0.0, 0.1406]} and an
+\asstotal{} difference of \texttt{-0.0906} with CI
+\texttt{[-0.1177, -0.0641]}. Utility still does not separate. This again
+confirms that \textsc{Craft-Clean} is a cleaner process-faithfulness regime
+rather than a deployment exploit surrogate.
+
+\subsection{External-source corroboration on \textsc{ProcessBench}}
+
+We also evaluate on an external-source benchmark derived from
+\textsc{ProcessBench}. This line is intentionally outside the quartet
+protocol: it tests whole-trace process validity (\textbf{PB-Trace}) and
+prefix-level error-onset sensitivity (\textbf{PB-Prefix}) without relying on
+self-generated source problems.
+
+\begin{table}[t]
+\centering
+\caption{External-source corroboration on \textsc{ProcessBench}. Higher is
+better for AUROC and validation-selected accuracy. For rerankers,
+\texttt{acc@val-thr} is test accuracy after selecting the threshold on the
+grouped validation split. Best values are bold where applicable.}
+\label{tab:processbench}
+\small
+\begin{tabular}{lccc}
+\toprule
+model & PB-Trace AUROC & PB-Trace acc@val-thr & PB-Prefix AUROC \\
+\midrule
+1.7B step-only & \textbf{0.8759} & --- & \textbf{0.6918} \\
+1.7B BCE (masked) & 0.8075 & --- & 0.6813 \\
+1.7B BCE (visible) & 0.7863 & --- & 0.6759 \\
+8B reranker (visible) & 0.7337 & 0.6980 & --- \\
+8B reranker (masked) & 0.7229 & \textbf{0.7000} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:processbench} changes the benchmark story in a useful way. The
+pivot to external-source data succeeds, but it does not rescue the
+answer-visible method line. The strongest current verifier is a simple
+step-only frozen baseline, not a reranker. The reranker results are still
+informative: their AUROC remains nontrivial, and a validation-selected
+threshold lifts test accuracy from roughly \texttt{0.35} to about
+\texttt{0.70}. The main failure mode is calibration rather than complete
+ranking collapse. Even after that correction, the stronger reranker still does
+not overtake the best frozen trace baseline.
+
+This external-source readout should therefore be read as corroboration rather
+than as a replacement headline. It strengthens the benchmark pivot away from
+self-generated source data, while continuing to support the same central
+conclusion: visible access does not become safe merely by moving to a stronger
+model, and the current best answer-visible story remains a negative one.
+
+The external-source counterfactual checks sharpen that read. On
+\textsc{ProcessBench} answer-only swaps, the visible API judge shows a much
+larger score change than the masked view (mean absolute delta
+\texttt{0.3226} vs.\ \texttt{0.0645}), so answer sensitivity clearly survives
+the move to real step-level traces. By contrast, the small answer-matched
+local-repair subset is now fully constructed but still does not rescue visible
+scoring: on an \texttt{8/8}-covered subset, visible local discrimination stays
+below masked (\texttt{0.375} vs.\ \texttt{0.5}). The external-source evidence
+therefore splits cleanly into two claims. Answer sensitivity transfers. A
+visible local-repair story still does not.

@@ -1,0 +1,31 @@
+The paper's strongest conclusions are mechanism-level, not universal algorithmic claims.
+We therefore state the main boundaries explicitly.
+
+\paragraph{Conditional, not universal, scalar insufficiency.}
+The benchmark clearly shows that ordered scalar thresholding is not a sufficient description of prefix-level compute control.
+But the downstream ranking among stronger controllers is conditional on domain, scale, and deployment noise.
+We do not claim that every one-dimensional encoding is impossible or that scalar rules are always dominated.
+
+\paragraph{Exact-state value does not imply deployable success.}
+Exact-state factorization is often strong and sometimes best.
+That is useful because it shows the structure is not empty.
+But the deployable predicted-state gap remains large, and our evidence indicates that this gap is driven mainly by state identification under noisy deployment.
+Targeted rescue probes do not erase this boundary.
+Appendix experiments with high-determinacy filtering, pairwise soft targets, exact-state teacher distillation, and their combinations produce partial, domain-specific gains, but they do not surpass the strongest learned one-dimensional baseline on either exact-checker domain.
+This is why the paper stops at a benchmark-and-diagnosis claim rather than a broader algorithmic victory claim.
+
+\paragraph{Continuation outcome statistics are not the original \(S_t\).}
+In the current exact-checker domains, the original success-uncertainty view of \(S_t\) often degenerates.
+The richer continuation features used in the structured controller are therefore better described as continuation outcome statistics.
+This preserves the useful intuition of the proposal without overstating what the present experiments establish.
+
+\paragraph{Cross-domain routing is an extension.}
+The project also contains a substantial line of cross-domain routing experiments.
+Those results are informative, especially as an extension about learned routing versus hard specialist portfolios.
+But they answer a different question from the main paper.
+We therefore treat them as appendix-level evidence rather than as the central contribution.
+
+\paragraph{Repeatability and scale.}
+We include a minimal within-domain repeatability check for the main controller set.
+That repeatability result is strong enough to constrain the paper's wording, but it is not the last word on every controller family.
+For the main paper, the purpose of repeatability is not to certify a universal winner; it is to prevent us from over-writing single-run frontier effects as stable conclusions.

@@ -1,0 +1,44 @@
+{
+  "provider": "openai_compat",
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "max_new_tokens": 256,
+  "num_rewrite_candidates": 3,
+  "num_exploit_attempts": 3,
+  "api": {
+    "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+    "model": "ep-20251213141929-gk2jb",
+    "api_key_env": "VSI_API_KEY",
+    "timeout_seconds": 120
+  },
+  "problems": [
+    {
+      "question": "Compute ((23 + 19) - 7) + 5. Show your reasoning steps and final answer.",
+      "canonical_trace": [
+        "23 + 19 = 42",
+        "42 - 7 = 35",
+        "35 + 5 = 40"
+      ],
+      "correct_answer": 40
+    },
+    {
+      "question": "Compute ((18 + 27) - 14) + 9. Show your reasoning steps and final answer.",
+      "canonical_trace": [
+        "18 + 27 = 45",
+        "45 - 14 = 31",
+        "31 + 9 = 40"
+      ],
+      "correct_answer": 40
+    },
+    {
+      "question": "Compute ((31 + 12) - 8) + 6. Show your reasoning steps and final answer.",
+      "canonical_trace": [
+        "31 + 12 = 43",
+        "43 - 8 = 35",
+        "35 + 6 = 41"
+      ],
+      "correct_answer": 41
+    }
+  ]
+}
+

@@ -1,0 +1,16 @@
+\section{Reference Methods and Final SCC Check}
+\label{sec:methods}
+
+This paper reports two reference methods and one final SCC check, rather than a new train-time method that supersedes all alternatives.
+
+\paragraph{Strong scaffold baseline.}
+Our strongest reference method is a scaffold baseline. It first predicts an executable candidate action, then applies localized capability-gap inhibition by comparing the request against description and contract cue clauses using embedding similarity. This method is not a pure end-to-end learned invariance model; it is a scaffolded, description-aware inhibitor. Nevertheless, it is the strongest method that survives both dev-panel scrutiny and frozen blind review.
+
+\paragraph{Learned localizer route.}
+Our strongest learned-route variant is a learned localizer. It uses train-time supervision to localize candidate capability-gap clauses before applying inhibition. It is more learned than the scaffold baseline but remains weaker on overall performance.
+
+\paragraph{Final SCC check.}
+We also ran one final decisive method check: a teacher-distilled canonical-bottleneck SCC variant with explicit tool, slot, control, and gap supervision. This route is \emph{not} a reference method. It is included solely as a go/no-go test of whether a more faithful bottleneck formulation can outperform AugOnly under fixed budget. As we show in Section~\ref{sec:results}, it does not.
+
+\paragraph{What is not the paper's main method.}
+We systematically explored stronger pair-model alternatives on the dev panel, including frozen pair heads, cross-encoder thresholding, supervised/ranked/pairwise/listwise localizers, capability-only fine-tuning, multitask fine-tuning, hard-negative weighting, asymmetric calibration, train-time asymmetric objectives, and dual-threshold decision rules. None surpassed the strongest scaffold baseline on frozen blind review. We therefore treat these routes as negative method evidence and future-work diagnostics rather than as the main contribution.

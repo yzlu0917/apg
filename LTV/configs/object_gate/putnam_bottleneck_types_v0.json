@@ -1,0 +1,37 @@
+[
+  {
+    "state_id": "coeff_X_sub_C_pow__sorry0",
+    "bottleneck_type": "structural_reduction",
+    "reason": "The main progress move is an explicit structural split on the latent case distinction m <= n."
+  },
+  {
+    "state_id": "finite_diff_identity__sorry1",
+    "bottleneck_type": "algebraic_normalization",
+    "reason": "The best move is algebraic normalization of the target into a form aligned with downstream coefficient manipulation."
+  },
+  {
+    "state_id": "putnam_1976_b5__sorry2",
+    "bottleneck_type": "algebraic_normalization",
+    "reason": "The good candidates mainly normalize and reassociate the summand so both sides match."
+  },
+  {
+    "state_id": "putnam_1976_b5__sorry3",
+    "bottleneck_type": "structural_reduction",
+    "reason": "The key move is reducing a sum-equals-zero goal to pointwise zero subgoals."
+  },
+  {
+    "state_id": "putnam_1993_a4__sorry0",
+    "bottleneck_type": "setup_extraction",
+    "reason": "The candidates mostly extract reusable bounds/positivity facts or introduce notation without reducing the existential target."
+  },
+  {
+    "state_id": "putnam_2013_b4__sorry2",
+    "bottleneck_type": "structural_reduction",
+    "reason": "The best move applies the correct comparison principle and opens the expected proof obligations."
+  },
+  {
+    "state_id": "putnam_2013_b4__sorry3",
+    "bottleneck_type": "algebraic_normalization",
+    "reason": "The candidates primarily rewrite or expose the variance identities needed for the target equality."
+  }
+]

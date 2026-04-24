@@ -1,0 +1,41 @@
+name: CTS-mini-v0
+status: frozen-for-phase0
+purpose: minimal same-semantics / semantic-flip stress slice for Object gate invariance checks
+domain: lean-first
+version_date: 2026-03-31
+
+data:
+  seed_path: data/cts/cts_mini_v0_seed.jsonl
+  panel_path: data/cts/cts_mini_v0_panel.jsonl
+  auto_panel_path: data/cts/cts_mini_v0_auto_panel.jsonl
+  annotated_panel_path: data/cts/cts_mini_v0_panel_annotated.jsonl
+  annotated_auto_panel_path: data/cts/cts_mini_v0_auto_panel_annotated.jsonl
+  current_seed_pairs: 4
+  current_panel_pairs: 20
+  current_auto_panel_pairs: 28
+  target_pairs_for_first_real_run:
+    same_semantics: 100-200
+    semantic_flip: 100-200
+
+pair_types:
+  same_semantics:
+    definition: preserve local proof intent while changing surface realization
+    examples:
+      - tactic paraphrase
+      - equivalent constructor syntax
+      - verbosity rewrite
+  semantic_flip:
+    definition: minimally alter local proof semantics so that local soundness changes
+    examples:
+      - swapped conjunction order
+      - wrong theorem reference
+      - invalid equality direction
+
+audit_controls:
+  - hold out at least one rewrite source during Audit gate
+  - avoid using a single template family for all rewrites
+  - record provenance for every pair
+
+freeze_rules:
+  - CTS-mini is a stress test, not a headline benchmark
+  - do not use CTS-mini-only gains to claim utility improvements

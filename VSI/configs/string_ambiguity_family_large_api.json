@@ -1,0 +1,123 @@
+{
+  "provider": "openai_compat",
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "max_new_tokens": 320,
+  "num_rewrite_candidates": 3,
+  "api": {
+    "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+    "model": "ep-20251213141929-gk2jb",
+    "api_key_env": "VSI_API_KEY",
+    "timeout_seconds": 120
+  },
+  "tasks": [
+    {
+      "task_id": "reverse_wrap_01",
+      "instruction": "Start from the string `code`. First reverse it, then wrap it in square brackets.",
+      "canonical_trace": [
+        "reverse code => edoc",
+        "wrap edoc in [] => [edoc]"
+      ],
+      "final_answer": "[edoc]"
+    },
+    {
+      "task_id": "upper_suffix_02",
+      "instruction": "Start from the string `mix`. First uppercase it, then append `!`.",
+      "canonical_trace": [
+        "uppercase mix => MIX",
+        "append ! to MIX => MIX!"
+      ],
+      "final_answer": "MIX!"
+    },
+    {
+      "task_id": "duplicate_prefix_03",
+      "instruction": "Start from the string `ab`. First duplicate the string, then prefix it with `#`.",
+      "canonical_trace": [
+        "duplicate ab => abab",
+        "prefix # to abab => #abab"
+      ],
+      "final_answer": "#abab"
+    },
+    {
+      "task_id": "reverse_wrap_04",
+      "instruction": "Start from the string `trace`. First reverse it, then wrap it in square brackets.",
+      "canonical_trace": [
+        "reverse trace => ecart",
+        "wrap ecart in [] => [ecart]"
+      ],
+      "final_answer": "[ecart]"
+    },
+    {
+      "task_id": "upper_suffix_05",
+      "instruction": "Start from the string `lens`. First uppercase it, then append `!`.",
+      "canonical_trace": [
+        "uppercase lens => LENS",
+        "append ! to LENS => LENS!"
+      ],
+      "final_answer": "LENS!"
+    },
+    {
+      "task_id": "duplicate_prefix_06",
+      "instruction": "Start from the string `vsi`. First duplicate the string, then prefix it with `#`.",
+      "canonical_trace": [
+        "duplicate vsi => vsivsi",
+        "prefix # to vsivsi => #vsivsi"
+      ],
+      "final_answer": "#vsivsi"
+    },
+    {
+      "task_id": "reverse_wrap_07",
+      "instruction": "Start from the string `logic`. First reverse it, then wrap it in square brackets.",
+      "canonical_trace": [
+        "reverse logic => cigol",
+        "wrap cigol in [] => [cigol]"
+      ],
+      "final_answer": "[cigol]"
+    },
+    {
+      "task_id": "upper_suffix_08",
+      "instruction": "Start from the string `audit`. First uppercase it, then append `!`.",
+      "canonical_trace": [
+        "uppercase audit => AUDIT",
+        "append ! to AUDIT => AUDIT!"
+      ],
+      "final_answer": "AUDIT!"
+    },
+    {
+      "task_id": "duplicate_prefix_09",
+      "instruction": "Start from the string `proto`. First duplicate the string, then prefix it with `#`.",
+      "canonical_trace": [
+        "duplicate proto => protoproto",
+        "prefix # to protoproto => #protoproto"
+      ],
+      "final_answer": "#protoproto"
+    },
+    {
+      "task_id": "reverse_wrap_10",
+      "instruction": "Start from the string `delta`. First reverse it, then wrap it in square brackets.",
+      "canonical_trace": [
+        "reverse delta => atled",
+        "wrap atled in [] => [atled]"
+      ],
+      "final_answer": "[atled]"
+    },
+    {
+      "task_id": "upper_suffix_11",
+      "instruction": "Start from the string `map`. First uppercase it, then append `!`.",
+      "canonical_trace": [
+        "uppercase map => MAP",
+        "append ! to MAP => MAP!"
+      ],
+      "final_answer": "MAP!"
+    },
+    {
+      "task_id": "duplicate_prefix_12",
+      "instruction": "Start from the string `gate`. First duplicate the string, then prefix it with `#`.",
+      "canonical_trace": [
+        "duplicate gate => gategate",
+        "prefix # to gategate => #gategate"
+      ],
+      "final_answer": "#gategate"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+\section{Discussion}
+
+The results support an audit-and-deployment story rather than a universal
+repair story. Ordinary discrimination can substantially overstate the
+trustworthiness of answer-visible process verifiers; answer-matched
+counterfactual evaluation exposes this gap; and the most reliable deployment
+intervention in the present setting is to remove direct answer access.
+
+\paragraph{Established findings.}
+Three conclusions are stable across the empirical package. First,
+\amcd{} is materially more informative than ordinary AUROC for understanding
+whether a verifier is useful in downstream selection. Second, judge-style
+evaluators are consistently answer-sensitive and therefore should not be
+interpreted as process-grounded simply because they discriminate valid from
+invalid traces on average. Third, stronger model scale does not make
+answer-visible verification safe by default: the strongest deployment model in
+the study is a masked reranker, and the strongest external-source verifier is
+currently a step-only frozen baseline rather than an answer-visible reranker.
+
+\paragraph{What remains unsupported.}
+The results do not show that all trained verifiers are dominated by outcome
+leakage, nor do they show that a simple repair term uniformly beats a strong
+masked baseline. \texttt{visible\_cond\_swap} improves answer invariance and
+can move \amcd{} on harder slices, but it does not dominate masked baselines or
+masked reranking. The dual-head line is likewise informative but negative at
+the current scale. The right read is therefore not ``repair failed,'' but
+``repair sharpened the mechanism story without becoming the deployment answer.''
+In this paper, repair terms are best read as diagnostic interventions rather
+than as a new architecture family.
+
+\paragraph{Why both benchmark regimes matter.}
+\textsc{Craft-Deploy} and \textsc{Craft-Clean} answer different questions. The
+first is the better deployment stress test: it exposes selection gain,
+exploitability, and attacker-transfer differences sharply. The second is the
+better faithfulness test: it preserves the visible-vs-masked process gap while
+reducing the benchmark artifacts that would otherwise blur interpretation. The
+divergence between these regimes is therefore a result, not a nuisance or a
+post-hoc benchmark swap.
+
+\paragraph{Open issues.}
+Two limits remain important. External human blind audit on \textsc{Craft-Clean}
+is still pending, so that benchmark should be described as strongly audited
+rather than fully closed. By contrast, \textsc{ProcessBench} is now an
+operational external-source package that is closed for its intended
+corroboration role rather than an exploratory side result. The remaining
+benchmark-closure gap is therefore specifically about \textsc{Craft-Clean}
+blind audit, not about whether the story survives on real step-level data. On
+the deployment side, planning-style naturalized traces remain the hardest
+regime for the best current model, and even after fully materializing a small
+external answer-matched local-repair subset, the visible view still does not
+beat the masked one. The external counterfactual evidence therefore supports
+the same conservative claim boundary. It does not support a new visible-method
+recovery story.

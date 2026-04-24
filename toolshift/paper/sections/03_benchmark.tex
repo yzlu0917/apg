@@ -1,0 +1,39 @@
+\section{Benchmark and Validation Chain}
+\label{sec:benchmark}
+
+\paragraph{Two-panel governance.}
+The original real-evolution benchmark is explicitly split into a \emph{dev panel} and a disjoint \emph{frozen blind panel}. The dev panel supports regression, diagnosis, and method development. The blind panel is frozen and used only for final review. This governance design matters because a benchmark that has already supported extensive method iteration cannot also serve as the sole final test set. Figure~\ref{fig:protocol-governance} summarizes both the protocol split and the governance structure used throughout the paper.
+
+\begin{figure}[t]
+\centering
+\footnotesize
+\setlength{\fboxsep}{6pt}
+\fbox{\parbox[t]{0.95\columnwidth}{\textbf{Protocol split.} \textbf{Positive transformations} preserve the admissible canonical action; \textbf{negative near-orbits} require a different admissible action or control response; \textbf{impossible} cases have no visible cue and are excluded from the main claim.}}
+
+\vspace{0.5em}
+
+\fbox{\parbox[t]{0.95\columnwidth}{\textbf{Governance and evidence chain.} \textbf{Dev panel:} 36 cases, 72 views, 63 sources, 9 families for regression and diagnosis. \textbf{Validation chain:} evaluator $\rightarrow$ execution sanity $\rightarrow$ request replay $\rightarrow$ official docs $\rightarrow$ API surface $\rightarrow$ frozen blind review. \textbf{Blind panel:} 24 cases, 48 views, 42 sources, 6 family tags / 5 vendors for final review.}}
+\caption{Compact overview of the evaluation protocol and governance. The paper separates positive transformations, negative near-orbits, and impossible cases, and evaluates methods through a dev-panel / frozen-blind-panel workflow backed by a six-layer validation chain.}
+\label{fig:protocol-governance}
+\end{figure}
+
+\paragraph{Real-evolution coverage.}
+Together, the dev and blind panels cover route replacement, parameter removal, lookup split, resource-context split, out-of-band replacement, response/body semantics, and auth/scope/permission semantics.
+
+\paragraph{Validation chain.}
+We do not rely on a single benchmark file as the sole evidence source. Each accepted real-evolution case is supported by a six-layer validation chain:
+\begin{enumerate}[leftmargin=1.5em]
+    \item deterministic canonical evaluator,
+    \item execution sanity,
+    \item request replay,
+    \item official-document smoke checks,
+    \item API-surface smoke checks from discovery/OpenAPI artifacts,
+    \item frozen blind review on disjoint families.
+\end{enumerate}
+This chain is intentionally stronger than a static benchmark alone. It ties each label to executable behavior, rendered request surfaces, and vendor documentation/specifications.
+
+\paragraph{Audit policy.}
+Main results are computed on audited unambiguous-core examples only. Ambiguous and impossible cases are tracked separately and used for boundary analysis rather than for the main claim. The paper therefore focuses on what can be measured confidently under schema-visible evolution, not on hidden backend behavior shifts or under-specified annotation cases.
+
+\paragraph{Protocol reliability.}
+The benchmark is small, so protocol choices must be made explicit rather than hidden in the evaluator. In the dev panel, 62 of 72 views are single-action and 10 are dual-control negatives; in the frozen blind panel, 38 of 48 views are single-action and the remaining 10 are again dual-control negatives. These dual-control views are not scattered arbitrarily: they account for 10 of the 11 negative near-orbit views in both panels. We therefore report split-sensitivity analyses that project these set-valued negatives into single-action, ask-only, and abstain-only variants, rather than treating one such policy choice as canonical without analysis. Source support is also multi-evidence rather than anecdotal: dev cases average 2.58 official sources and blind cases 2.75, with almost all cases mixing at least two source kinds (reference, guide, or changelog).

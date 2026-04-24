@@ -1,0 +1,132 @@
+\section{Benchmark and Audit Protocol}
+
+\subsection{CRAFT-Core}
+
+The benchmark begins with three executable domains:
+\begin{itemize}[leftmargin=1.5em]
+\item algebra,
+\item graph path,
+\item blocksworld-like planning.
+\end{itemize}
+We verbalize each problem into natural-language reasoning traces and construct
+matched counterfactual families around the audited locus. The benchmark focuses
+on executable, auditable settings because the goal is to isolate verifier
+failure modes cleanly before making stronger natural-language generalization
+claims.
+
+\subsection{Counterfactual families}
+
+The core families are:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{local-invalid}: the process is changed locally near the audited
+locus;
+\item \texttt{answer-swap}: the process is kept fixed while the final answer
+surface changes;
+\item \texttt{lucky-answer}: an invalid process is paired with a correct-looking
+final answer;
+\item \texttt{paraphrase}: the language surface changes while semantics are
+preserved.
+\end{itemize}
+\texttt{Delayed-repair} is treated as a stress slice rather than part of the
+core benchmark, because it mixes local invalidity with later trajectory
+recovery.
+
+\begin{figure}[t]
+\centering
+\setlength{\fboxsep}{10pt}
+\fbox{
+\begin{minipage}{0.92\linewidth}
+\small
+\textbf{Executable latent problem} $\rightarrow$ \textbf{audited locus} $\rightarrow$
+\textbf{matched quartet}
+
+\vspace{0.5em}
+\begin{tabular}{ll}
+\texttt{valid\_correct} & locally valid process, correct answer surface \\
+\texttt{invalid\_correct} & locally invalid process, same answer surface \\
+\texttt{valid\_swapped} & same valid process, swapped answer surface \\
+\texttt{invalid\_swapped} & same invalid process, swapped answer surface
+\end{tabular}
+
+\vspace{0.75em}
+Audit intent:
+\begin{itemize}[leftmargin=1.5em]
+\item \amcd: compare valid vs.\ invalid while holding the answer surface fixed
+\item \asstotal: compare the same process under answer-visible and answer-swapped views
+\item artifact audit: reject shallow stylistic cues before using the benchmark for claims
+\end{itemize}
+\end{minipage}
+}
+\caption{Schematic of the matched-quartet audit protocol. The benchmark is built
+from executable latent trajectories, then expanded into answer-matched local
+counterfactuals so that process validity and answer consistency can be probed
+separately.}
+\label{fig:quartet_protocol}
+\end{figure}
+
+\subsection{Artifact audit}
+
+Every benchmark stage is filtered through artifact checks before it is used for
+claims. The initial hard slice already passes shallow-feature audit without
+obvious style leakage. The cleaner benchmark is then accepted under a narrower
+artifact-focused criterion: the goal is an artifact-clean audited benchmark,
+not universally human-indistinguishable valid/invalid pairs. Under that
+criterion, the current \textsc{Craft-Clean} export retains \texttt{52 / 54}
+accepted families and \texttt{208} records. External human blind audit on this
+export is still pending, so the benchmark should be read as strongly audited
+rather than fully closed.
+Throughout the paper, this artifact-focused criterion is the primary
+benchmark-acceptance rule; the stricter universal detectability criterion is
+reported only as a diagnostic.
+
+\subsection{Two benchmark regimes}
+
+We report two benchmark regimes on purpose rather than by accident:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{\textsc{Craft-Deploy}} is the main deployment benchmark. It is a
+naturalized full-hybrid generated slice designed to ask whether a verifier or
+reranker improves selection quality and reduces exploitability under realistic
+distribution shift.
+\item \textbf{\textsc{Craft-Clean}} is the cleaner audit benchmark. It is the
+accepted cleaner export under the artifact-focused acceptance criterion
+and is more useful for isolating process-faithfulness gaps than for maximizing
+utility separation.
+\end{itemize}
+These regimes should not be merged into a single headline score. They answer
+rather different questions, and that difference is now part of the core claim
+rather than a nuisance variable. Figure~\ref{fig:quartet_protocol} shows the
+core logic shared by both regimes.
+
+\subsection{External-source corroboration with \textsc{ProcessBench}}
+
+The matched-quartet benchmarks are not our only evidence. To reduce dependence
+on self-generated source problems, we also build an external-source benchmark
+from \textsc{ProcessBench}. This line is deliberately not forced into the
+quartet template. Instead, it provides two companion tasks:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{PB-Trace:} whole-trace process validity prediction using the
+annotated first-incorrect-step label,
+\item \textbf{PB-Prefix:} prefix-level detection in which prefixes before the
+first incorrect step are valid and prefixes from the first incorrect step
+onward are invalid.
+\end{itemize}
+This external-source package is deliberately lighter than the matched-quartet
+protocol, so it is not a substitute for the full \amcd/\ass{} benchmark.
+Instead, it serves two corroboration roles. First, \textbf{PB-Trace} and
+\textbf{PB-Prefix} test whether the main ranking story survives on a benchmark
+built from externally sourced step-level supervision. Second, we add two small
+external-source counterfactual checks directly on \textsc{ProcessBench}: an
+answer-only swap set for external \ass{}-style stress, and an answer-matched
+local-repair subset for minimal local-discrimination stress.
+To keep this line reproducible, we materialize it as a canonical benchmark
+package rather than a loose collection of scripts: the release now includes a
+suite summary, a manifest of authoritative datasets and artifacts, and a split
+manifest that pins the grouped \textbf{PB-Trace} split and the capped
+\textbf{PB-Prefix} split used by the current baselines. In other words,
+\textsc{ProcessBench} is now closed for its intended corroboration role even
+though it is not a matched-quartet replacement.
+As we show later, these corroboration lines support the same conservative
+read. Visible answer sensitivity persists on real traces, but the answer-visible
+method story still does not recover, and the strongest current verifier on
+this external-source benchmark remains a simple step-only frozen baseline
+rather than a visible reranker.

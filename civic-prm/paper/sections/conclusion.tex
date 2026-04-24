@@ -1,0 +1,20 @@
+\section{Conclusion}
+
+Answer-visible process verification should not be trusted on ordinary
+discrimination alone. Across executable matched-quartet benchmarks,
+answer-matched counterfactual audits reveal a stable gap between ordinary
+separability and genuinely local process discrimination, and mechanism analyses
+support a picture in which lower local \amcd{} accompanies the downstream
+utility cost of answer sensitivity.
+
+The deployment takeaway is therefore simple: in the current setting,
+the safest intervention is to remove direct answer access. On
+\textsc{Craft-Deploy}, masked reranking clearly outperforms visible reranking;
+on \textsc{Craft-Clean}, masking still improves process-faithfulness even when
+utility no longer separates. The most durable contribution is thus an
+audit-and-deployment recipe for process verifiers, not a claim that a single
+visible repair term already solves answer leakage. The external-source
+\textsc{ProcessBench} package reinforces the same conservative read on real
+step-level traces rather than overturning it. The broader lesson is that
+process verifiers should be validated under answer-matched counterfactual
+audits before they are trusted in reranking or compute-allocation loops.

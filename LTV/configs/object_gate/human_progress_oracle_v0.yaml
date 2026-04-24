@@ -1,0 +1,37 @@
+name: human-progress-oracle-v0
+status: first-batch
+version_date: 2026-04-08
+purpose: manual progress oracle for replayable state-first candidate tactics
+
+task:
+  unit: replayable_candidate_under_shared_before_state
+  question: among replayable candidate tactics for the same Lean before-state, which ones make stronger proof progress
+
+annotation_scheme:
+  candidate_tier_values:
+    solved:
+      ordinal: 3
+      description: closes the goal immediately with no remaining subgoals
+    strong_partial:
+      ordinal: 2
+      description: does not close immediately but reduces the state to small, obviously actionable subgoals
+    weak_partial:
+      ordinal: 1
+      description: introduces potentially useful local structure while leaving the main proof obligation largely intact
+    neutral:
+      ordinal: 0
+      description: replayable but provides little or no clear forward progress relative to the current goal
+    uncertain:
+      ordinal: null
+      description: replayable but too ambiguous to rank confidently
+
+derivation_rules:
+  - pairwise preferences may be derived only within the same before-state
+  - if ordinal gap >= 1, higher tier is preferred
+  - equal tiers are treated as equivalent unless manually overridden
+  - any `uncertain` candidate should be held out from derived pairwise preferences
+
+constraints:
+  - only replay-ok candidates are annotated for progress
+  - Lean legality is handled before this oracle and is not relabeled here
+  - stylistic elegance alone is not a positive signal; progress is defined relative to proof completion

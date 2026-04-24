@@ -1,0 +1,36 @@
+Reasoning-time scaling turns test-time compute allocation into a control problem for language-model reasoning \citep{wei2022chain,snell2024scaling}.
+But many practical controllers still reduce that problem to one scalar move: estimate confidence, then threshold on it.
+That reduction is often convenient at the final-answer level and often misleading at the prefix level.
+At an intermediate prefix, the controller may need to continue the current trajectory, revise a partially corrupted one, or abstain from further computation entirely.
+Those actions are interventions, not merely confidence-ranked outcomes, and they are not naturally ordered by a single scalar notion of ``how good the prefix looks.''
+
+This observation motivates the paper's central question:
+\emph{is prefix compute allocation better modeled as ordered thresholding, or as \processstate control?}
+To answer it, we move from final-answer accuracy to prefix-level oracle evaluation.
+We build exact-checker oracle benchmarks on arithmetic and linear equations, expose three prefix actions (\continue, \revise, \abstain), and compare controller classes by oracle regret under a finite token budget.
+
+The benchmark changes the story in two ways.
+First, it reveals substantial high-determinacy action crossing: prefixes with similar scalar scores can require different oracle-optimal actions.
+This is direct evidence against simple continuation-score thresholding, and more generally against treating one ordered confidence score as a sufficient description of low-regret control.
+Second, it sharpens the role of structured controllers.
+Exact-state factorization has clear value, but deployable predicted-state performance drops sharply.
+That drop appears not only in regret, but also in revision harm and compute-value calibration, which points to state identification under noisy deployment as the main bottleneck.
+Appendix rescue probes aimed directly at this bottleneck---high-determinacy filtering, pairwise soft targets, and exact-state teacher distillation---recover only domain-specific portions of the gap and do not overtake the strongest learned one-dimensional baseline.
+
+The paper's strongest conclusions are therefore mechanism-level rather than triumphalist.
+Linear equations supports a strong scalar-insufficiency story.
+Arithmetic does not support a universal ``scalar always fails'' claim, and larger repeatability runs make that boundary explicit.
+Likewise, direct policy remains a hard baseline to beat, so the structured-controller claim must be written conditionally.
+We regard this as a feature of the benchmark: it separates mechanism, deployment, and controller-class questions instead of collapsing them into a single leaderboard.
+
+\paragraph{Contributions.}
+Our contributions are:
+\begin{enumerate}[leftmargin=1.5em]
+  \item We introduce a prefix-level oracle benchmark for verifiable reasoning, with exact-checker domains, action-level utilities, determinacy diagnostics, and crossing diagnostics.
+  \item We show that ordered scalar thresholding is conditionally insufficient: both domains exhibit non-trivial high-determinacy action crossing, and the linear domain in particular rejects a scalar-only controller view.
+  \item We isolate the central structured-controller bottleneck as a deployment problem: exact-state structured control is valuable, but predicted-state deployment degrades sharply under noisy state identification.
+  \item We recenter evaluation on budgeted decision quality by reporting action regret at budget, equal-token frontiers, revision harm, compute-value calibration, and within-domain repeatability.
+\end{enumerate}
+
+The resulting thesis is narrower but stronger than a universal algorithmic win:
+prefix compute allocation in verifiable reasoning is best framed as \processstate control, ordered thresholding is not a sufficient general abstraction, and the main open systems problem is reliable state identification under deployment noise.

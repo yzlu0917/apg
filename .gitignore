@@ -1,0 +1,90 @@
+# Local environments and secrets
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+ENV/
+
+# Python caches and test/tool caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter and editor/OS noise
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+*.lnk
+*.swp
+*.swo
+*~
+
+# Experiment data, generated artifacts, and run outputs
+**/data/
+**/artifacts/
+**/outputs/
+**/history/
+
+# Working notes and intermediate project docs
+idea/
+idea2/
+legacy/
+research/
+**/progress.md
+**/results.md
+**/proposal.md
+**/phase0_bootstrap.md
+**/*_plan.md
+**/*_memo*.md
+**/*_note*.md
+triver/paper_assembly.md
+triver/paper_reframe.md
+
+# Large model/checkpoint/feature artifacts
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+*.npz
+*.npy
+*.pkl
+*.pickle
+*.parquet
+*.arrow
+*.sqlite
+*.db
+
+# Generated tabular/log streams
+*.jsonl
+*.csv
+*.tsv
+*.log
+*.zip
+
+# LaTeX/build outputs
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.pdf
+
+# Local packaging/build outputs
+build/
+dist/
+*.egg-info/
+.eggs/

@@ -1,0 +1,78 @@
+{
+  "phase": "object_redefinition",
+  "status": "frozen_design",
+  "date_frozen": "2026-04-07",
+  "branch_goal": "test decision-bearing units rather than arbitrary reasoning lines",
+  "environment": {
+    "conda_env": "infer",
+    "default_model_family": "Qwen3",
+    "default_model_tier": "1.7B",
+    "api_generation_enabled": true,
+    "execution_allowed": false
+  },
+  "chosen_family": {
+    "name": "tower_of_hanoi",
+    "carrier_type": "planning_text",
+    "reason": "lowest-risk family for validating whether decision, execution, and bookkeeping labels explain the previously observed early-planning signal"
+  },
+  "deferred_families": [
+    {
+      "name": "countdown",
+      "reason": "needs equation-state units plus search-cost-aware evaluation before reuse"
+    },
+    {
+      "name": "quantum_lock",
+      "reason": "needs stronger solving reliability before transition-based unit work is meaningful"
+    }
+  ],
+  "segmentation": {
+    "version": "macro_decision_v0",
+    "unit_types": [
+      "decision",
+      "execution",
+      "bookkeeping",
+      "unclear"
+    ],
+    "max_retained_units_per_trace": 3,
+    "selection_priority": [
+      "first_decision",
+      "second_distinct_decision",
+      "matched_non_decision_control"
+    ]
+  },
+  "slice": {
+    "dev_seed": 1729,
+    "family_prompt_limit": 12,
+    "traces_per_prompt": 2,
+    "target_usable_traces_min": 8
+  },
+  "intervention": {
+    "policy_version": "matched_counterfactual_v1",
+    "variants": [
+      "delete",
+      "paraphrase",
+      "distractor"
+    ],
+    "continuation_policy": "prefix_or_state_resume",
+    "continuation_count": 2,
+    "remaining_budget_policy": "same_remaining_budget_as_source"
+  },
+  "acceptance": {
+    "unit_validity_non_unclear_rate_min": 0.8,
+    "decision_unit_trace_coverage_expected": "most_usable_traces",
+    "matched_control_trace_coverage_expected": "most_usable_traces",
+    "decision_sensitivity_required": true,
+    "proxy_comparison_required": true,
+    "family_transfer_required_for_first_pass": false
+  },
+  "artifacts": {
+    "spec": "project/decision_unit_segmentation_spec.md",
+    "schema": "project/decision_unit_candidate_schema.md",
+    "gate": "project/object_redefinition_gate.md"
+  },
+  "notes": [
+    "This config freezes the design boundary for the redefinition branch, not a new family sweep.",
+    "No execution beyond tiny dev-slice preparation should occur until the new unit definition is accepted.",
+    "The old line-level object branch remains a documented bootstrap baseline only."
+  ]
+}

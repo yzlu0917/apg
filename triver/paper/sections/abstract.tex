@@ -1,0 +1,16 @@
+\begin{abstract}
+We study whether prefix compute allocation in verifiable reasoning can be modeled by ordered confidence thresholding.
+To answer that question, we introduce a prefix-level oracle benchmark on two exact-checker domains, arithmetic and linear equations, with three actions: \continue, \revise, and \abstain.
+The benchmark reveals substantial high-determinacy action crossing: prefixes with similar continuation scores can still require different oracle-optimal actions.
+This is evidence against simple continuation-score thresholding, and more broadly against treating one ordered confidence score as a sufficient description of low-regret control.
+
+We then compare ordered scalar controllers, learned one-dimensional controllers, direct policies, and structured factorized controllers.
+The resulting controller picture is conditional rather than universal.
+Linear equations strongly disfavors ordered scalar control, while arithmetic is more mixed under repeatability.
+For structured controllers, the most stable result is a deployment gap: exact-state factorization is often strong, but deployable predicted-state performance deteriorates sharply under noisy state estimates.
+Target-cleaning and exact-state distillation probes recover only domain-specific fractions of this gap and do not restore a general algorithmic win.
+That gap appears not only in action regret, but also in revision harm and compute-value calibration.
+
+Our strongest contribution is therefore benchmark- and mechanism-level rather than leaderboard-level:
+prefix compute allocation in verifiable reasoning is better understood as \processstate control than as ordered thresholding, exact-checker prefix benchmarks are necessary for testing that claim, and reliable state identification is the main deployment bottleneck for structured controllers.
+\end{abstract}

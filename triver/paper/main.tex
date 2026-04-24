@@ -1,0 +1,86 @@
+\documentclass{article}
+
+\usepackage[preprint]{neurips_2024}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{mathtools}
+\usepackage{subcaption}
+\usepackage{threeparttable}
+\usepackage{xspace}
+\usepackage{appendix}
+
+\newcommand{\orderedscalar}{\textsc{OrderedScalar}\xspace}
+\newcommand{\learnedoned}{\textsc{Learned-1D}\xspace}
+\newcommand{\directpolicy}{\textsc{DirectPolicy}\xspace}
+\newcommand{\triver}{\textsc{TriVer}\xspace}
+\newcommand{\continue}{\textsc{continue}\xspace}
+\newcommand{\revise}{\textsc{revise$_1$}\xspace}
+\newcommand{\abstain}{\textsc{abstain}\xspace}
+\newcommand{\processstate}{process-state\xspace}
+\newcommand{\etal}{et al.\xspace}
+
+\title{Beyond Ordered Thresholding:\\ A Prefix-Level Oracle Benchmark for Verifiable Reasoning Control}
+
+\author{Anonymous Authors}
+
+\begin{document}
+
+\maketitle
+
+\input{sections/abstract}
+
+\section{Introduction}
+\input{sections/introduction}
+
+\section{Related Work}
+\label{sec:related}
+\input{sections/related_work}
+
+\section{Setup}
+\label{sec:setup}
+\input{sections/setup}
+
+\section{Oracle Benchmark and Mechanism}
+\label{sec:benchmark}
+\input{sections/benchmark}
+
+\section{Controller Comparison}
+\label{sec:controllers}
+\input{sections/controller_comparison}
+
+\section{Budgeted Decision Quality}
+\label{sec:budget}
+\input{sections/budget_quality}
+
+\section{Discussion and Limitations}
+\label{sec:limitations}
+\input{sections/limitations}
+
+\section{Conclusion}
+\label{sec:conclusion}
+\input{sections/conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+
+\section{Additional Experimental Details}
+\label{app:details}
+\input{sections/appendix_details}
+
+\section{Extension: Cross-Domain Routing}
+\label{app:routing}
+\input{sections/appendix_routing}
+
+\section{Negative Results and Architecture Sweep}
+\label{app:negative}
+\input{sections/appendix_negative}
+
+\end{document}

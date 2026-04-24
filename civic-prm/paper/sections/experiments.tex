@@ -1,0 +1,81 @@
+\section{Experimental Setup, Baselines, and Stronger Models}
+
+\subsection{Evaluation stages}
+
+We evaluate in cumulative stages rather than through a single leaderboard:
+\begin{itemize}[leftmargin=1.5em]
+\item judge-style pilots for diagnosis,
+\item same-backbone frozen-head baselines,
+\item minimal repair variants,
+\item stronger rerankers,
+\item robustness and reproduction layers.
+\end{itemize}
+This ordering reflects the central question. We first establish
+whether answer-visible verification is shortcut-heavy at all; only then do we
+ask whether lightweight repairs improve that behavior.
+
+\subsection{Judge-style evaluators}
+
+We first test local prompt judges and an external API judge. These are useful
+because they resemble how process evaluation is often deployed in practice, but
+they are weak scientific instruments for local process grounding. Across easy,
+hard, and naturalized slices, they show the same qualitative pattern: high
+answer sensitivity and weak \amcd. This establishes a distinction that
+persists throughout: judge-style leakage is real, but it should not
+be conflated with the behavior of trained verifiers.
+
+\subsection{Same-backbone frozen-head baselines}
+
+The next stage uses a frozen \texttt{Qwen3-1.7B} backbone with small learned
+heads:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{visible\_bce},
+\item \texttt{masked\_bce},
+\item \texttt{pairwise\_visible},
+\item \texttt{step\_only}.
+\end{itemize}
+These baselines are the first place where the strong masked baseline becomes
+decisive. On early synthetic slices, the answer-masked baseline is already
+very strong. This result prevents us from overstating the necessity of more
+complex repair objectives.
+
+\subsection{Minimal repairs}
+
+We test minimal repair variants:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{local-pair},
+\item \texttt{cond-swap},
+\item \texttt{hard-neg},
+\item minimal and step-scan dual-head variants.
+\end{itemize}
+\texttt{visible\_cond\_swap} can improve faithfulness and sometimes \amcd,
+especially on structured hard OOD slices. However, no simple repair variant
+uniformly dominates the masked baseline across naturalized OOD, and the
+dual-head line remains negative at the current scale. The resulting picture is
+a faithfulness-utility frontier rather than a universal repair win.
+
+\subsection{Stronger rerankers}
+
+We then move beyond frozen linear heads to stronger local rerankers:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{Qwen3-Reranker-8B},
+\item \texttt{Qwen3-Reranker-4B}.
+\end{itemize}
+These models change the deployment picture materially. The strongest current
+model is \texttt{Qwen3-Reranker-8B} in the masked setting, not a visible
+reranker and not a frozen-head repair.
+
+\subsection{Reporting regimes}
+
+Unless otherwise stated, the main table uses \textsc{Craft-Deploy} because it
+best matches the deployment question. \textsc{Craft-Clean} is always
+reported as a secondary cleaner benchmark, not as a silent replacement for the
+main deployment regime. The two benchmarks separate process-faithfulness and
+deployment utility more clearly than either one does alone. We also report an
+external-source corroboration line on \textsc{ProcessBench}. This line is not
+used for quartet metrics; instead, it checks whether the broader audit story
+survives on real step-level supervision without self-generated source
+problems. In the released package, this external-source line is pinned through
+a canonical suite summary, manifest, and split manifest, so it should be read
+as a formal corroboration benchmark rather than as a loose collection of
+auxiliary experiments.

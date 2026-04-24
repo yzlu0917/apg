@@ -1,0 +1,76 @@
+\section{Method Overview}
+
+\subsection{Object-First Decomposition}
+
+The proposal separates three claims that should not be conflated:
+
+\begin{enumerate}
+  \item \textbf{Object identification:} is trajectory-conditional necessity actually measurable?
+  \item \textbf{Faithful offline training:} can that object be converted into a training signal without obvious harm?
+  \item \textbf{Budgeted utility:} does that training signal improve downstream performance relative to matched alternatives?
+\end{enumerate}
+
+This decomposition matters because later positive claims should only be made if earlier ones already hold.
+
+\subsection{Pipeline Overview}
+
+\begin{figure}[t]
+  \centering
+  \setlength{\fboxsep}{6pt}
+  \small
+  \fbox{\parbox{0.26\linewidth}{\raggedright \textbf{Stage 1: Synthetic gate}\\Program synthetic traces with known local importance and check whether CNT recovers that ground truth rather than detectability or observational shortcuts.}}
+  $\rightarrow$
+  \fbox{\parbox{0.26\linewidth}{\raggedright \textbf{Stage 2: Audited math object}\\Collect verified GSM8K traces, apply \texttt{drop}/\texttt{swap}/paraphrase edits, and audit necessity under train-side and held-out continuators.}}
+  $\rightarrow$
+  \fbox{\parbox{0.26\linewidth}{\raggedright \textbf{Stage 3: Offline training}\\Train matched Stage~B objectives on the audited pool, first on the dev pool and only then on the frozen final-test gate.}}
+  \caption{The current object-first CNT pipeline. The core separation is deliberate: object identification and auditing come before utility claims.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Current Experimental Regime}
+
+The current real-domain experiments use GSM8K-style math traces \citep{cobbe2021gsm8k}. Successful traces are edited with controlled \texttt{drop}, \texttt{swap}, and paraphrase operators, then rescored under held-out continuators. This produces a conservative audited pool used for downstream Stage~B comparisons.
+
+Two evaluation layers are now fixed:
+
+\begin{itemize}
+  \item a \textbf{Week~2 object-validity exit}, currently the larger-pool conservative audit over the 112-trace GSM8K collection;
+  \item a \textbf{Week~3 utility gate}, currently a frozen strict 29-example mixed non-ceiling gate used only for final-style testing.
+\end{itemize}
+
+To avoid contamination, recipe development has been moved off the frozen final-test gate and onto a complementary 81-example dev pool.
+
+\subsection{Training And Verdict Logic}
+
+The current training program uses matched control and CNT variants over the same audited pool. The verdict logic is intentionally two-stage. First, a recipe must be non-harmful on rollout utility relative to matched SFT-only control. Second, object-preservation diagnostics such as weighted necessity and paraphrase/equiv stability refine the reading. This ordering matters because the recent Week~3 evidence shows that weighted necessity can move in the opposite direction from utility, so the two should not be collapsed into one scalar.
+
+\subsection{Experimental Setup}
+
+The current paper is anchored to one stable audited regime rather than a moving collection of pilots:
+
+\begin{itemize}
+  \item a 112-trace verified GSM8K collection baseline;
+  \item a larger-pool conservative Week~2 exit with 230 kept pairs out of 298 filtered candidates;
+  \item a frozen strict 29-example final-test gate for Week~3;
+  \item a complementary 81-example dev pool for recipe selection.
+\end{itemize}
+
+This discipline matters for interpretation. The paper is not comparing one favorable slice against another. The object-validity exit, the final-test gate, and the dev pool are explicitly separated so that negative Week~3 conclusions are not artifacts of same-gate recipe search.
+
+\subsection{Operational Notation}
+
+For the current draft, we use a lightweight operational notation:
+
+\begin{itemize}
+  \item $p_t$: the original prefix up to candidate step $t$;
+  \item $\tilde{p}_{t,e}$: an edited version of that prefix under editor family $e$;
+  \item $V(\cdot)$: a verifier-style solve indicator or solve probability after continuation;
+  \item $\hat{N}_t$: an empirical necessity estimate defined through the solve gap between original and edited prefixes under fixed continuation conditions.
+\end{itemize}
+
+At a high level, the empirical object is a solve-gap quantity of the form
+\[
+\hat{N}_t \approx \mathbb{E}[V(\text{continue}(p_t))] - \mathbb{E}[V(\text{continue}(\tilde{p}_{t,e}))].
+\]
+
+The proposal also introduces a stability-style quantity that downweights editor- or continuator-sensitive estimates. In the current paper, that role is reflected in weighted necessity diagnostics, but those diagnostics are treated as secondary to utility/no-harm when reading Stage~B results.

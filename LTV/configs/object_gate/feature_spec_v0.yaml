@@ -1,0 +1,32 @@
+name: feature-spec-v0
+status: frozen-for-smoke
+version_date: 2026-03-31
+
+model:
+  default_model_name: DeepSeek-Prover-V2-7B
+  default_model_path: /cephfs/shared/hf_cache/hub/models--deepseek-ai--DeepSeek-Prover-V2-7B/snapshots/a8d9e14432b2e8dd9df2a4d4e70f1ba9bc8d9b7b
+  dtype: bfloat16
+  device: cuda:0
+
+representation:
+  boundary_states:
+    - h_minus
+    - h_plus
+    - delta_h
+  layer_selection:
+    mode: relative
+    values: [-1, -8, -16]
+  token_anchor: last token of the theorem prefix before / after the current step
+  pooling: none
+
+storage:
+  smoke_output_dir: artifacts/object_gate_smoke/deepseek_prover_v2_7b
+  smoke_format:
+    feature_tensor: torch_pt
+    manifest: json
+  save_dtype: float32
+  projection: deferred_until_parser_is_stable
+
+freeze_rules:
+  - do not add full-sequence pooling in phase 0
+  - do not introduce learned projection before the first smoke succeeds

@@ -1,0 +1,20 @@
+We introduced a prefix-level oracle benchmark for verifiable reasoning and used it to test a simple but consequential hypothesis:
+is prefix compute allocation well modeled as ordered scalar thresholding?
+Our answer is no at the benchmark level and conditional at the controller-ranking level.
+
+The benchmark shows substantial high-determinacy action crossing in two exact-checker domains.
+That is enough to reject simple continuation-score thresholding, and more generally a single ordered confidence score, as a sufficient description of low-regret prefix control.
+At the same time, the strongest structured-controller result is a deployment-gap diagnosis rather than a universal win:
+exact-state structure is clearly valuable, but predicted-state performance degrades sharply under noisy state estimation.
+
+This leads to the paper's main message.
+Prefix compute allocation in verifiable reasoning should be studied as \processstate control.
+The right benchmark is prefix-level and oracle-based.
+The right evaluation target is budgeted decision quality, not only final-answer accuracy.
+And the main open systems problem is reliable state identification under deployment noise.
+
+The broader takeaway is methodological.
+If we evaluate only final-answer accuracy, many of these distinctions disappear.
+If we evaluate prefix actions against oracle regret, revision harm, and compute-value calibration, they become explicit.
+That is the role of the benchmark in this paper.
+It does not merely rank controllers; it separates mechanism from deployment, and action quality from raw confidence, which is exactly what scalar-threshold narratives tend to collapse.

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "triver"
+version = "0.1.0"
+description = "Week-1 experimental scaffolding for TriVer"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = ["triver*"]

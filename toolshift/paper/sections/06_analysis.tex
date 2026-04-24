@@ -1,0 +1,31 @@
+\section{Mechanism and Boundary Analyses}
+\label{sec:analysis}
+
+\paragraph{Masking sensitivity.}
+If the scaffold baseline were mainly exploiting raw tool or argument names, masking names should collapse performance. It does not. Instead, Table~\ref{tab:analysis} shows that name masking causes only minor degradation, while masking descriptions or contract cues causes large drops for both reference methods. This indicates that the decisive signal is localized description/contract grounding rather than lexical name matching.
+
+\paragraph{Decision-state evidence.}
+We further probe internal decision states on the dev panel. The scaffold baseline produces much tighter positive-orbit clustering and a larger separation gap between positive and negative states than the learned localizer. This matters because it shows that the behavior gap is not merely a post-hoc thresholding artifact; it is reflected in the geometry of the internal decision state.
+
+\paragraph{Boundary evidence.}
+Finally, we test counterfactual impossible shadows by restoring the clean surface while swapping in the negative admissible action. Here the strongest scaffold baseline collapses completely: impossible-shadow \CAA{} is $0.000$ and execute rate is $1.000$. This result places a sharp boundary on our claim. The current strongest method succeeds when capability shifts are visible in schema, documentation, or contract, but not when they are hidden.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+Analysis & Method & Name-mask \CAA{} & Desc-mask \CAA{} & Contract-mask \CAA{} & Probe acc. & Pos. state sim. & Impossible-shadow \CAA{} \\
+\midrule
+Mechanism & Scaffold baseline & 0.986 & 0.632 & 0.618 & 0.972 & 0.997 & 0.000 \\
+Mechanism & Learned localizer & 0.861 & 0.500 & 0.486 & 0.826 & 0.615 & 0.136 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Mechanism and boundary evidence on the dev panel. Name masking barely affects either reference method, while description/contract masking sharply degrades both. The scaffold baseline forms more stable positive decision states but also fails completely on impossible shadows, confirming that the paper's strongest claim must be limited to schema-visible evolution.}
+\label{tab:analysis}
+\end{table*}
+
+These analyses jointly support a coherent interpretation: the scaffold baseline works because it reads localized description and contract cues and turns them into a cleaner positive-versus-negative decision boundary. The same evidence also explains why we should not over-claim. Once those cues are removed, the mechanism no longer protects the agent.

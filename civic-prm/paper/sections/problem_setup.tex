@@ -1,0 +1,48 @@
+\section{Problem Setup}
+
+We study process verification in audited executable domains. Each example has a
+problem statement, a reasoning trace, and a marked audited locus indicating the
+local step whose validity is scientifically relevant. The core distinction is
+between two input settings:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{answer-visible}: the verifier sees the full trace including the
+final answer line;
+\item \textbf{answer-masked}: the verifier sees the same trace with the answer
+line masked.
+\end{itemize}
+The central question is whether verifier scores reflect local process validity
+or whether they are materially distorted by answer-sensitive behavior.
+
+\subsection{Step validity and matched counterfactuals}
+
+Each benchmark item is derived from an executable latent trajectory. We
+construct matched quartets with two orthogonal axes:
+\begin{itemize}[leftmargin=1.5em]
+\item process validity: \texttt{valid} vs.\ \texttt{invalid};
+\item answer surface: \texttt{correct} vs.\ \texttt{swapped}.
+\end{itemize}
+This yields the minimal quartet:
+\texttt{valid\_correct}, \texttt{invalid\_correct},
+\texttt{valid\_swapped}, and \texttt{invalid\_swapped}. The point of this
+construction is that the verifier can be tested under answer-matched local
+comparisons. A model that simply prefers traces with a correct-looking answer
+will fail this test.
+
+\subsection{Metrics}
+
+We use the following metrics throughout:
+\begin{itemize}[leftmargin=1.5em]
+\item \auroc: ordinary valid-vs-invalid discrimination over all traces;
+\item \amcd: answer-matched counterfactual discrimination, which asks whether a
+verifier prefers \texttt{valid} over \texttt{invalid} when the answer surface
+is held fixed;
+\item \asstotal: average score change under answer-swap interventions;
+\item \selectiongain: improvement over random top-of-quartet selection;
+\item \exploitability: how often the top-ranked trace is an invalid-but-lucky
+one.
+\end{itemize}
+
+These metrics serve different purposes. \auroc{} captures global separability,
+\amcd{} captures local process grounding, and \asstotal{} measures direct
+sensitivity to answer swapping. The downstream metrics test whether these audit
+signals matter operationally.

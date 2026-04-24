@@ -1,0 +1,19 @@
+{
+  "model_path": "/cephfs/shared/hf_cache/hub/Qwen3-4B",
+  "device_map": "auto",
+  "torch_dtype": "bfloat16",
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "max_new_tokens": 256,
+  "num_rewrite_candidates": 3,
+  "num_exploit_attempts": 3,
+  "problem": {
+    "question": "Compute ((23 + 19) - 7) + 5. Show your reasoning steps and final answer.",
+    "canonical_trace": [
+      "23 + 19 = 42",
+      "42 - 7 = 35",
+      "35 + 5 = 40"
+    ],
+    "correct_answer": 40
+  }
+}

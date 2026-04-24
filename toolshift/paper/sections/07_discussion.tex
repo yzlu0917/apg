@@ -1,0 +1,23 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\paragraph{What this paper validates.}
+This paper validates a benchmark, an evaluation protocol, a validation chain, and a strong scaffold baseline for \emph{schema-visible capability-gap inhibition}. It does \emph{not} validate the stronger method claim that SCC-style learned invariance has already been solved.
+
+\paragraph{Why the method story narrowed.}
+The paper began from a stronger method ambition, but the final evidence supports a narrower conclusion. This is not just because we stopped early or never revisited the bottleneck thesis. We did run one final teacher-distilled canonical-bottleneck SCC check under fixed matched-budget controls, and it still failed to recover positive retention. What remained robust by the end of the study was the benchmark/protocol line and the scaffold baseline; the learned pair-model line did not close. The result is therefore a benchmark-and-diagnosis paper with a strong scaffold baseline, not a completed SCC method paper.
+
+\paragraph{What the learned routes taught us.}
+Across many dev-panel sweeps, stronger pair models repeatedly exposed the same failure mode: improving negative inhibition tended to trade against clean and positive retention, while preserving positive retention tended to erode negative inhibition. The final teacher-distilled bottleneck run sharpened the same lesson. It fit train-side supervision cleanly, produced only a tiny dev-panel \NOS{} lift over AugOnly, and still left $\CAA^{+}$ and \POC{} at zero. In other words, simply increasing model complexity, changing localizer losses, or distilling a stronger teacher was not enough to replace the localized cue scaffold. This is negative evidence, but it is scientifically useful negative evidence.
+
+\paragraph{Why the blind panel matters.}
+The scaffold baseline is perfect on the dev panel, but not on the frozen blind panel. The blind review therefore changes the story in an important way: the paper can no longer end at dev-panel perfection. It must emphasize the blind stressor---especially \texttt{slack\_auth}---and treat blind review as a first-class result rather than a formality.
+
+\paragraph{What our reliability evidence does and does not show.}
+The new protocol-reliability results make three things explicit. First, negative evaluation is genuinely set-valued in this benchmark: most blind negative views permit either \texttt{ask\_clarification} or \texttt{abstain}, and collapsing that choice changes absolute \NOS{} substantially. Second, source support is multi-evidence rather than single-document annotation. Third, family-cluster bootstrap and leave-one-family-out analyses show that blind pressure is not a one-family accident. What these analyses do \emph{not} provide is annotator-level agreement. Our current reliability evidence is protocol-level and audit-level, not a substitute for a multi-annotator adjudication study.
+
+\paragraph{Main limitation.}
+Our strongest claim is restricted to schema-visible evolution. Impossible-shadow evidence shows that the current strongest baseline does not generalize to hidden backend shifts. A second limitation is that the learned localizer route is still substantially weaker overall than the scaffold baseline, so the paper cannot claim that a learned pair model has replaced localized cue engineering. A third limitation is scale: although the benchmark is now more auditable and externally comparable than before, the blind panel remains small enough that uncertainty intervals must be interpreted as part of the result, not ignored.
+
+\paragraph{Overall conclusion.}
+\toolshift{} should therefore be read as a deterministic, audited benchmark for canonical-action evaluation under real API evolution. Its strongest empirical finding is that schema-visible capability-gap inhibition is the core difficulty, and that a strong localized cue scaffold still outperforms current learned alternatives, including a final teacher-distilled canonical-bottleneck SCC revisit. This framing is narrower than a pure method-success story, but it is the one supported by the evidence.

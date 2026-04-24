@@ -1,0 +1,6 @@
+{
+  "surface_cost": 1.0,
+  "semantic_cost": 2.0,
+  "route_gain_threshold": 0.25
+}
+

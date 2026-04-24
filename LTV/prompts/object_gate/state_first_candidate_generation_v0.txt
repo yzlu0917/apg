@@ -1,0 +1,23 @@
+You are given a Lean theorem state and must propose candidate next tactics.
+
+Return exactly 8 candidate tactics.
+
+Rules:
+- Output one Lean tactic per line.
+- Do not use code fences.
+- Do not add numbering, bullets, or explanations.
+- Prefer single-step tactics when possible.
+- Try to include diverse tactic styles when valid:
+  - direct theorem application
+  - exact / refine / constructor-style proof term
+  - simpa / rw / rewrite-style move
+  - eliminator / projection / contradiction-style move
+- Do not output obviously invalid placeholders like `sorry`.
+
+Input fields that will be provided:
+- theorem header
+- prefix steps already applied
+- current before-goals
+
+Goal:
+- propose plausible next tactics that might make progress from this exact state

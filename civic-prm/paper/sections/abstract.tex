@@ -1,0 +1,30 @@
+\begin{abstract}
+Process verifiers are often evaluated by ordinary valid-vs.-invalid
+discrimination. In answer-visible settings, however, those metrics confound
+local process grounding with answer-consistency shortcuts. We introduce
+answer-matched counterfactual audits for answer-visible process verifiers,
+centered on answer-matched counterfactual discrimination (\amcd) and
+answer-swap sensitivity (\ass), and instantiate them on executable
+matched-quartet benchmarks in algebra, graph path, and blocksworld. Across
+prompt judges, frozen-head baselines, diagnostic repair objectives, and
+stronger rerankers, ordinary metrics materially overstate the reliability of
+answer-visible verification. Judge-style evaluators are strongly
+answer-sensitive, and the mechanism analyses are consistent with lower local
+\amcd{} accompanying worse downstream utility. On the deployment benchmark
+\textsc{Craft-Deploy}, a masked \texttt{Qwen3-Reranker-8B} is the strongest
+model, outperforming visible reranking and frozen-head baselines on \amcd{},
+exploitability, robustness, and seed-averaged reproduction. On the cleaner
+audit benchmark \textsc{Craft-Clean}, masking still improves
+process-faithfulness while utility no longer separates, indicating a cleaner
+faithfulness benchmark rather than a direct deployment surrogate. Minimal
+repairs act as diagnostic interventions: they move the
+faithfulness--utility frontier but do not dominate strong masked baselines.
+On the external-source \textsc{ProcessBench} package, the same conservative
+read also holds: a step-only frozen baseline is currently strongest,
+answer-only swaps still move visible scores far more than masked scores, and a
+fully constructed local-repair subset still does not restore a visible
+advantage.
+The operational conclusion is simple: answer-visible process verifiers should
+be audited with answer-matched counterfactuals, and the safest current
+deployment choice is to remove direct answer access.
+\end{abstract}

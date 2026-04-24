@@ -1,0 +1,14 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Tool-use and function-calling benchmarks.}
+Recent work has greatly improved evaluation for tool use and function calling, including API-Bank~\citep{li2023apibank}, ToolLLM/ToolBench~\citep{qin2023toolllm}, BFCL~\citep{patil2025bfcl}, and StableToolBench~\citep{guo2024stabletoolbench}. These benchmarks established the importance of deterministic checking, broader tool coverage, and realistic multi-turn interaction. However, they primarily evaluate static or simulated tool interfaces. \toolshift{} instead targets behavior under \emph{real API evolution}, where the same user intent may remain executable, require a different action, or become inadmissible.
+
+\paragraph{Tool-use methods and robustness.}
+ReAct~\citep{yao2023react}, Toolformer~\citep{schick2023toolformer}, and Gorilla~\citep{patil2023gorilla} demonstrated that language models can invoke tools effectively and at scale. More recent work such as Hammer~\citep{lin2025hammer} argues that robust function calling requires resistance to naming shortcuts and irrelevant tools. Our findings are consistent with that motivation, but sharpen the diagnosis: the core difficulty is not just lexical robustness, but deciding when visible schema or contract changes should preserve invariance and when they should break it.
+
+\paragraph{API evolution in software engineering.}
+Empirical software-engineering work has documented that web APIs deprecate, migrate, and split over time~\citep{yasmin2020restdeprecation}. \toolshift{} operationalizes that observation for agent evaluation. Rather than merely cataloging interface drift, we turn audited evolution events into canonical-action test cases with deterministic verification and an explicit impossible boundary.
+
+\paragraph{Positioning.}
+Taken together, these lines of work motivate our framing. Prior tool-use benchmarks explain why deterministic evaluation matters; robustness work explains why shortcut resistance matters; and API-evolution studies explain why static schemas are insufficient. \toolshift{} sits at the intersection, but makes a narrower claim than a general agent benchmark: it evaluates schema-visible capability-gap inhibition under real API evolution.

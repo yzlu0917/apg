@@ -1,0 +1,58 @@
+\documentclass{article}
+
+\PassOptionsToPackage{numbers,compress}{natbib}
+\usepackage{neurips_2025}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{enumitem}
+
+\title{ToolShift: Canonical-Action Evaluation under Real API Evolution}
+
+\author{Anonymous Authors}
+
+\newcommand{\toolshift}{\textsc{ToolShift}}
+\newcommand{\CAA}{\textsc{CAA}}
+\newcommand{\POC}{\textsc{POC}}
+\newcommand{\NOS}{\textsc{NOS}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\input{sections/01_intro}
+\input{sections/02_related}
+\input{sections/02_protocol}
+\input{sections/03_benchmark}
+\input{sections/04_methods}
+\input{sections/05_results}
+\input{sections/06_analysis}
+\input{sections/07_discussion}
+
+\paragraph{Broader impact.}
+Our benchmark studies tool-use reliability under API evolution, a setting directly relevant to production assistants and developer tools. Better evaluation can reduce silent failures when APIs deprecate fields, change scopes, or split capabilities. The main risk is over-claiming beyond the observable evidence. We therefore explicitly limit our strongest claim to \emph{schema-visible} evolution and report impossible-shadow boundary failures when no visible cue is available.
+
+\paragraph{Reproducibility statement.}
+All reported metrics come from deterministic evaluation pipelines and artifact summaries already stored in this repository. The paper is backed by a six-layer validation chain: evaluator correctness, execution sanity, request replay, official-document smoke tests, API-surface smoke tests, and frozen blind review. The exact artifact pointers used by this draft are listed in Appendix~\ref{app:artifacts}.
+
+\bibliographystyle{unsrtnat}
+\bibliography{refs}
+
+\appendix
+\input{sections/appendix}
+
+\end{document}

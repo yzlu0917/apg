@@ -1,0 +1,90 @@
+phase: object_gate_v0
+
+claim_scope:
+  headline: object
+  conditional:
+    - method
+    - deployment
+
+frozen_scope:
+  domains:
+    - math
+    - code
+  active_families:
+    - substance_flip
+    - style_flip
+  deferred_families:
+    - reasoning_fluff
+  label_regime:
+    - objective
+    - semi_objective
+
+data_construction:
+  mode: model_driven
+  generator:
+    default_models:
+      - qwen3_4b_instruct
+      - qwen3_1p7b_instruct
+  reviewer:
+    default_models:
+      - qwen3_4b_instruct
+    optional_api_models:
+      - deepseek_v3_2_endpoint
+  guardrail:
+    use_verifier_for_correctness_only: true
+    use_rule_based_family_construction: false
+
+judges:
+  minimum_variants: 4
+  default_variants:
+    - qwen3_0p6b_base_judge
+    - qwen3_0p6b_critic_judge
+    - qwen3_4b_base_judge
+    - qwen3_4b_critic_judge
+  optional_variants:
+    - api_strong_base_judge
+    - api_strong_critic_judge
+
+splits:
+  object_dev_v0:
+    target_pairs_per_domain_family: 30
+    audit_samples_per_domain_family: 10
+  frozen_final_v0:
+    target_pairs_per_domain_family: 20
+    freeze_rule: freeze_after_object_gate
+
+metrics:
+  primary:
+    - coc
+    - worst_family_miss
+    - hard_error_recall
+  support:
+    - overall_accuracy
+    - family_fidelity
+    - miss_overlap
+    - miss_correlation
+
+audit_controls:
+  order_balance:
+    enabled: true
+    protocol: paired_original_swapped
+    primary_readout: pair_strict_accuracy
+    support_readout:
+      - balanced_directional_accuracy
+      - expected_swap_rate
+      - tie_stability_rate
+
+go_no_go:
+  object_gate:
+    family_fidelity_min: 0.80
+    overall_accuracy_delta_max_pt: 2.0
+    coc_delta_min_pt: 5.0
+    worst_family_miss_delta_min_pt: 10.0
+  conversion_gate:
+    overall_accuracy_drop_tolerance_pt: 1.0
+
+paths:
+  raw_data_dir: data/raw
+  interim_data_dir: data/interim
+  manifest_dir: data/manifests
+  artifact_dir: artifacts/object_gate

@@ -1,0 +1,117 @@
+\section{Appendix}
+
+This appendix records the current reproducibility map and the writing boundaries for the present draft. The main paper claim is intentionally narrow, so the appendix supports that claim rather than overstating later-stage results.
+
+\subsection{Reproducibility Map}
+
+The current artifact map is:
+
+\begin{itemize}
+  \item synthetic benchmark entry point: \path{scripts/run_week1_synthetic.py}
+  \item current collection baseline: \path{outputs/countertrace_mini_math_20260311_merged03/}
+  \item current Week~2 conservative exit: \path{outputs/math_stage_a_20260311_audit08_conservative_merged112/}
+  \item frozen Week~3 final-test gate: \path{outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/strict_gate_manifest.json}
+  \item Week~3 negative-branch narrative: \path{history/week3_negative_branch.md}
+\end{itemize}
+
+\subsection{Code And Artifact Availability}
+
+The present draft is backed by repository-local artifacts rather than a separate release package. The main entry points are:
+
+\begin{itemize}
+  \item paper source: \path{paper/neurips/main.tex}
+  \item compiled draft: \path{paper/neurips/main.pdf}
+  \item experiment ledger: \path{history/results.md}
+  \item current status ledger: \path{history/progress.md}
+\end{itemize}
+
+Together with the artifact roots listed below, these files are sufficient to recover the current claim boundary of the paper.
+
+\subsection{Representative Command Paths}
+
+The paper is grounded in a few stable artifact roots:
+
+\begin{itemize}
+  \item Week~1 synthetic run: \path{outputs/week1_20260309_run01/}
+  \item collection baseline: \path{outputs/countertrace_mini_math_20260311_merged03/}
+  \item larger-pool conservative audit: \path{outputs/math_stage_a_20260311_audit08_conservative_merged112/}
+  \item frozen final-test gate bundle: \path{outputs/math_stage_b_20260315_gate_bundle_audit08_strict29/}
+\end{itemize}
+
+\subsection{Representative Reproduction Commands}
+
+Representative entry points for the current paper are:
+
+\begin{verbatim}
+python scripts/run_week1_synthetic.py \
+  --num-instances 48 \
+  --sigma 0.35 \
+  --output-dir outputs/week1_20260309_run01
+\end{verbatim}
+
+\begin{verbatim}
+python scripts/run_countertrace_mini_math.py \
+  --max-examples 128 \
+  --target-successes 16 \
+  --output-dir outputs/countertrace_mini_math_20260311_seed*/...
+\end{verbatim}
+
+\begin{verbatim}
+python scripts/run_math_stage_b_fold_compare.py \
+  --audit-kept outputs/math_stage_a_20260311_audit08.../<file> \
+  --strict-gate outputs/math_stage_b_20260315_gate.../<file> \
+  --recipe-dev ...
+\end{verbatim}
+
+These commands are intentionally schematic in the main appendix. The exact artifact roots and summaries in \path{history/results.md} remain the authoritative run ledger.
+
+\subsection{Internal Labels Retained For Traceability}
+
+The main text describes Week~3 recipes by family name rather than by internal run label. For artifact traceability, the family-to-label mapping is:
+
+\begin{itemize}
+  \item uniform equiv weighting $\leftrightarrow$ \texttt{signal10}
+  \item rollout-preference-only $\leftrightarrow$ \texttt{signal11}
+  \item semantic anchor negatives $\leftrightarrow$ \texttt{signal12}
+  \item cross-prompt protect $\leftrightarrow$ \texttt{signal13}
+  \item bundle-level cross-prefix ranking $\leftrightarrow$ \texttt{signal14}
+\end{itemize}
+
+These labels are retained only because the artifact roots, summaries, and history logs are organized under them. They are not part of the scientific claim.
+
+\subsection{Tables To Expand In A Longer Draft}
+
+A fuller appendix should later include:
+
+\begin{itemize}
+  \item synthetic recovery tables against observational, entropy, and future-success baselines;
+  \item the larger-pool Stage~A audit table for the 112-trace GSM8K pool;
+  \item per-family Stage~B dev-pool summaries for the five Week~3 families reported in the main text (\texttt{signal10}--\texttt{signal14});
+  \item explicit frozen-gate evaluation protocol and example manifest.
+\end{itemize}
+
+\subsection{Current Writing Boundary}
+
+This draft deliberately stops before claiming:
+
+\begin{itemize}
+  \item compute-normalized or equal-token superiority;
+  \item second-domain robustness;
+  \item positive RL refinement;
+  \item final statistical significance over a positive Stage~B effect.
+\end{itemize}
+
+Those claims require a stronger Week~3 signal than the repository currently supports.
+
+\subsection{Open Claims Kept Out Of The Main Paper}
+
+The following claims remain intentionally out of scope for the current draft:
+
+\begin{itemize}
+  \item equal-token frontier gains;
+  \item second-domain transfer;
+  \item RL refinement;
+  \item significance-backed positive utility claims.
+\end{itemize}
+
+Those belong in a later version only if Week~3 is reopened and a genuinely stronger training family first clears the current dev-pool and frozen-gate discipline.

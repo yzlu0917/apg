@@ -1,0 +1,52 @@
+\section{Related Work}
+
+\paragraph{Process supervision and verifier-guided reasoning.}
+Verifier-based reasoning systems long predate the current process reward model
+literature, but recent work has made the generator--verifier pattern a standard
+tool for mathematical reasoning. \citet{cobbe2021training} showed that ranking
+candidate solutions with a trained verifier can substantially improve math word
+problem solving. \citet{lightman2023verify} pushed this further with
+step-level process supervision and the \texttt{PRM800K} dataset. Subsequent
+work studied automated or weakly supervised process labels
+\citep{wang2024mips}, progress-based verifier targets \citep{setlur2024pav},
+and more generative or deliberative verifier formulations such as GenRM,
+ThinkPRM, and GenPRM \citep{zhang2024genrm,khalifa2025thinkprm,zhao2025genprm}.
+This paper differs from that line in objective rather than only in model
+choice: we do not primarily ask how to build a stronger verifier, but how to
+audit whether an answer-visible verifier is actually using local process
+information rather than answer-consistency shortcuts.
+
+\paragraph{LLM evaluators, reward models, and judge bias.}
+Our work is also related to the broader literature on LLM evaluators and reward
+models. RewardBench highlighted the need for systematic evaluation of reward
+models beyond isolated pairwise preferences \citep{lambert2024rewardbench}.
+Self-training approaches such as Self-Taught Evaluators try to improve
+evaluation models without fresh human labels \citep{wang2024selftaught}. At the
+same time, several papers show that evaluator behavior can be biased: LLM
+judges may prefer their own generations \citep{panickssery2024selfprefer}, and
+pairwise local comparisons can align better with human judgments than direct
+scalar scoring \citep{liu2024pairwise}. Our results are consistent with this
+picture, but sharpen it for process verification: in answer-visible reasoning
+settings, evaluator success on ordinary discrimination can coexist with strong
+answer-swap sensitivity and weak answer-matched local discrimination.
+
+\paragraph{Benchmarks for process assessment and scalable oversight.}
+The benchmark contribution sits between executable reasoning benchmarks
+and scalable-oversight evaluations. For planning-style reasoning, PlanBench
+argues that structured planning domains are useful because they separate true
+reasoning from world-knowledge recall \citep{valmeekam2023planbench}. For
+reasoning-process assessment, ProcessBench evaluates whether models can locate
+the earliest error in mathematical reasoning traces \citep{zheng2024processbench}.
+Scalable-oversight work similarly emphasizes that the evaluation protocol
+itself can change which capabilities become visible \citep{kenton2024oversight}.
+Our benchmark contribution is narrower but more explicitly counterfactual. We
+do not introduce another first-error localization benchmark in the style of
+\textsc{ProcessBench}, nor another planning benchmark in the style of
+\textsc{PlanBench}. Instead, we build executable matched quartets and use
+answer-swap counterfactuals to separate process validity from answer-consistency
+shortcuts, then report both a deployment-oriented benchmark and a cleaner
+audit benchmark rather than forcing one regime to serve both purposes. The
+external-source \textsc{ProcessBench} package in our paper therefore plays a
+corroborative role: it tests whether the same conservative conclusions survive
+on real step-level supervision without collapsing the paper into a different
+benchmark task.

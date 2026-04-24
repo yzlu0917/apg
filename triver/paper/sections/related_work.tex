@@ -1,0 +1,32 @@
+Our work sits at the intersection of reasoning-time scaling, verifiable reasoning, and iterative correction.
+
+\paragraph{Reasoning-time scaling and control.}
+Chain-of-thought prompting showed that additional reasoning tokens can unlock substantial gains \citep{wei2022chain}.
+More recent work studies how test-time compute should be allocated \citep{snell2024scaling,qu2025mrt,qi2025brpo}.
+These papers make test-time compute a first-class learning problem, including cumulative-regret-style objectives and anytime RL formulations.
+Other recent systems emphasize adaptive refinement or verifier allocation rather than uniform scaling \citep{lifshitz2025multiagent,jin2026corefine}.
+Relative to this literature, our contribution is not ``another adaptive controller objective.''
+Most prior approaches still evaluate control decisions indirectly through final-task outcomes, stopping heuristics, or scalar confidence surrogates.
+Our focus is narrower and more mechanistic: which controller class best explains \emph{prefix-level} low-regret action selection once actions are labeled by an exact-checker oracle under an explicit budget?
+
+\paragraph{Verification and process supervision.}
+Verifier-based reasoning emphasizes that intermediate reasoning states can be evaluated rather than judged only through final answers \citep{cobbe2021training,lightman2023lets}.
+We build on that intuition but shift the target of evaluation.
+Instead of only asking whether a verifier can score a trajectory, we define a prefix-level oracle over multiple actions and use that oracle to study compute control itself.
+This makes determinacy, crossing, revision harm, and compute-value calibration first-class empirical objects.
+Our paper is therefore closer to a controller-class diagnosis than to a pure verifier paper.
+
+\paragraph{Revision and self-correction.}
+Iterative refinement methods such as Self-Refine highlight the importance of revising an imperfect trajectory \citep{madaan2023selfrefine}.
+Recent adaptive refinement work goes further by learning when to halt, re-examine, or try alternative reasoning paths \citep{jin2026corefine}.
+Our benchmark provides a cleaner setting for evaluating such interventions.
+Because we compare \continue, \revise, and \abstain against a prefix-level oracle, revision is judged not merely by whether it happened, but by whether it happened at the right time and under the right budget.
+
+\paragraph{Novelty boundary.}
+We do not claim to be the first paper to study adaptive test-time compute, stopping, verification-guided control, or refinement controllers.
+Our novelty is benchmark- and diagnosis-level:
+an exact-checker \emph{prefix-level} oracle benchmark, controller-class diagnostics built around determinacy and crossing, and a deployment-gap analysis that separates exact-state value from predicted-state deployability.
+That is also why our strongest claims are about benchmark adequacy, controller-class diagnostics, and deployment bottlenecks, not about producing a universal new best controller.
+
+Taken together, these threads motivate the main framing of the paper:
+prefix compute allocation should be analyzed as control over reasoning state, not as scalar post-processing over final confidence alone.

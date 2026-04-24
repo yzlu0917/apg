@@ -1,0 +1,103 @@
+\section{Introduction}
+
+Process verifiers are increasingly used to rank, filter, and allocate compute
+over reasoning traces. Yet the standard reading of verifier scores is often too
+optimistic. In answer-visible settings, a high score can reflect at least two
+very different behaviors: sensitivity to local reasoning validity, or
+sensitivity to whether the trace is simply consistent with a correct-looking
+final answer. Ordinary discrimination metrics do not separate these behaviors,
+so strong average performance can coexist with brittle counterfactual behavior.
+
+This problem matters because verifier-guided reasoning has become a standard
+pattern in mathematical reasoning and process supervision
+\citep{cobbe2021training,lightman2023verify,wang2024mips}. At the same time,
+recent work on reward models and LLM evaluators shows that strong average
+judging performance can mask important evaluator biases
+\citep{lambert2024rewardbench,panickssery2024selfprefer,wang2024selftaught}.
+This work connects these threads by asking a narrower question: when a process
+verifier can see the final answer, how much of its apparent process skill is
+actually answer-sensitive shortcutting?
+
+We treat answer-visible process verification as an auditing problem. Rather
+than proposing a large new verifier architecture, we build an evaluation
+protocol that makes shortcut reliance falsifiable. The protocol combines
+executable matched-quartet benchmarks, answer-matched counterfactual
+discrimination (\amcd), answer-swap sensitivity (\ass), and strong
+same-backbone masked baselines. Minimal repair objectives serve as diagnostic
+interventions: they test whether answer-sensitive behavior can be reduced
+without simply deleting useful reasoning signals.
+
+The empirical picture is narrower but more useful than a new-method story.
+Ordinary metrics overstate the trustworthiness of answer-visible verification,
+and \amcd{} is much more informative about downstream behavior than ordinary
+AUROC. The strongest current deployment strategy is to remove direct answer
+access. A secondary cleaner audit benchmark reaches the same qualitative
+conclusion in a different regime: masking still improves process-facing
+metrics even when utility no longer separates. A canonical external-source
+\textsc{ProcessBench} package corroborates the same conservative read on real
+step-level traces. There, the strongest current verifier is a simple step-only
+frozen baseline, answer-only swaps still move visible scores much more than
+masked scores, and even a fully constructed local-repair subset does not
+produce a visible advantage. Taken together, these results support an
+audit-and-deployment story, not a universal repair story.
+Table~\ref{tab:claim_boundary} states the intended claim boundary explicitly.
+
+\paragraph{Contributions.}
+Our contributions are fourfold:
+\begin{enumerate}[leftmargin=1.5em]
+\item We introduce an audit protocol for answer-visible process verification
+built around \amcd, \ass, and strong same-backbone masked baselines rather than
+ordinary discrimination alone.
+\item We show that the strongest current deployment configuration is a masked
+reranker, while judge-style evaluators and visible rerankers remain
+substantially answer-sensitive.
+\item We provide mechanism evidence that local answer sensitivity tracks worse
+utility in a pattern consistent with lower local process discrimination,
+rather than merely co-occurring with weak utility.
+\item We develop a benchmark package with two complementary regimes:
+\textsc{Craft-Deploy}, a deployment-oriented naturalized generated benchmark,
+and \textsc{Craft-Clean}, a cleaner audit benchmark accepted under an
+artifact-focused acceptance criterion; and we corroborate the main qualitative
+conclusions on a canonical external-source \textsc{ProcessBench} package with
+trace, prefix, answer-swap, and local-repair views.
+\end{enumerate}
+
+\begin{table}[t]
+\centering
+\caption{Claim boundary for the paper. The manuscript is organized around
+auditing, benchmark design, and deployment guidance rather than a new dominant
+verifier architecture.}
+\label{tab:claim_boundary}
+\small
+\begin{tabularx}{\linewidth}{p{0.24\linewidth}p{0.34\linewidth}X}
+\toprule
+Claim & Direct evidence & Not claiming \\
+\midrule
+Ordinary verifier metrics can mislead in answer-visible settings. &
+\amcd{} and \ass{} separate ordinary valid-vs.-invalid discrimination from
+answer-sensitive shortcutting across judges, frozen heads, and rerankers. &
+Not claiming that every answer-visible verifier is useless, or that ordinary
+AUROC has no value at all. \\
+Masked scoring is the strongest current deployment choice. &
+On \textsc{Craft-Deploy}, masked reranking beats visible reranking on
+\amcd{}, exploitability, robustness, and seed-averaged reproduction. &
+Not claiming that masking is the only possible long-run solution, only that it
+is the safest current deployment choice in our setting. \\
+Minimal repairs are diagnostic interventions rather than the final answer. &
+\texttt{visible\_cond\_swap} moves the faithfulness--utility frontier, but no
+simple visible repair dominates strong masked baselines or masked reranking. &
+Not claiming universal repair dominance or a new best verifier architecture. \\
+\textsc{Craft-Clean} is a usable cleaner audit benchmark. &
+The accepted export keeps \texttt{52/54} families under an artifact-focused
+criterion and reproduces the visible-vs.-masked faithfulness gap at mid-scale. &
+Not claiming full benchmark closure; external human blind audit is still
+pending. \\
+External-source corroboration supports the benchmark pivot. &
+On \textsc{ProcessBench}, the current strongest verifier is a step-only frozen
+baseline, answer-only swaps still expose a large visible-vs.-masked gap, and a
+fully constructed local-repair subset still does not favor the visible view. &
+Not claiming that external-source results already support a new deployment
+headline, or that \textsc{ProcessBench} is itself an \amcd/\ass{} quartet benchmark. \\
+\bottomrule
+\end{tabularx}
+\end{table}

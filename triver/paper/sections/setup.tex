@@ -1,0 +1,61 @@
+We consider a reasoning policy interacting with a prefix \(p_t\) and a remaining token budget \(b_t\).
+At each decision point the controller chooses one of three actions:
+\[
+\mathcal{A} = \{\continue, \revise, \abstain\}.
+\]
+Here \continue means extending the current trajectory, \revise means taking one bounded corrective intervention, and \abstain means stopping and declining further computation.
+
+\paragraph{Oracle utility.}
+For a prefix \(p_t\) in an exact-checker domain, we estimate an action utility
+\[
+\mathcal{U}(a \mid p_t, b_t)
+\]
+by rollout under a fixed base reasoner and exact task checker.
+The oracle action is the action with maximal expected utility.
+Because the environment is verifiable, the oracle can be computed at the prefix level rather than inferred only from final-task success.
+In the experiments reported here, \abstain has fixed utility \(0\), while \continue and \revise are estimated from \(4\)--\(8\) Monte Carlo rollouts of a fixed base reasoner \(\pi_0\).
+Each rollout is scored by
+\[
+\mathbb{1}\{\text{success}\} - \lambda_{\text{tok}} \cdot \text{tokens} - \gamma_{\text{wrong}} \cdot \mathbb{1}\{\text{unsafe wrong}\},
+\]
+so the benchmark trades off correctness, token cost, and harmful incorrect finalization.
+A prefix is marked \emph{ambiguous} when the top-two estimated actions are not cleanly separated: either the top-two mean-utility gap is below \(0.05\), or their \(95\%\) confidence intervals overlap.
+Main controller comparisons exclude ambiguous prefixes by default.
+
+\paragraph{Ordered scalar controllers.}
+The ordered-scalar controller class reduces the decision to a scalar score \(s(p_t)\) together with budget-dependent thresholds.
+Abstractly, it has the form
+\[
+\pi_{\text{scalar}}(p_t, b_t) = g(s(p_t), b_t),
+\]
+where \(g\) is an order-preserving threshold policy over \(s\).
+This covers natural scalar surrogates together with learned scalar summaries paired with order-preserving decision rules.
+At the same time, the paper does \emph{not} claim to rule out every one-dimensional encoding.
+The learned one-dimensional controller in the main text should be read as a strong compression baseline, not as the formal impossibility target.
+Our benchmark is designed to test whether such scalar-ordering views are expressive enough for low-regret prefix control.
+
+\paragraph{Structured controllers.}
+We also study a factorized controller family that predicts a structured \processstate and then maps that state to action values.
+The exact semantic content of the state is intentionally narrow.
+One component captures local invalidity risk \(q_t\).
+A second component captures \emph{continuation outcome statistics}: summary information about what happens if the current prefix is allowed to continue.
+We avoid calling these richer features the full \(S_t\) from the original proposal, because in the current exact-checker domains the original Beta-style success uncertainty often degenerates.
+
+\paragraph{Controller families.}
+The main-text comparison includes five controller types:
+\begin{enumerate}[leftmargin=1.5em]
+  \item \orderedscalar: an ordered threshold controller over \(\mu_{\continue}\),
+  \item \learnedoned: a learned one-dimensional ordered controller,
+  \item \directpolicy: an unstructured direct policy,
+  \item \triver exact-state: a structured controller with oracle state access,
+  \item \triver predicted-state: one selected deployable predicted-state controller per domain.
+\end{enumerate}
+The exact-state controller is an upper bound on what the factorization can achieve when state is not the bottleneck.
+The predicted-state controller measures deployment quality.
+The predicted-state row is intentionally frozen for the main text.
+Later appendix rescue probes are used to diagnose the deployment gap, not to reopen the core controller comparison.
+
+\paragraph{Domains and metrics.}
+We instantiate the benchmark on arithmetic and linear equations.
+Our core metrics are oracle determinacy rate, crossing mass, action regret, oracle action accuracy, revision harm, and compute-value calibration.
+For budgeted evaluation we also report action regret as a function of budget and equal-token frontiers.

@@ -1,0 +1,19 @@
+\section{Introduction}
+
+The motivating question behind CNT is not simply how to assign another process reward, but how to define and audit a more precise supervision object for reasoning traces. Our working object is \emph{trajectory-conditional necessity}: given a successful trace, how much does a particular local step matter for future successful continuation once nearby edits and continuators are controlled?
+
+CNT therefore separates three questions that are often conflated in reasoning-supervision work. First, can the target object be identified at all? Second, can it survive auditing in a real domain under editor and continuator variation? Third, can that object be converted into offline utility gains over matched control? The proposal operationalizes these questions as a staged program: Week~1 for synthetic recovery, Week~2 for real-domain auditing, and Week~3 for offline training. Weeks~4--6 are intentionally downstream and only become live once Week~3 produces a credible positive signal.
+
+The current evidence supports a disciplined reading. The object-level program is successful through Week~2. The training-side program is not yet successful through Week~3. Several structurally different offline families move offline margins, but none currently deliver a stable CNT-over-control rollout gain. The right status update is therefore not ``almost-there training win,'' but rather:
+
+\begin{quote}
+Week~1--2 succeed; Week~3 is a clean negative / partial-result branch.
+\end{quote}
+
+This paper preserves that distinction and treats the negative Week~3 branch as a result rather than as an inconvenience. The resulting contribution set is narrower than a full training-win paper, but it is also cleaner:
+
+\begin{itemize}
+  \item a staged, object-first CNT program that explicitly separates identification, auditing, and utility claims;
+  \item synthetic and real-domain evidence showing that the necessity object is meaningful and auditable;
+  \item a clean negative / partial-result Week~3 branch showing that current offline training families do not automatically convert that object into rollout gains.
+\end{itemize}

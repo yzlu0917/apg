@@ -1,0 +1,30 @@
+\section{Discussion And Limitations}
+
+\subsection{What The Current Evidence Actually Buys}
+
+The current evidence is strongest on the object side. In particular, the project now supports a benchmark-and-audit contribution even without a positive offline training headline. The synthetic gate shows that the target quantity is not merely observational step quality, while the larger-pool GSM8K audit shows that the same object survives beyond tiny-sample toy settings.
+
+What this buys is a more defensible decomposition of reasoning supervision. Instead of asking only whether a training recipe improves accuracy, the project first asks whether the supervision object is identifiable and auditable. That contribution survives the current negative Week~3 branch and remains the main positive claim of the paper.
+
+\subsection{What The Current Evidence Does Not Buy}
+
+The project does not yet justify stronger downstream claims. In particular:
+
+\begin{itemize}
+  \item it does not justify saying CNT offline training robustly beats matched SFT-only control;
+  \item it does not justify equal-token frontier claims;
+  \item it does not justify a second-domain generalization claim;
+  \item it does not justify lightweight RL refinement.
+\end{itemize}
+
+The right reading is therefore narrower than a full training-paper claim. The current paper should be framed as a successful object-identification and auditing program with an unresolved offline utility-conversion problem.
+
+\subsection{Current Failure Mode}
+
+The present Stage~B pattern is also informative in a specific way. Several families, including genuinely different ones, improve offline margins without producing a stable rollout gain. This suggests that local pairwise or bundlewise agreement with the intended object is not by itself enough to guarantee non-harmful utility conversion. The current bottleneck is therefore deeper than data cleanliness alone and should be treated as an objective-family problem rather than a final-gate problem.
+
+The dev-pool evidence further suggests that the failure is structured rather than noisy. One family creates a small utility improvement while hurting weighted necessity; another family inverts that tradeoff; several stronger variants collapse the frontier back to an exact tie. That pattern is harder to dismiss as simple undertraining or evaluation noise.
+
+\subsection{Scope Limits}
+
+All current real-domain evidence is on audited GSM8K-style math traces. We deliberately avoid over-claiming beyond that scope. The proposal already anticipated that broader utility and frontier claims should remain conditional on stronger earlier-stage evidence. The current paper follows that discipline and treats Weeks~4--6 as open rather than implicitly completed.

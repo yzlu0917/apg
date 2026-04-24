@@ -1,0 +1,137 @@
+name: pairwise-progress-label-v0
+status: draft-for-object-gate
+version_date: 2026-04-03
+purpose: stronger pairwise progress labeling schema for frozen-hidden separability audits
+owner: object-gate
+
+task:
+  unit: pair_of_candidate_steps_under_shared_pre_state
+  comparison_question: which candidate produces more goal-directed progress from the same pre-state
+  compatibility_with_round35_36: true
+  note: in the fixed-pre-state pairwise setting, post-state and transition differences collapse to the same comparison object
+
+candidate_schema:
+  required_fields:
+    - theorem_id
+    - step_index
+    - candidate_id
+    - step_text
+    - local_sound
+    - parser_status
+    - before_goal_count
+    - after_goal_count
+    - main_goal_solved
+    - spawned_goal_count
+    - before_main_goal_pp
+    - after_main_goal_pp
+    - before_total_goal_tokens
+    - after_total_goal_tokens
+    - progress_class
+    - progress_evidence
+  parser_status_values:
+    - exact
+    - normalized_equiv
+    - parse_error
+    - type_error
+    - unknown
+  progress_class_values:
+    solved:
+      description: locally sound and closes the main goal with no remaining goals
+      ordinal: 3
+    reduced:
+      description: locally sound and reduces goal count or total goal complexity without introducing harder obligations
+      ordinal: 2
+    equivalent:
+      description: locally sound and leaves the proof state equivalent up to formatting or theorem-application style
+      ordinal: 1
+    ambiguous:
+      description: locally sound but progress direction is unclear from state deltas alone
+      ordinal: 0
+    regressed:
+      description: locally sound but increases goals or clearly worsens the obligation structure
+      ordinal: -1
+    unsound:
+      description: parser/type/semantic failure; not a valid local proof step
+      ordinal: -2
+
+pair_schema:
+  required_fields:
+    - pair_id
+    - theorem_id
+    - step_index
+    - shared_pre_state_guarantee
+    - source_candidate
+    - variant_candidate
+    - pair_label
+    - pair_label_strength
+    - label_source
+    - label_status
+  pair_label_values:
+    no_progress_difference:
+      description: both candidates are progress-equivalent under the stronger schema
+    source_better_weak:
+      description: source has a one-level ordinal advantage over variant
+    source_better_strong:
+      description: source has a two-or-more-level ordinal advantage over variant
+    variant_better_weak:
+      description: variant has a one-level ordinal advantage over source
+    variant_better_strong:
+      description: variant has a two-or-more-level ordinal advantage over source
+    incomparable:
+      description: pair should not be used for final object-gate reporting
+  pair_label_strength_values:
+    - proxy
+    - structural
+    - decisive
+  label_status_values:
+    - final_usable
+    - proxy_only
+    - needs_proof_state_extraction
+    - ambiguous_holdout
+
+derivation_rules:
+  candidate_progress:
+    - if local_sound == 0, assign unsound
+    - else if main_goal_solved == true and after_goal_count == 0, assign solved
+    - else if after_goal_count < before_goal_count, assign reduced
+    - else if before_main_goal_pp == after_main_goal_pp and before_goal_count == after_goal_count, assign equivalent
+    - else if after_goal_count > before_goal_count or after_total_goal_tokens > before_total_goal_tokens, assign regressed
+    - else assign ambiguous
+  pairwise_label:
+    - compare source and variant progress ordinals
+    - absolute ordinal gap 0 -> no_progress_difference when both are equivalent-compatible; otherwise incomparable
+    - absolute ordinal gap 1 -> weak advantage label
+    - absolute ordinal gap >= 2 -> strong advantage label
+    - any ambiguous candidate -> incomparable unless manually resolved
+
+current_mapping_from_cts_v0:
+  source_assumption:
+    current_value: local_sound_positive_proxy
+    caveat: source is usually curated as the canonical positive step but lacks proof-state evidence
+  variant_assumption:
+    same_semantics: positive_proxy
+    semantic_flip: negative_proxy
+  pair_label_mapping:
+    same_semantics: no_progress_difference
+    semantic_flip: source_better_strong
+  label_status: proxy_only
+  note: current CTS rows can seed the schema but do not satisfy final_usable status without proof-state extraction
+
+extraction_requirements:
+  missing_from_current_lean_jsonl:
+    - before_goal_count
+    - after_goal_count
+    - main_goal_solved
+    - spawned_goal_count
+    - before_main_goal_pp
+    - after_main_goal_pp
+    - before_total_goal_tokens
+    - after_total_goal_tokens
+    - parser_status
+  recommended_next_step:
+    - add a Lean proof-state extraction pass that records before/after states for each step and each variant replay
+
+freeze_rules:
+  - do not report final pairwise object-gate numbers using proxy_only labels as if they were structural labels
+  - keep current round35/36 results as proxy-based object evidence, not final pairwise progress evidence
+  - once a frozen final pairwise panel is defined, do not change pair_label derivation without reopening ALIGN

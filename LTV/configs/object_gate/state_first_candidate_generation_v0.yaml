@@ -1,0 +1,50 @@
+name: state-first-candidate-generation-v0
+status: seed-panel-frozen
+version_date: 2026-04-07
+purpose: generate candidate tactics from shared Lean before-states for pairwise progress data construction
+
+task:
+  unit: before_state_with_multiple_candidate_tactics
+  main_question: for the same Lean before-state, which replayable candidate tactic leads to more proof progress
+  label_source:
+    legality: Lean replay
+    progress_oracle: human pairwise judgment
+  old_cts_role: auxiliary audit set only
+
+seed_panel:
+  source_artifact: artifacts/object_gate_round41/cts_variant_replay_full.jsonl
+  dedupe_key:
+    - theorem_id
+    - before_goals
+  inclusion_rule:
+    - source replay must be ok
+    - before_goals must be present
+  current_panel_target: small_clean_seed
+
+candidate_generation:
+  provider_requirement: external model API or equivalent generation backend
+  current_env_status: no_api_key_detected
+  requested_candidates_per_state: 8
+  diversity_requirement:
+    - theorem_application
+    - constructor_or_projection
+    - rewrite_or_simpa_style
+    - eliminator_or_case_progress
+  tactic_format:
+    - single Lean tactic per candidate
+    - no code fences
+    - no explanation text
+  replay_note:
+    - composite tactics containing semicolons should be normalized or split before replay
+
+oracle_guidance:
+  validity_first: invalid candidates are not judged for progress
+  progress_question: among replayable candidates under the same before-state, which tactic more strongly advances the proof
+  annotation_mode:
+    - pairwise preference
+    - optional within-state top_k ranking
+
+freeze_rules:
+  - do not use old CTS same/flip labels as the main progress oracle on this branch
+  - do not treat API-generated candidates as labels; they are only proposal candidates
+  - do not judge unreplayable candidates for progress

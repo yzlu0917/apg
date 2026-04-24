@@ -1,0 +1,17 @@
+The project also contains a cross-domain specialist-routing extension.
+Its question is different from the main paper's prefix-action question:
+given two fixed within-domain specialists, can a shared learned router choose between them better than a hard domain split?
+
+The answer is yes in expectation once supervision is large enough.
+In the current extension results, learned routing can surpass hard specialist routing in mean regret.
+At the same time, routing-family winners remain much less stable than the within-domain controller rankings used in the main text.
+That is why routing stays in the appendix.
+It is informative, but it lives at a different level of control.
+
+Three conclusions matter for the paper.
+First, hard-coded fallback heuristics are not the main source of routing gains.
+Second, learned routing can outperform hard specialist routing in mean performance.
+Third, routing must be reported with mean/std and win counts rather than with a single-seed winner, because single-run frontier effects are too unstable.
+
+The current strongest routing family is a higher-capacity random-forest-style router, specifically the stronger ExtraTrees-style variant within that family.
+We keep this result as an extension because it supports a broader hierarchical-control view, but it is not necessary for the benchmark and controller-class claims in the main paper.

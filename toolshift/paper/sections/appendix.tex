@@ -1,0 +1,101 @@
+\section{Artifact Pointers}
+\label{app:artifacts}
+
+This draft relies on the following repository artifacts:
+\begin{itemize}[leftmargin=1.5em]
+    \item blind review: \url{artifacts/real_evolution_blind_review_v1/summary.json}
+    \item dev-versus-blind comparison: \url{artifacts/real_evolution_dev_vs_blind_v1/summary.json}
+    \item protocol reliability (dev): \url{artifacts/real_evolution_protocol_reliability_dev_v1/summary.json}
+    \item protocol reliability (blind): \url{artifacts/real_evolution_protocol_reliability_blind_v1/summary.json}
+    \item blind family/vendor stability: \url{artifacts/real_evolution_blind_stability_v1/summary.json}
+    \item decisive SCC revisit: \url{artifacts/real_evolution_family_holdout_teacher_distilled_v1/summary.json}
+    \item decisive SCC diagnostics: \url{artifacts/real_evolution_factorized_compare_teacher_distilled_vs_aug_only_v1/summary.json}
+    \item masking sensitivity: \url{artifacts/real_evolution_masking_sensitivity_v1/summary.json}
+    \item decision-state probe: \url{artifacts/real_evolution_decision_probe_v1/summary.json}
+    \item boundary evidence: \url{artifacts/real_evolution_boundary_evidence_v1/summary.json}
+    \item external bridge assets: \url{artifacts/api_bank_seed_pilot_v1/summary.json}, \url{artifacts/bfcl_bridge_pilot_qwen3_8b_v1/summary.json}, \url{artifacts/toolevo_bridge_qwen_prompt_4b_v1/summary.json}
+    \item non-Qwen public-model snapshots: \url{artifacts/real_evolution_blind_llama32_3b_v1/summary.json}, \url{artifacts/toolevo_bridge_llama32_3b_v1/summary.json}
+\end{itemize}
+
+\section{External Comparability Snapshots}
+
+Table~\ref{tab:appendix-external} collects the public-model snapshots that now back the main-text claim that \toolshift{} is not only difficult for our retained internal methods. We report split-aware metrics where the bridged benchmark exposes positive/negative structure, and use dashes otherwise.
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{llcccc}
+        \toprule
+        Benchmark & Model & \CAA{} & \CAA$^{+}$ & \NOS{} & Cov. \\
+        \midrule
+        \toolshift{} dev & Qwen3-8B & 0.931 & 0.960 & 0.727 & 0.917 \\
+        \toolshift{} blind & Qwen3-8B & 0.875 & 0.923 & 0.636 & 0.854 \\
+        \toolshift{} blind & Qwen3-4B & 0.812 & 0.923 & 0.364 & 0.917 \\
+        \toolshift{} blind & Llama-3.2-3B & 0.625 & 0.692 & 0.273 & 0.833 \\
+        API-Bank bridge & Qwen3-8B & 0.486 & 0.667 & 0.125 & 0.986 \\
+        ToolEVO bridge & Qwen3-4B & 0.844 & 0.938 & 0.500 & 0.875 \\
+        ToolEVO bridge & Llama-3.2-3B & 0.500 & 0.375 & 1.000 & 0.438 \\
+        BFCL bridge & Qwen3-8B & 0.840 & --- & --- & 0.640 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Public-model snapshots under the \toolshift{} evaluator. BFCL bridge does not expose the positive/negative split used by \toolshift{}, so only overall \CAA{} and coverage are directly comparable there; its selective risk is $0.25$.}
+    \label{tab:appendix-external}
+\end{table}
+
+A separate retrieval+rerrank document baseline now complements the same picture. On \toolshift{} blind it reaches $\CAA=0.812 / \CAA^{+}=1.000 / \NOS=0.273 / \POC=1.000$; on API-Bank bridge it reaches $\CAA=0.806$, on ToolEVO bridge $\CAA=0.719$, and on BFCL bridge $\CAA=0.580$ at full coverage. This is useful because it addresses the reviewer-facing ``document retrieval system'' baseline bucket directly. It is also revealing: the baseline is strong on documentation-heavy schema-visible assets, but it does not dominate the public Qwen baselines on BFCL, ToolEVO, or \toolshift{} blind. The non-Qwen Llama-3.2-3B snapshot adds a separate sanity check: it is weaker overall than the Qwen baselines, but it fails in the same general direction on \toolshift{} blind and behaves as an over-conservative blocker on ToolEVO.
+
+\section{Protocol Reliability and Stability Notes}
+
+The protocol-reliability artifacts make explicit that dual-control negatives are a structural property of the benchmark rather than a hidden evaluator quirk. In both panels, 10 of the 11 negative views admit either \texttt{ask\_clarification} or \texttt{abstain}. Projecting these views to a single-action-only benchmark drives blind \NOS{} to $1.000$ for all compared methods, so a single-action evaluator would erase the main phenomenon. Ask-only and abstain-only projections instead favor different method families, which is precisely why the main paper uses a set-valued evaluator and reports the sensitivity separately.
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lcccc}
+        \toprule
+        Method & Canonical \NOS{} & Ask-only \NOS{} & Abstain-only \NOS{} & Single-action \NOS{} \\
+        \midrule
+        Scaffold baseline & 0.727 & 0.727 & 0.091 & 1.000 \\
+        Qwen3-8B & 0.636 & 0.182 & 0.545 & 1.000 \\
+        Qwen3-4B & 0.364 & 0.091 & 0.364 & 1.000 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Blind split-sensitivity summary. Because 10 of the 11 blind negative views are dual-control, collapsing the benchmark to a single negative action would trivialize \NOS{}. Ask-only and abstain-only projections instead reward different controller families.}
+    \label{tab:appendix-sensitivity}
+\end{table}
+
+The blind-stability artifacts complement the same point. Family-cluster and vendor-cluster bootstrap intervals are wide, so the benchmark should not be presented as a large-$N$ leaderboard. At the same time, leave-one-family-out results show that the blind scaffold drop is not caused by a single family. Removing \texttt{slack\_auth} helps, but does not restore blind-perfect behavior; \texttt{gitlab\_rest} and \texttt{trello} still move \NOS{} materially.
+
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{lccc}
+        \toprule
+        Method & Blind \NOS{} & Family bootstrap CI & Leave out \texttt{slack\_auth} \\
+        \midrule
+        Scaffold baseline & 0.727 & [0.444, 0.917] & 0.800 \\
+        Qwen3-8B & 0.636 & [0.273, 0.917] & 0.700 \\
+        Qwen3-4B & 0.364 & [0.091, 0.667] & 0.400 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Blind family-level stability for \NOS{}. The scaffold drop is pressure-sensitive but not a single-family artifact: removing \texttt{gitlab\_rest} or \texttt{trello} still leaves scaffold \NOS{} at $0.778$.}
+    \label{tab:appendix-stability}
+\end{table}
+
+\section{Retained Learned-Route Context}
+
+We intentionally do not present the many pair-model variants as main-method tables in the core paper. They are useful as diagnostic evidence but would dilute the main contribution. The key takeaways from these routes are:
+\begin{enumerate}[leftmargin=1.5em]
+    \item stronger learned pair models were explored systematically on the dev panel,
+    \item none surpassed the strongest scaffold baseline on frozen blind review,
+    \item the dominant failure mode was a tradeoff between negative inhibition and positive retention.
+\end{enumerate}
+
+\section{Additional Visualizations Omitted for Space}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item one protocol figure for positive versus negative versus impossible splits,
+    \item one benchmark-governance figure for dev versus frozen blind panels,
+    \item one family-level blind heatmap emphasizing \texttt{slack\_auth},
+    \item one decision-state figure for positive-state similarity and separation gap.
+\end{itemize}

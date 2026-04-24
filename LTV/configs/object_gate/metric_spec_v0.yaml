@@ -1,0 +1,29 @@
+name: metric-spec-v0
+status: frozen-for-phase0
+version_date: 2026-03-31
+
+object_gate:
+  primary_metrics:
+    - local_sound_auroc
+    - earliest_fail_localization
+    - invariance_gap
+    - semantic_sensitivity
+  first_smoke_checks:
+    - boundary extraction completes without runtime error
+    - per-step feature tensors have consistent layer dimensions
+    - output manifest contains theorem_id, step_index, token counts, and labels
+  provisional_go_signals:
+    - transition beats post_state_only on at least one object-specific metric
+    - or matched-SS invariance_gap improves by at least 20 percent
+    - or earliest-fail localization improves by at least 3 absolute points
+  no_go_signals:
+    - transition is indistinguishable from text/post-state controls
+    - or the signal disappears after basic audit controls
+
+reporting:
+  always_record:
+    - exact command
+    - model path
+    - input slice path
+    - output directory
+    - failure mode if any

@@ -1,0 +1,107 @@
+\section{Current Results}
+
+\subsection{Synthetic Recovery Of The Necessity Object (Week 1)}
+
+Week~1 is positive. The synthetic benchmark establishes that necessity recovery can track programmed ground truth while avoiding collapse onto observational or detectability-only shortcuts. This is the first reason the project remains aligned with the proposal: the object survives its earliest falsification gate.
+
+The key synthetic readout remains strong:
+
+\begin{itemize}
+  \item correlation between CNT score and synthetic ground truth: $0.9902$;
+  \item observational baseline correlation: $-0.0488$;
+  \item entropy baseline correlation: $-0.6187$.
+\end{itemize}
+
+\subsection{Larger-Pool Audited Math Evidence (Week 2)}
+
+Week~2 is also positive. The current larger-pool conservative exit is based on a 112-trace GSM8K collection baseline and yields a strong joint audit:
+
+\begin{itemize}
+  \item 298 candidate-step pairs remain after conservative filtering;
+  \item 230 of those 298 survive the final train-side plus held-out joint audit;
+  \item the kept subset shows zero paraphrase gap under the current conservative protocol.
+\end{itemize}
+
+This means the object is not surviving only because of tiny-sample luck. The main remaining Stage~A failure family is held-out swap repair, not paraphrase drift.
+
+\subsection{Offline Training Does Not Yet Yield Stable Utility Gains (Week 3)}
+
+Week~3 is the current negative / partial-result branch. After freezing the strict final-test gate, recipe development moved to a disjoint 81-example dev pool. The accepted dev-side evidence is:
+
+\begin{itemize}
+  \item \emph{uniform equiv weighting}: exact tie;
+  \item \emph{rollout-preference-only}: sparse frontier, with utility up and weighted necessity down;
+  \item \emph{semantic anchor negatives}: exact tie;
+  \item \emph{cross-prompt protect}: exact tie even after adding a genuine cross-prefix protection term;
+  \item \emph{bundle-level cross-prefix ranking}: a genuinely new objective family, but still three-fold tie plus one-fold frontier.
+\end{itemize}
+
+The most informative current result is the bundle-level family, because it changes objective family rather than only moving a nearby knob inside the earlier pairwise family. Its aggregate dev-pool outcome is:
+
+\begin{itemize}
+  \item $\Delta$ drop solve $= -0.0060$,
+  \item $\Delta N_t = -0.0040$,
+  \item $\Delta$ weighted $N_t = +0.0057$,
+  \item with non-zero behavior in only one of four folds.
+\end{itemize}
+
+Even after a genuinely different family, the rollout picture is still not a broad CNT-over-control win. Across families, the recurrent pattern is not random instability but a clean frontier: some recipes improve utility at the cost of weighted necessity, while others improve weighted necessity at the cost of utility, and many collapse back to exact ties.
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{p{0.19\linewidth} p{0.16\linewidth} p{0.14\linewidth} p{0.31\linewidth}}
+    \toprule
+    Family & Rollout delta & Weighted $N_t$ delta & Reading \\
+    \midrule
+    uniform equiv weighting & tie & tie & no effect after hygienic dev split \\
+    rollout-preference-only & $+0.0127$ drop solve & $-0.0123$ & sparse frontier \\
+    semantic anchor negatives & tie & tie & semantic negatives flatten the frontier \\
+    cross-prompt protect & tie & tie & genuine protect term remains rollout-no-op \\
+    bundle cross-prefix ranking & $-0.0060$ drop solve & $+0.0057$ & new-family partial-negative \\
+    \bottomrule
+  \end{tabular}
+  \caption{Week~3 dev-pool family summary after freezing the strict final-test gate. Internal artifact labels are omitted from the main text and retained only in the appendix.}
+  \label{tab:signal-summary}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{p{0.22\linewidth} p{0.16\linewidth} p{0.12\linewidth} p{0.28\linewidth}}
+    \toprule
+    Regime & Key metric & Value & Interpretation \\
+    \midrule
+    Week 1 synthetic & corr(CNT, GT) & $0.9902$ & object recovered from ground truth \\
+    Week 2 larger-pool audit & final kept pairs & $230 / 298$ & conservative real-domain object survives \\
+    Week 2 larger-pool audit & held-out weighted $N_t$ on kept subset & $0.0332$ & positive object signal remains after joint audit \\
+    Week 3 dev pool (rollout-pref-only) & $\Delta$ drop solve & $+0.0127$ & sparse utility improvement only \\
+    Week 3 dev pool (rollout-pref-only) & $\Delta$ weighted $N_t$ & $-0.0123$ & frontier, not broad win \\
+    Week 3 dev pool (bundle family) & $\Delta$ drop solve & $-0.0060$ & new-family partial-negative \\
+    Week 3 dev pool (bundle family) & $\Delta$ weighted $N_t$ & $+0.0057$ & one-fold frontier persists \\
+    \bottomrule
+  \end{tabular}
+  \caption{Representative quantitative checkpoints across the current program.}
+  \label{tab:keynumbers}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \small
+  \begin{tabular}{p{0.14\linewidth} p{0.17\linewidth} p{0.12\linewidth} p{0.43\linewidth}}
+    \toprule
+    Stage & Target & Status & Main evidence \\
+    \midrule
+    Week 1 & synthetic object identification & positive & synthetic benchmark recovers necessity rather than observational shortcuts \\
+    Week 2 & real-domain audited object & positive & 112-trace pool, 230/298 survive final joint audit \\
+    Week 3 & offline training utility gain & negative / partial & five dev-side recipe families move offline margins but do not yield stable rollout wins \\
+    Week 4--6 & ablations, frontier, second-domain, RL & open & downstream claims remain unsupported until a stronger Week~3 signal exists \\
+    \bottomrule
+  \end{tabular}
+  \caption{Current status against the staged proposal.}
+  \label{tab:status}
+\end{table}
+
+\subsection{Why Week 4--6 Remain Open}
+
+The proposal's later weeks depend on a stronger training-side signal than the project currently has. Week~4 assumes a meaningful positive recipe that can be stress-tested under length matching, held-out editors, and continuator changes. Week~5 assumes there is already a candidate utility advantage worth carrying into frontier and second-domain comparisons. Week~6 assumes the signal is strong enough to justify RL refinement and a final significance package. None of those conditions currently hold, so the honest status is that Weeks~4--6 remain open rather than completed.

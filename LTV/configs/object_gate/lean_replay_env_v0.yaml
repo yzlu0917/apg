@@ -1,0 +1,25 @@
+name: lean-replay-env-v0
+status: smoke-verified
+version_date: 2026-04-07
+purpose: project-side environment hook for Lean proof-state replay and future pairwise progress data construction
+
+workspace:
+  mathlib_root: /root/mathlib4-4.15.0
+  repl_root: /root/mathlib4-4.15.0/repl
+  toolchain_file: /root/mathlib4-4.15.0/lean-toolchain
+  toolchain: leanprover/lean4:v4.15.0
+
+executables:
+  lake: /root/.elan/bin/lake
+  lean: /root/.elan/bin/lean
+
+smoke:
+  input_path: data/lean/repl_smoke_v0.in
+  raw_output_path: artifacts/object_gate_round38/repl_smoke_output.txt
+  summary_path: artifacts/object_gate_round38/repl_smoke_summary.json
+  command_note: run `lake exe repl` inside `repl_root` with the project-owned smoke input
+
+freeze_rules:
+  - this config only proves that an external Lean+Mathlib REPL can be called from the project
+  - it does not imply proof-state extraction is already implemented
+  - future pairwise progress labels still require replay and state extraction on project data

@@ -1,0 +1,41 @@
+\section{Claim Boundary Relative To The Proposal}
+
+The proposal remains directionally correct, but the supported claim set is narrower than a full training-win story. This section makes the paper's claim boundary explicit.
+
+\subsection{What Is Supported}
+
+The current evidence supports the following:
+
+\begin{itemize}
+  \item trajectory-conditional necessity is a meaningful object on synthetic data;
+  \item the same object survives larger-pool real-domain auditing in math;
+  \item the project now has a reproducible object-validity protocol and a conservative Week~2 exit.
+\end{itemize}
+
+\subsection{What Is Not Yet Supported}
+
+The current evidence does \emph{not} support:
+
+\begin{itemize}
+  \item a robust CNT-over-control offline training win;
+  \item stable equal-budget utility gains;
+  \item Week~4 ablations preserving a positive training advantage;
+  \item equal-token frontier claims, second-domain transfer, or RL refinement.
+\end{itemize}
+
+\subsection{How Week 3 Should Now Be Read}
+
+Stage~B should be read with a two-stage verdict:
+
+\begin{enumerate}
+  \item utility / no-harm first: CNT should not underperform matched control on original or damaged-prefix rollout utility;
+  \item object-preservation second: weighted necessity and paraphrase/equiv stability can refine the reading once utility is non-negative.
+\end{enumerate}
+
+Under this rule, the current Stage~B families do not pass. The honest proposal-compatible interpretation is therefore:
+
+\begin{quote}
+object identified; audit protocol established; offline utility conversion unresolved.
+\end{quote}
+
+This is a clean negative / partial result, not a collapse of the full research direction.

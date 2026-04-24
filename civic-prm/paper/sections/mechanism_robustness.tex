@@ -1,0 +1,107 @@
+\section{Mechanism Evidence and Robustness}
+
+\subsection{Mechanism evidence}
+
+The central mechanism result is not that repair wins everywhere, but that
+answer sensitivity, local process discrimination, and downstream utility are
+linked in a stable way.
+
+\begin{figure}[t]
+\centering
+\setlength{\fboxsep}{10pt}
+\fbox{
+\begin{minipage}{0.9\linewidth}
+\small
+\centering
+\textbf{Higher local answer sensitivity}
+
+\vspace{0.3em}
+$\Downarrow$
+
+\vspace{0.3em}
+\textbf{Lower local \amcd}
+
+\vspace{0.3em}
+$\Downarrow$
+
+\vspace{0.3em}
+\begin{tabular}{c}
+lower selection gain \\
+higher exploitability
+\end{tabular}
+
+\vspace{0.75em}
+\raggedright
+Observed evidence:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{corr(local\_ASS, local\_AMCD) = -0.2851}
+\item \texttt{corr(local\_AMCD, selection\_gain\_at4) = 0.8475}
+\item \texttt{corr(local\_AMCD, exploitability\_rate) = -0.6662}
+\end{itemize}
+\end{minipage}
+}
+\caption{Mechanism schematic. The key claim is not merely that
+answer-sensitive behavior co-occurs with poor performance, but that the
+observed correlations are consistent with lower local process discrimination
+accompanying worse downstream utility.}
+\label{fig:mechanism_chain}
+\end{figure}
+
+Across pooled head-level points:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{corr(AMCD, selection\_gain\_at4) = 0.8778}
+\item \texttt{corr(AMCD, exploitability\_rate) = -0.7724}
+\item \texttt{corr(ordinary\_auroc, selection\_gain\_at4) = 0.4659}
+\item \texttt{corr(ordinary\_auroc, exploitability\_rate) = -0.0104}
+\end{itemize}
+These head-level correlations already show that \amcd{} is much closer to
+downstream utility than ordinary AUROC. Figure~\ref{fig:mechanism_chain}
+summarizes the behavioral pathway most consistent with the pooled correlations
+and the later robustness results.
+
+The local analysis is stronger still:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{corr(local\_ASS, local\_AMCD) = -0.2851}
+\item \texttt{corr(local\_ASS, selection\_gain\_at4) = -0.2758}
+\item \texttt{corr(local\_ASS, exploitability\_rate) = 0.2726}
+\item \texttt{corr(local\_AMCD, selection\_gain\_at4) = 0.8475}
+\item \texttt{corr(local\_AMCD, exploitability\_rate) = -0.6662}
+\end{itemize}
+The most consistent reading is that answer sensitivity is harmful not merely
+because it exists, but because lower local process discrimination accompanies
+it and tracks the downstream utility gap. This explains why ordinary AUROC can
+remain misleadingly healthy while deployment behavior still degrades.
+
+\subsection{Robustness}
+
+The visible-vs-masked reranker gap also survives transfer checks.
+On the naturalized deployment benchmark, \texttt{Qwen3-Reranker-8B} visible
+falls from hard synthetic \amcd{} \texttt{0.6667} to structured generated
+\texttt{0.3235}, then only recovers to \texttt{0.5294} on the naturalized
+generated slice. The masked reranker instead goes from \texttt{0.7546} to
+\texttt{0.8235} and then \texttt{0.8529}. The visible reranker is therefore
+more brittle under generated OOD, while the masked reranker stays strong and
+low-sensitivity.
+
+Against the mixed visible-attacker ensemble, the strongest current target,
+\texttt{reranker8\_masked}, remains robust:
+\begin{itemize}[leftmargin=1.5em]
+\item \texttt{pairwise\_attack\_win\_rate = 0.1944}
+\item \texttt{quartet\_top\_attack\_rate = 0.1111}
+\item attacked-quartet \selectiongain{} \texttt{= 0.3333}
+\item attacked-quartet \exploitability{} \texttt{= 0.0833}
+\end{itemize}
+For comparison, \texttt{reranker8\_visible} under the same mixed attacker has
+attacked-quartet \exploitability{} \texttt{= 0.25}, and
+\texttt{visible\_cond\_swap} also remains at \texttt{0.25}. This is strong
+evidence that masked deployment is not only better on average but also more
+robust under transfer from visible-family failures.
+
+The main remaining weak slice for the best current model is planning-style
+naturalized blocksworld. On that slice, \texttt{reranker8\_masked} reaches
+\auroc{} \texttt{= 0.6875}, \amcd{} \texttt{= 0.5833}, and \asstotal{}
+\texttt{= 0.0075}. The remaining weakness is therefore concrete rather than
+generic. The cleaner \textsc{Craft-Clean} regime sharpens a complementary
+boundary: once obvious artifact effects are reduced, the remaining weakness is
+less about blocksworld surface artifacts and more about algebra and graph-path
+faithfulness.

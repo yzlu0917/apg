@@ -1,0 +1,37 @@
+\section{Canonical Actions and Evaluation Protocol}
+\label{sec:protocol}
+
+\paragraph{Canonical semantic action.}
+For a user request $x$, we define a canonical action as a tuple
+\[
+a^\star = (t^\star, \mathbf{z}^\star, c^\star),
+\]
+where $t^\star$ is a canonical tool identifier, $\mathbf{z}^\star$ is a normalized argument assignment, and $c^\star \in \{\texttt{execute}, \texttt{abstain}, \texttt{ask\_clarification}\}$ is a control tag. This action is intentionally independent of any particular API surface.
+
+\paragraph{Set-valued admissible action set.}
+We do not assume a single gold action. Instead, each request has an admissible set $A^\star(x)$ containing one or more acceptable canonical actions. This set-valued definition prevents the evaluator from over-committing when multiple tools or control policies are legitimately admissible. Examples that cannot be annotated with sufficiently stable admissible sets are excluded from the main table and placed in ambiguous splits.
+
+\paragraph{Rendered versus canonical actions.}
+An agent sees a concrete schema/documentation view $S_i$ and emits a schema-specific call. Evaluation first canonicalizes that call and then checks membership in $A^\star(x)$. Canonical equivalence is deterministic: tool identity, normalized arguments, control tag legality, and contract compatibility must all match. This design avoids LLM judges and reduces evaluator variance.
+
+\paragraph{Positive transformation families.}
+Positive transformations preserve the intended semantic action. In our setting they include renames, aliases, paraphrases, reorderings, documentation reformats, and version migrations that preserve the executable semantics. Under these views, the admissible canonical action class should remain unchanged.
+
+\paragraph{Negative near-orbits.}
+Negative near-orbits are deliberately not invariance examples. They include deprecations, capability deletions, permission narrowing, response-contract splits, and replacements that are related but no longer drop-in. In these cases the agent should either choose a different admissible action or decline execution.
+
+\paragraph{Impossible boundary.}
+Some changes are not visible in schema, documentation, or observable contract. We explicitly separate such cases from the main claim. They do not belong in the positive or negative main splits; instead, they define an \emph{impossible} boundary. This matters because otherwise an evaluator could reward arbitrary conservatism or punish correct execution when no visible cue exists.
+
+\paragraph{Metrics.}
+We report the following metrics throughout the paper:
+\begin{itemize}[leftmargin=1.5em]
+    \item \CAA: overall canonical action accuracy after deterministic canonicalization,
+    \item \CAA{}$_\text{clean}$: canonical action accuracy on clean views,
+    \item $\CAA^{+}$: canonical action accuracy on positive near-orbit views,
+    \item \POC: positive-orbit consistency, i.e., the execute-side retention of the intended semantic action under positive transformations,
+    \item \NOS: near-orbit sensitivity on negative views,
+    \item coverage: the rate at which the agent returns an admissible control/output rather than falling outside the contract,
+    \item selective risk: error rate on covered examples.
+\end{itemize}
+The paper emphasizes the joint requirement that an agent should keep $\CAA^{+}$ and \POC{} high \emph{without} collapsing \NOS{}. This is precisely why we separate positive transformations from negative near-orbits instead of collapsing them into a single robustness score.

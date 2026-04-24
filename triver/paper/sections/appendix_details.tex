@@ -1,0 +1,43 @@
+This appendix records the implementation choices needed to interpret the main-text comparisons.
+
+\paragraph{Domains.}
+The two main exact-checker domains are arithmetic and linear equations.
+Both domains support prefix-level oracle evaluation through rollout under a fixed base reasoner and exact verification.
+This is what makes action-level utility, determinacy, and crossing measurable at intermediate prefixes rather than only at final answers.
+
+\paragraph{Utility, abstention, and ambiguity.}
+For each non-abstain action, the oracle estimates expected utility from a small Monte Carlo rollout set under a fixed base reasoner.
+The rollout utility is
+\[
+\mathbb{1}\{\text{success}\} - \lambda_{\text{tok}} \cdot \text{tokens} - \gamma_{\text{wrong}} \cdot \mathbb{1}\{\text{unsafe wrong}\},
+\]
+while \abstain is assigned utility \(0\).
+Across the benchmark datasets used in the paper, each non-abstain action is estimated from \(4\)--\(8\) rollouts.
+A prefix is marked ambiguous if the top-two action estimates are not cleanly separated, either because the mean-utility gap is below \(0.05\) or because the corresponding \(95\%\) confidence intervals overlap.
+Main-text controller comparisons exclude ambiguous prefixes by default.
+
+\paragraph{Prefix sampling and bounded revision.}
+Decision points are sampled along base traces produced by the fixed reasoner, and recoverable perturbations are injected when needed to cover revise-relevant states.
+The \revise action is intentionally local: it rolls back the most recent faulty step and resumes rollout from the repaired prefix.
+This bounded operator is part of the benchmark design.
+It makes revision measurable at the prefix level without turning the oracle into an open-ended planner over arbitrary editing strategies.
+
+\paragraph{Frozen main-text controller set.}
+The main paper freezes the controller comparison to five rows:
+\orderedscalar, \learnedoned, \directpolicy, exact-state \triver, and one selected deployable predicted-state \triver controller per domain.
+This freeze is intentional.
+The paper is about benchmark design and controller-class comparison, not about exhaustively searching over every local architecture variant.
+Broader value-head and routing sweeps are therefore treated as appendix-only evidence.
+
+\paragraph{Selected deployable predicted-state controller.}
+The deployable predicted-state row is domain-specific.
+For linear equations, the selected controller uses the predicted state together with an exact-plus-out-of-fold value-head training regime.
+For arithmetic, the selected controller uses the strongest available exact-trained deployable predicted-state controller.
+In the main text we report this row uniformly as predicted-state \triver, because the conceptual question is whether the structured controller survives deployment, not which local variant happened to be the strongest within a domain.
+The later appendix rescue probes intentionally do not overwrite this row.
+They are used to diagnose whether the remaining gap is due to label noise, target mismatch, or state identification, not to reopen the main-text leaderboard.
+
+\paragraph{Repeatability protocol.}
+The repeatability table in the main text uses the \(100\)-sample scale and reports means and standard deviations over a minimal set of within-domain reruns.
+Its purpose is not to certify a universal winner.
+Its purpose is to constrain wording: if a ranking does not survive this repeatability check, we do not write it as a stable paper claim.

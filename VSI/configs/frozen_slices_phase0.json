@@ -1,0 +1,47 @@
+{
+  "phase": "phase0_audit",
+  "families": {
+    "string_ambiguity_large": {
+      "config": "configs/string_ambiguity_family_large_api.json",
+      "dev_task_ids": [
+        "reverse_wrap_01",
+        "upper_suffix_02",
+        "duplicate_prefix_03",
+        "reverse_wrap_04",
+        "upper_suffix_05",
+        "duplicate_prefix_06"
+      ],
+      "final_task_ids": [
+        "reverse_wrap_07",
+        "upper_suffix_08",
+        "duplicate_prefix_09",
+        "reverse_wrap_10",
+        "upper_suffix_11",
+        "duplicate_prefix_12"
+      ]
+    },
+    "exploit_code_large": {
+      "config": "configs/exploit_code_tasks_large_api.json",
+      "dev_task_ids": [
+        "affine_01",
+        "affine_02",
+        "affine_03",
+        "quadratic_04",
+        "quadratic_05",
+        "quadratic_06"
+      ],
+      "final_task_ids": [
+        "triangular_07",
+        "triangular_08",
+        "triangular_09",
+        "alternating_10",
+        "alternating_11",
+        "alternating_12"
+      ]
+    }
+  },
+  "notes": [
+    "This is the first frozen dev/final split for phase-0 audit work.",
+    "No result should be reported as a final-slice conclusion before the scripts are re-run with this split respected."
+  ]
+}

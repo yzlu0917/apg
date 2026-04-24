@@ -1,0 +1,27 @@
+\section{Limitations}
+
+The first limitation is scope. The strongest results are on audited executable
+domains and naturalized/model-generated transfer built around those domains.
+These results should not be read as broad open-domain generality.
+
+The second limitation is that the benchmark story remains layered rather than
+singular. \textsc{Craft-Clean} is usable at mid-scale under the
+artifact-focused acceptance rule, but the external human blind audit is still
+pending. \textsc{ProcessBench} is now an operational external-source package
+that is closed for its intended corroboration role, but it is not a
+matched-quartet replacement and does not by itself reproduce the full
+\amcd/\ass{} protocol. We therefore avoid language that implies a single fully
+closed benchmark, or independence from this layered package structure.
+
+The third limitation is calibration. The downstream evaluation includes
+\texttt{ECE / Brier / AURC}, but the strongest improvements are on ranking and
+exploitability rather than probability calibration. Calibration should
+therefore remain a secondary downstream result and is reported only in the
+appendix.
+
+Finally, the current dual-head and replay lines are informative negative
+results rather than positive method stories. They help define the
+faithfulness-utility boundary, but they do not currently support a claim that a
+single repair mechanism already solves answer leakage at this scale. More
+generally, the strongest contribution is an audit-and-deployment result, not an
+architecture result.

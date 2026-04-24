@@ -1,0 +1,166 @@
+\section{Additional Downstream and Benchmark Details}
+
+\subsection{Calibration remains secondary}
+
+Table~\ref{tab:appendix_calibration} summarizes the main calibration readout
+for the strongest visible and masked rerankers on \textsc{Craft-Deploy}. The
+gap is much smaller than the ranking and exploitability gap in the main text,
+which is why calibration remains an
+appendix-level result rather than a core mechanism claim.
+
+\begin{table}[h]
+\centering
+\caption{Calibration summary for the main deployment comparison. Lower ECE is
+better.}
+\label{tab:appendix_calibration}
+\small
+\begin{tabular}{lcc}
+\toprule
+model & ECE & note \\
+\midrule
+\texttt{reranker8\_masked} & 0.4195 & best deployment model overall \\
+\texttt{reranker8\_visible} & 0.4320 & utility and faithfulness both weaker \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{\textsc{Craft-Clean} acceptance summary}
+
+Table~\ref{tab:appendix_acceptance} records the acceptance logic for the
+current \textsc{Craft-Clean} export. We keep the universal strict gate as a
+diagnostic, but the benchmark is accepted under the artifact-focused criterion
+that does not treat purely semantic detectability as a benchmark failure.
+
+\begin{table}[h]
+\centering
+\caption{\textsc{Craft-Clean} acceptance summary. Higher accepted-family counts
+are better; the strict criterion is reported only as a diagnostic.}
+\label{tab:appendix_acceptance}
+\small
+\begin{tabular}{lcc}
+\toprule
+criterion & accepted families & interpretation \\
+\midrule
+strict & 2 / 54 & over-strict diagnostic only \\
+\texttt{ignore\_semantic\_only} & 52 / 54 & authoritative export criterion \\
+\texttt{surface\_or\_mixed\_only} & 52 / 54 & artifact-focused cross-check \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{\textsc{Craft-Clean} reproduction summary}
+
+Table~\ref{tab:appendix_benchv3_repro} gives the cleaner-benchmark frozen-head
+means across three seeds. These numbers support the same qualitative story as
+the main text: \textsc{Craft-Clean} preserves process-faithfulness gaps, but it does
+not amplify them into a strong utility separation.
+
+\begin{table}[h]
+\centering
+\caption{\textsc{Craft-Clean} quartet-protocol reproduction summary across
+three seeds. Higher is better for AUROC and AMCD; lower is better for ASS.}
+\label{tab:appendix_benchv3_repro}
+\small
+\begin{tabular}{lccc}
+\toprule
+model & AUROC & AMCD & ASS \\
+\midrule
+\texttt{step\_only\_bce} & 0.9233 & 0.8842 & 0.0891 \\
+\texttt{visible\_bce} & 0.9161 & 0.9028 & 0.1389 \\
+\texttt{masked\_bce} & 0.9302 & 0.9213 & 0.1055 \\
+\texttt{pairwise\_visible} & 0.8659 & 0.9028 & 0.0736 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{\textsc{ProcessBench} external-source summary}
+
+Table~\ref{tab:appendix_processbench} records the current external-source main
+table behind the brief readout in the main text. The important point is not
+that rerankers are useless; it is that the current stronger reranker does not
+yet dominate the best frozen external-source baseline, and that its weakest
+behavior on this benchmark is calibration rather than total lack of ranking
+signal.
+The package is now materialized in four canonical release artifacts:
+\texttt{processbench\_suite.json}, \texttt{processbench\_suite.md},
+\texttt{processbench\_manifest.json}, and
+\texttt{processbench\_split\_manifest.json}. Together they fix the
+authoritative datasets and result artifacts for \textbf{PB-Trace},
+\textbf{PB-Prefix}, answer-only swap, and local repair. They also pin the
+grouped trace split and the capped prefix split used by the current frozen and
+reranker baselines.
+
+\begin{table}[h]
+\centering
+\caption{\textsc{ProcessBench} external-source summary. Higher is better for
+AUROC and validation-selected test accuracy. Best values are bold where
+applicable.}
+\label{tab:appendix_processbench}
+\small
+\begin{tabular}{lcccc}
+\toprule
+model & task & AUROC & acc@0.5 & acc@val-thr \\
+\midrule
+\texttt{frozen\_visible} & PB-Trace & 0.7863 & 0.7059 & --- \\
+\texttt{frozen\_masked} & PB-Trace & 0.8075 & 0.7157 & --- \\
+\texttt{frozen\_step\_only} & PB-Trace & \textbf{0.8759} & \textbf{0.7784} & --- \\
+\texttt{reranker8\_visible} & PB-Trace & 0.7337 & 0.3490 & 0.6980 \\
+\texttt{reranker8\_masked} & PB-Trace & 0.7229 & 0.3529 & 0.7000 \\
+\texttt{frozen\_visible} & PB-Prefix & 0.6759 & 0.6229 & --- \\
+\texttt{frozen\_masked} & PB-Prefix & 0.6813 & 0.6386 & --- \\
+\texttt{frozen\_step\_only} & PB-Prefix & \textbf{0.6918} & 0.6375 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{\textsc{ProcessBench} external-source counterfactual checks. For
+answer-only swap, lower mean absolute delta indicates less answer sensitivity.
+For local repair, higher values indicate better local discrimination.}
+\label{tab:appendix_processbench_cf}
+\small
+\begin{tabular}{lccc}
+\toprule
+check & visible & masked & note \\
+\midrule
+answer-only swap mean abs.\ delta & 0.3226 & 0.0645 & 31 answer-swapped pairs \\
+local repair discrimination & 0.3750 & 0.5000 & 8 answer-matched repair pairs \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The external-source counterfactual checks matter because they separate two
+questions. The answer-only swap set shows that answer sensitivity transfers
+cleanly to externally sourced traces rather than being an artifact of the
+generated quartets. The answer-matched local-repair subset now materializes
+fully on a small selected subset, so its current negative-to-inconclusive read
+can no longer be dismissed as mere construction failure. Instead, the present
+external-source picture is sharper: visible answer sensitivity persists, but
+external local repair still does not outperform the masked view. The package
+artifacts above therefore serve two purposes at once: they make the
+external-source benchmark reproducible, and they make its current claim
+boundary explicit rather than leaving it implicit in scattered experiment
+logs.
+
+\subsection{Negative repair results that shape the claim boundary}
+
+Several method lines remain informative negative results rather than positive
+headline stories:
+\begin{itemize}[leftmargin=1.5em]
+\item \textbf{Hard-neg replay:} utility can improve, but answer sensitivity
+often rises with it, leaving a clear frontier rather than a dominant method.
+\item \textbf{Dual-head separation attempts:} the minimal dual-head and the
+step-scan variant both fail to produce a stable additional channel at the
+current scale.
+\item \textbf{Earlier cleaner-benchmark hardening:} the older iterative
+hardening line was useful for discovering artifact failure modes, but
+\textsc{Craft-Clean} is now the active cleaner benchmark regime.
+\end{itemize}
+
+\subsection{External blind-audit status}
+
+The remaining benchmark-validation blocker is external human blind audit on the
+\textsc{Craft-Clean} packet. The packet, response form, hidden key, and scoring script
+already exist locally; what remains is reviewer return rather than additional
+local infrastructure.

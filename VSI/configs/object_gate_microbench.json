@@ -1,0 +1,12 @@
+{
+  "seed": 7,
+  "trajectory_length": 6,
+  "branching_factor": 2,
+  "instances_per_family": 4,
+  "thresholds": {
+    "required_h_gap": 0.5,
+    "required_a_gap": 0.5,
+    "required_e_gap": 0.5
+  }
+}
+

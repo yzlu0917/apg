@@ -1,0 +1,43 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{neurips_2024}[2026/03/15 Local fallback NeurIPS-style package]
+
+\newif\if@final
+\newif\if@preprint
+\newif\if@nonatbib
+
+\DeclareOption{final}{\@finaltrue}
+\DeclareOption{preprint}{\@preprinttrue}
+\DeclareOption{nonatbib}{\@nonatbibtrue}
+\ProcessOptions\relax
+
+\RequirePackage[margin=1in]{geometry}
+\RequirePackage[T1]{fontenc}
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{microtype}
+\microtypesetup{expansion=false}
+\RequirePackage{xcolor}
+\RequirePackage{url}
+\RequirePackage{lineno}
+
+\if@nonatbib\else
+  \RequirePackage[numbers,sort&compress]{natbib}
+\fi
+
+\definecolor{neuripsblue}{rgb}{0.0,0.08,0.45}
+\RequirePackage[colorlinks=true,linkcolor=neuripsblue,citecolor=neuripsblue,urlcolor=neuripsblue]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45ex}
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{2pt}
+
+\AtBeginDocument{%
+  \if@final
+  \else
+    \if@preprint
+    \else
+      \linenumbers
+    \fi
+  \fi
+}

@@ -1,0 +1,57 @@
+\section{Main Results}
+\label{sec:results}
+
+\paragraph{Dev-panel reference-method comparison.}
+On the dev panel, the scaffold baseline reaches perfect aggregate scores. The learned localizer remains competitive on negative inhibition but is weaker overall.
+
+\paragraph{Final matched-budget SCC check on the dev panel.}
+We also ran one final matched-budget SCC revisit against the only controls allowed by our governance plan: \texttt{SeedOnly}, \texttt{AugOnly}, and a teacher-distilled canonical-bottleneck SCC variant. The result is negative. Relative to AugOnly, the decisive SCC run raises dev-panel \CAA{} only from $0.093$ to $0.102$ and \NOS{} from $0.606$ to $0.636$, but leaves $\CAA^{+}=0.000$ and $\POC=0.000$. The paired comparison yields only two improved pairs, both concentrated in a single Stripe lineage. This is not enough to justify escalating the method story to blind review.
+
+\paragraph{Frozen blind review.}
+Table~\ref{tab:main-results} reports the key reference-method comparison on the frozen blind panel. The scaffold baseline remains best overall, but blind review is not trivial: the perfect dev score drops to $\CAA=0.917$, driven almost entirely by \NOS{} degradation rather than by positive-orbit failure.
+
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llcccccc}
+\toprule
+Panel & Method & \CAA{} & \CAA{}$_\text{clean}$ & \CAA$^{+}$ & \NOS{} & \POC{} & Coverage \\
+\midrule
+Dev & Scaffold baseline & 1.000 & 1.000 & 1.000 & 1.000 & 1.000 & 0.986 \\
+Dev & Learned localizer & 0.875 & 0.917 & 0.820 & 0.864 & 0.820 & 0.986 \\
+\midrule
+Blind & Scaffold baseline & 0.917 & 0.958 & 1.000 & 0.727 & 1.000 & 0.979 \\
+Blind & Learned localizer & 0.781 & 0.708 & 0.885 & 0.818 & 0.885 & 0.979 \\
+\bottomrule
+\end{tabular}
+}
+\caption{Reference methods on the dev panel and the frozen blind panel. The scaffold baseline remains best overall after blind review; its degradation is concentrated in \NOS{}, while $\CAA^{+}$ and \POC{} remain intact.}
+\label{tab:main-results}
+\end{table*}
+
+\paragraph{Blind-family stress points.}
+\begin{center}
+\small
+\resizebox{0.98\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+Method & $\Delta$NOS (dev$\rightarrow$blind) & Hardest negative family & Weakest positive family \\
+\midrule
+Scaffold baseline & $-0.273$ & \texttt{slack\_auth} (\NOS{} $=0.000$) & none ($\CAA^{+}=1.000$) \\
+Learned localizer & $-0.045$ & \texttt{gitlab\_rest} (\NOS{} $=0.500$) & \texttt{youtube\_channels} ($\CAA^{+}=0.500$) \\
+\bottomrule
+\end{tabular}
+}
+\end{center}
+The scaffold baseline therefore fails mainly on blind negative inhibition, whereas the learned localizer holds \NOS{} more steadily but gives up positive retention.
+
+\paragraph{External comparability.}
+We additionally place public Qwen baselines, a retrieval+rerrank document reference system, a lightweight non-Qwen public-model sanity check, and external benchmark bridges under the same protocol. A public Qwen3-8B prompt baseline reaches $\CAA=0.931 / \CAA^{+}=0.960 / \NOS=0.727 / \POC=0.960$ on the dev panel, but drops to $\CAA=0.875 / \CAA^{+}=0.923 / \NOS=0.636 / \POC=0.923$ on the frozen blind panel. The drop pattern is not arbitrary: the same blind families that pressure the scaffold baseline---especially \texttt{slack\_auth} and \texttt{gitlab\_rest}---also pressure the public baseline. A separate document retrieval+rerrank baseline preserves blind positive execution ($\CAA^{+}=1.000$, $\POC=1.000$) but still under-inhibits negatives ($\NOS=0.273$), showing that simple documentation grounding is not enough either. A non-Qwen public model, Llama-3.2-3B-Instruct, also degrades sharply on the frozen blind panel ($\CAA=0.625$, $\CAA^{+}=0.692$, $\NOS=0.273$), so the external story is not Qwen-only. This matters because it shows that TOOLSHIFT is not only difficult for our retained method family. We further connect the protocol to API-Bank, BFCL, and ToolEVO-style external assets; these bridges improve community comparability, but do not replace the blind real-evolution panel as the paper's main claim-bearing evaluation.
+
+\paragraph{Protocol sensitivity and blind stability.}
+Because 10 of the 11 blind negatives are dual-control admissible, absolute \NOS{} depends materially on whether the evaluator allows both \texttt{ask\_clarification} and \texttt{abstain}. If these dual-control negatives are collapsed into a single-action-only protocol, blind \NOS{} becomes $1.000$ for all three compared methods, which would trivially erase the benchmark's central difficulty. Conversely, ask-only and abstain-only projections reward different method families. We therefore keep the set-valued protocol and report the sensitivity explicitly. Small-sample uncertainty is also nontrivial: family-cluster bootstrap yields a blind \NOS{} interval of $[0.444, 0.917]$ for the scaffold baseline, and leave-one-family-out analysis shows that removing \texttt{slack\_auth} raises scaffold blind \NOS{} only from $0.727$ to $0.800$. The blind pressure is therefore family-sensitive, but not a one-family artifact.
+
+\paragraph{Takeaway.}
+The key result is not that blind review preserves dev-perfect behavior. It does not. The key result is that the scaffold baseline remains strongest after blind review, while the final SCC revisit still fails to make a credible matched-budget case against AugOnly on the dev panel. Current scaffolded inhibition handles many schema-visible capability gaps but remains brittle under blind auth/scope/permission semantics, especially in auth/scope migrations.

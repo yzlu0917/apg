@@ -1,0 +1,40 @@
+name: Lean-mini-v0
+status: frozen-for-phase0
+purpose: minimal clean-room slice for Object gate smoke and first object-existence check
+domain: lean
+version_date: 2026-03-31
+
+data:
+  seed_path: data/lean/lean_mini_v0_firstpass.jsonl
+  smoke_seed_path: data/lean/lean_mini_v0_smoke.jsonl
+  unit: tactic_step
+  current_seed_records: 20
+  current_seed_steps: 33
+  target_step_count_for_first_real_run: 200-500
+  sampling_policy:
+    - prefer short proofs with clear local tactic boundaries
+    - include both positive and negative local-soundness steps
+    - keep a single prover family during Object gate
+
+labels:
+  local_sound:
+    values: [0, 1]
+    smoke_source: manually curated
+    target_source_for_next_round: executable or parser-assisted validation
+  path_viability:
+    enabled: false
+    rationale: not required for phase-0 object existence
+
+format:
+  required_fields:
+    - theorem_id
+    - split
+    - header
+    - steps
+    - local_sound
+  boundary_definition: text step boundary under a fixed theorem header
+
+freeze_rules:
+  - do not expand to full benchmark before smoke extraction succeeds
+  - do not introduce multi-model mixing in phase 0
+  - do not use this slice to support deployment claims

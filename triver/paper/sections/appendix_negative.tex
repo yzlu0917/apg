@@ -1,0 +1,27 @@
+The project includes a large number of negative or mixed-signal probes.
+These do not belong in the main narrative, but they are important for interpreting the paper's boundaries.
+
+\paragraph{Value-head sweeps.}
+We tested richer value heads including pairwise, interaction, heteroscedastic, low-rank, conditional-latent, and calibration-wrapper variants.
+Taken together, these sweeps support a narrower conclusion than ``we only need a stronger head.''
+Richer parameterizations often improve exact-state performance, but deployable predicted-state performance is much harder to improve robustly.
+Many apparent gains are domain-specific, and many do not survive cross-domain comparison or repeatability checks.
+
+\paragraph{Continuation outcome statistics.}
+The richer structured-controller features eventually included quantities such as wrong-rate, token cost, and utility dispersion.
+These were empirically useful, but they also moved the representation away from the original narrow success-distribution interpretation of \(S_t\).
+This is why the main paper now uses the more conservative term \emph{continuation outcome statistics}.
+
+\paragraph{Why these negative results matter.}
+The point of this appendix is not to advertise more controller families.
+It is to document that the final paper boundaries were chosen only after substantial unsuccessful attempts to eliminate the deployment gap by local architectural search alone.
+Those failures strengthen the main interpretation of the paper:
+the central obstacle is not merely missing head capacity, but reliable state identification and deployment under noise.
+
+\paragraph{State-identification rescue probes.}
+We also tested more targeted rescue probes aimed directly at the deployment gap rather than at generic head capacity.
+These included high-determinacy-only training slices, pairwise/soft teacher targets, exact-state teacher distillation, and combinations of the best cleanup and teacher variants.
+The resulting picture was again conditional rather than universal.
+Some probes improved linear equations, others improved arithmetic, and some combinations reduced revision harm without improving regret.
+But the gains did not stack into a stable rescue, and the best predicted-state variants still remained above the strongest learned one-dimensional baseline on both domains.
+This is the key reason the main paper stops at a benchmark / mechanism / deployment-diagnosis claim.

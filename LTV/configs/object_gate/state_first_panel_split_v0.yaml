@@ -1,0 +1,33 @@
+name: state-first-panel-split-v0
+version_date: 2026-04-08
+purpose: freeze the first state-first oracle dev panel and define the next medium-difficulty expansion slice
+
+panels:
+  dev_oracle_panel_v0:
+    status: frozen_for_current_object_gate
+    source:
+      - data/lean/state_first_dev_panel_v0.jsonl
+      - data/annotations/state_first_progress_oracle_batch_v0.jsonl
+    role:
+      - first human-oracle object-gate panel
+      - first frozen-hidden separability audit
+    notes:
+      - includes two fully solved arithmetic states
+      - suitable as dev/object evidence, not yet as final panel
+
+  medium_seed_panel_v0:
+    status: pending_generation_and_replay
+    source:
+      - data/lean/state_first_medium_seed_panel_v0.jsonl
+    role:
+      - next state-first expansion slice
+      - intended to increase partial-order structure and reduce all-solved dominance
+    inclusion_bias:
+      - implication composition
+      - equality transitivity
+      - projection-plus-application
+      - nested chain application
+
+freeze_rules:
+  - do not silently replace dev_oracle_panel_v0 after seeing results
+  - new medium states are additive and should be evaluated under the same separability protocol
