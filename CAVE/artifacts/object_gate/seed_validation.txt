@@ -1,0 +1,6 @@
+validation ok
+records: 6
+pairs: 3
+domains: {'code': 2, 'plan': 2, 'sym': 2}
+actions: {'keep': 3, 'revise': 3}
+pair_ids: ['code_pair_001', 'plan_pair_001', 'sym_pair_001']

@@ -1,0 +1,62 @@
+version: object_dev_v0
+status: bootstrap_template
+
+scope:
+  domains:
+    - math
+    - code
+  active_families:
+    - substance_flip
+    - style_flip
+  deferred_families:
+    - reasoning_fluff
+
+item_schema:
+  required_fields:
+    - item_id
+    - domain
+    - source_dataset
+    - source_task_id
+    - family
+    - construction_method
+    - generator_model
+    - reviewer_model
+    - prompt
+    - answer_a
+    - answer_b
+    - gold_label
+    - verifier_type
+    - verifier_note
+    - reviewer_decision
+    - reviewer_note
+    - audit_status
+    - split
+
+audit_status_values:
+  - pending
+  - pass
+  - fail
+  - needs_revision
+
+default_split_policy:
+  object_dev_v0:
+    target_pairs_per_domain_family: 30
+  frozen_final_v0:
+    target_pairs_per_domain_family: 20
+    note: freeze only after object gate passes
+
+seed_sources:
+  math: []
+  code: []
+
+judge_variants_expected:
+  - qwen3_0p6b_base_judge
+  - qwen3_0p6b_critic_judge
+  - qwen3_4b_base_judge
+  - qwen3_4b_critic_judge
+
+notes:
+  - Fill this manifest before running any judge evaluation.
+  - Use model-driven family construction and model-driven review by default.
+  - Keep only objective or semi-objective items with a clear verifier path.
+  - Do not promote an item into frozen_final_v0 until family fidelity has been audited.

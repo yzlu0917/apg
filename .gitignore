@@ -26,9 +26,23 @@ Thumbs.db
 *.swo
 *~
 
-# Experiment data, generated artifacts, and run outputs
-**/data/
-**/artifacts/
+# Experiment data, generated artifacts, and run outputs.
+# Keep lightweight documentation and manifest templates that explain how runs
+# were produced; ignore raw/generated payloads by default.
+**/data/**
+!**/data/
+!**/data/**/
+!**/data/**/README.md
+!**/data/manifests/
+!**/data/manifests/**/
+!**/data/manifests/**/*.yaml
+!**/data/manifests/**/*.yml
+
+**/artifacts/**
+!**/artifacts/
+!**/artifacts/**/
+!**/artifacts/**/*.md
+!**/artifacts/**/*.txt
 **/outputs/
 
 # Large model/checkpoint/feature artifacts
